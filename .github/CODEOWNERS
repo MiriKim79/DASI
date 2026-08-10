@@ -1,0 +1,19 @@
+# 경로별 리뷰어 자동 지정 (아래쪽 규칙이 우선)
+
+/frontend/src/pages/AgeTest/       @minkyung3038
+/backend/**/age_test*              @minkyung3038
+
+/frontend/src/pages/Playground/    @KIM-M0101
+/frontend/src/components/Sidebar/  @KIM-M0101
+/frontend/src/components/Layout/   @KIM-M0101
+/backend/**/playground*            @KIM-M0101
+
+/frontend/src/components/Chatbot/  @MiriKim79
+/backend/**/chat*                  @MiriKim79
+
+/frontend/src/pages/Auth/          @junghocomputer
+/frontend/src/pages/Ranking/       @junghocomputer
+/frontend/src/pages/Feedback/      @junghocomputer
+/backend/**/user*                  @junghocomputer
+/backend/**/ranking*               @junghocomputer
+/backend/**/feedback*              @junghocomputer
