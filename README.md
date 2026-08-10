@@ -53,5 +53,5 @@ docs/       기능 명세 등 문서
 
 ## 진행 관리
 
-- Milestone 대신 🏁 스프린트 이슈로 진행률 추적: MVP1(#52) → MVP2(#53) → MVP3(#54)
+- Milestone 대신 🏁 스프린트 이슈로 진행률 추적: MVP1(#52) → MVP2(#53) → MVP3(#54) → Final(#55)
 - 라벨: 담당(`role-1~4`, `공통`) / 영역(`frontend` `backend` `database` `ai`) / `MVP`
