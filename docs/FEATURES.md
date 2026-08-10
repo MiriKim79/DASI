@@ -2,9 +2,7 @@
 
 각 항목이 GitHub 이슈 1개에 대응합니다. 진행 추적: 🏁 MVP1 [#52](../../issues/52) → MVP2 [#53](../../issues/53) → MVP3 [#54](../../issues/54) → Final [#55](../../issues/55).
 
-⚠️ 표시는 아직 팀 확정 전, 제 제안(초안)입니다. 담당자가 확정하면 표시를 지우고 이 문서를 갱신해주세요.
-
-## 공통 규칙 ⚠️ 제안 — 팀 확인 필요
+## 공통 규칙
 
 - API 응답 필드: **snake_case** (FastAPI/Pydantic 기본값)
 - 에러 응답: FastAPI 기본 형식 `{ "detail": "메시지" }` 그대로 사용
@@ -66,8 +64,8 @@
 - `GET /api/playground/categories/{id}/quiz` → `{ "category": "드라마", "questions": [{ "id": 1, "text": "...", "options": [...] }] }` (정답은 응답에 포함하지 않음)
 - `POST /api/playground/categories/{id}/submit` → 요청 `{ "answers": [{ "question_id": 1, "option_id": 2 }, ...] }` → 응답 `{ "score": 8, "total": 10 }` — 클라이언트는 선택한 answers만 보내고, 서버가 채점해 score를 계산한다
 - 서버는 category 존재 여부와 option_id가 해당 질문 소속인지 검증 후 채점한다
-- ⚠️ 정답을 제출 전 프론트로 내려줄지(부정행위 이슈) 확인 필요
-- 완료조건: 7개 분야 퀴즈를 풀고 점수를 받을 수 있다
+- 정답은 제출 **전**(quiz 조회 응답)에는 내려주지 않는다. 제출 **후**(submit 응답)에는 복습을 위해 문항별 정답을 포함할 수 있다 — 예: `{ "score": 8, "total": 10, "results": [{ "question_id": 1, "correct_option_id": 2 }] }`
+- 완료조건: 7개 분야 퀴즈를 풀고 점수와 정답 리뷰를 받을 수 있다
 
 ### F2-3. 개그 콘텐츠 API — [#19](../../issues/19)
 - `GET /api/playground/gag?type=아재|문과|이과|세대` → `[{ "id": 1, "content": "...", "answer": "..." }]`
@@ -112,8 +110,8 @@
 ### F4-1. 인증 API — [#38](../../issues/38) [#39](../../issues/39) [#40](../../issues/40)
 - `POST /api/auth/signup` → `{ "email": "...", "password": "..." }` → `201`
 - `POST /api/auth/login` → `{ "email": "...", "password": "..." }` → `{ "access_token": "...", "token_type": "bearer" }`
-- ⚠️ 로그아웃을 서버 API로 둘지, 클라이언트 토큰 삭제만으로 처리할지 확인 필요
-- 완료조건: 회원가입 후 로그인하면 JWT가 발급된다
+- 로그아웃은 별도 서버 API를 두지 않는다. JWT는 stateless이므로 **클라이언트가 저장된 토큰을 삭제**하는 것으로 처리한다 (서버 측 블랙리스트 등은 MVP 범위 밖)
+- 완료조건: 회원가입 후 로그인하면 JWT가 발급되고, 로그아웃 시 클라이언트에서 토큰이 제거되어 인증이 필요한 요청이 거부된다
 
 ### F4-2. 인증 의존성 — [#41](../../issues/41)
 - FastAPI `Depends(get_current_user)` 형태로 제공, 다른 라우터에서 재사용
@@ -144,8 +142,6 @@
 
 ---
 
-## 미확정 (⚠️ 팀 확인 필요 모음)
+## 미확정
 
-- 공통 규칙(에러 응답 형식/필드 케이스) 최종 확정
-- F2-2: 퀴즈 정답 노출 시점(제출 전/후)
-- F4-1: 로그아웃 처리 방식(서버 API vs 클라이언트 처리)
+없음. (공통 규칙 확정 / F2-2 정답 노출 시점 / F4-1 로그아웃 처리 방식 모두 위에 반영됨)
