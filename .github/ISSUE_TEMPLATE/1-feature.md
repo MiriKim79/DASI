@@ -19,3 +19,4 @@ title: "[역할] 기능명"
 - 영역: FE / BE / DB
 - 브랜치: feature/xxx
 - Dependency:
+- 관련 명세: `docs/FEATURES.md`의 F-

@@ -1,0 +1,27 @@
+# env
+.env
+.env.local
+*.env
+
+# node / frontend
+node_modules/
+dist/
+build/
+.vite/
+
+# python / backend
+__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+*.egg-info/
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# logs
+*.log
