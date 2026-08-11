@@ -1,4 +1,6 @@
 """나이 맞히기(Age Test) Pydantic 스키마 (요청/응답 DTO)."""
+from typing import Optional
+
 from pydantic import BaseModel, ConfigDict
 
 
@@ -16,5 +18,21 @@ class AgeTestQuestionOut(BaseModel):
 
     id: int
     text: str
+    subtitle: Optional[str] = None
     options: list[AgeTestOptionOut] = []
     # weight는 서버 내부(#5 계산) 전용이라 응답에 포함하지 않는다.
+
+
+# ---------- 답변 제출 ----------
+class AgeTestAnswerIn(BaseModel):
+    question_id: int
+    option_id: int
+
+
+class AgeTestSubmitIn(BaseModel):
+    answers: list[AgeTestAnswerIn]
+
+
+class AgeTestSubmitOut(BaseModel):
+    estimated_age: int
+    top_reasons: list[str]

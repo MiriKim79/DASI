@@ -6,6 +6,7 @@ import MemoryContentPage from "./pages/Playground/MemoryContentPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import AgeTestStartPage from "./pages/AgeTest/StartPage.jsx";
 import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
+import AgeTestResultPage from "./pages/AgeTest/ResultPage.jsx";
 import DockedMori from "./components/Chatbot/DockedMori.jsx";
 import { ChatbotProvider } from "./components/Chatbot/ChatbotContext.jsx";
 
@@ -21,6 +22,7 @@ export default function App() {
       <Routes>
         <Route path="/age-check" element={<AgeTestStartPage />} />
         <Route path="/age-check/quiz" element={<AgeTestQuizPage />} />
+        <Route path="/age-check/result" element={<AgeTestResultPage />} />
 
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />

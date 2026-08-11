@@ -2,6 +2,8 @@
 
 Question 1 - N Option. 기존 database.py의 Base(공통 engine/session)를 그대로 재사용한다.
 """
+from typing import Optional
+
 from sqlalchemy import Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -13,7 +15,9 @@ class Question(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
-    # EXPERIENCE(경험형 7문항) / ANCHOR(기준점형 3문항)
+    # 질문 아래 작게 보여주는 보조 문구(기준 시점 안내 등). 없으면 null.
+    subtitle: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    # EXPERIENCE(강한 세대 신호) / ANCHOR(보정) / FUN(재미, 낮은 weight)
     type: Mapped[str] = mapped_column(String(20), nullable=False)
     # 이 질문이 나이 추정에서 갖는 초기 신호 강도.
     # MVP 휴리스틱 값(팀 내부 판단)이며 통계적으로 검증된 값이 아니다.
