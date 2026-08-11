@@ -32,11 +32,42 @@ def _accepted_answers(answer_field: str) -> list[str]:
     return [a for a in answer_field.split("|") if a]
 
 
+def _primary_answer(item: dict) -> str:
+    return _accepted_answers(item["answer"])[0]
+
+
+def _hint1(item: dict) -> str:
+    """gag_data.py에 hint1이 직접 있으면 그걸 쓰고, 없으면 자동 생성(글자 수).
+    96개 전부 손으로 힌트를 쓰기엔 이번 4일 범위에서 비효율적이라 자동 생성을
+    기본값으로 둔다 — 나중에 특정 문항에 더 좋은 힌트를 주고 싶으면 gag_data.py에
+    "hint1" 키만 추가하면 이 자동 생성보다 우선한다."""
+    if item.get("hint1"):
+        return item["hint1"]
+    length = len(_primary_answer(item).replace(" ", ""))
+    return f"정답은 총 {length}글자예요!"
+
+
+def _hint2(item: dict) -> str:
+    if item.get("hint2"):
+        return item["hint2"]
+    first = _primary_answer(item).replace(" ", "")[:1] or "?"
+    return f"첫 글자는 '{first}'예요!"
+
+
 @router.get("/gag", response_model=list[schemas.GagItemOut])
 def list_gag_items():
-    """개그 문항 목록 — docs/FEATURES.md F3-4. 매번 랜덤 순서로 반환한다."""
+    """개그 문항 목록 — docs/FEATURES.md F3-4. 매번 랜덤 순서로 반환한다.
+    힌트 2단계(hint1/hint2)를 함께 내려준다 — 정답 자체는 여전히 포함하지 않는다."""
     shuffled = random.sample(GAG_ITEMS, len(GAG_ITEMS))
-    return [{"id": item["id"], "prompt": item["prompt"]} for item in shuffled]
+    return [
+        {
+            "id": item["id"],
+            "prompt": item["prompt"],
+            "hint1": _hint1(item),
+            "hint2": _hint2(item),
+        }
+        for item in shuffled
+    ]
 
 
 @router.post("/gag/{item_id}/answer", response_model=schemas.GagAnswerOut)
