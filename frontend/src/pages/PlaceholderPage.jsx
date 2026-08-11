@@ -3,7 +3,7 @@ import RetroWindow from "../components/RetroWindow.jsx";
 // 타 팀원 담당 기능 자리표시 페이지 (라우팅/사이드바 연결 확인용).
 export default function PlaceholderPage({ title, note }) {
   return (
-    <div className="page">
+    <div className="page page--centered">
       <RetroWindow>
         <h1 className="window-heading">
           <span className="sparkle">✨</span>

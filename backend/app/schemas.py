@@ -41,9 +41,21 @@ class ContentOut(BaseModel):
     options: list[ContentOptionOut] = []
 
 
-# ---------- Answer ----------
+# ---------- Answer (객관식) ----------
 class AnswerIn(BaseModel):
     option_id: int
+
+
+# ---------- Answer (텍스트 입력형: 사진/노래 보고 정답 작성) ----------
+class TextAnswerIn(BaseModel):
+    text: str
+
+
+class TextAnswerOut(BaseModel):
+    content_id: int
+    is_correct: bool
+    correct_answer: Optional[str] = None
+    message: str
 
 
 class AnswerOut(BaseModel):

@@ -17,6 +17,12 @@ venv/
 env/
 *.egg-info/
 
+# local database (SQLite)
+*.db
+*.sqlite
+*.sqlite3
+backend/memory_playground.db
+
 # os / editor
 .DS_Store
 Thumbs.db
