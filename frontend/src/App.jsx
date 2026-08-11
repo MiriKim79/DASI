@@ -7,6 +7,7 @@ import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import AgeTestStartPage from "./pages/AgeTest/StartPage.jsx";
 import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
 import ChatbotFab from "./components/Chatbot/ChatbotFab.jsx";
+import { ChatbotProvider } from "./components/Chatbot/ChatbotContext.jsx";
 
 // 전체 앱 라우팅. 공통 Layout(사이드바+상단바) 아래에 각 화면이 들어간다.
 // 나이 맞히기 시작 화면(#1)은 #15 정책대로 Layout 밖(사이드바 없이) 단독으로 둔다.
@@ -15,7 +16,7 @@ import ChatbotFab from "./components/Chatbot/ChatbotFab.jsx";
 // ChatbotFab 내부에서 현재 경로를 보고 스스로 판단한다.
 export default function App() {
   return (
-    <>
+    <ChatbotProvider>
       <Routes>
         <Route path="/age-check" element={<AgeTestStartPage />} />
         <Route path="/age-check/quiz" element={<AgeTestQuizPage />} />
@@ -42,6 +43,6 @@ export default function App() {
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <ChatbotFab />
-    </>
+    </ChatbotProvider>
   );
 }

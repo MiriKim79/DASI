@@ -1,14 +1,16 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import MoriWanderer from "../../components/MoriWanderer.jsx";
+import { useChatbot } from "../../components/Chatbot/ChatbotContext.jsx";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
 export default function HomePage() {
   const navigate = useNavigate();
+  const { open: openChatbot } = useChatbot();
   return (
     <div className="page page--home">
-      {/* 배경을 걸어다니는 마스코트 모리 */}
-      <MoriWanderer />
+      {/* 배경을 걸어다니는 마스코트 모리 — 클릭하면 챗봇이 열린다 */}
+      <MoriWanderer onClick={openChatbot} />
 
       <RetroWindow>
         <h1 className="window-heading">
