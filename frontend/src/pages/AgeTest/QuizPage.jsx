@@ -70,6 +70,12 @@ export default function QuizPage() {
   const currentQuestion = questions[currentIndex];
   const progress = currentIndex + 1;
 
+  function handleBack() {
+    if (currentIndex === 0 || selectedOptionId !== null) return;
+    setCurrentIndex((i) => i - 1);
+    setAnswers((prev) => prev.slice(0, -1));
+  }
+
   function handleSelect(optionId) {
     if (selectedOptionId !== null) return; // 중복 클릭 방지
     setSelectedOptionId(optionId);
@@ -95,6 +101,17 @@ export default function QuizPage() {
     <div className="page age-start-page">
       <RetroWindow titleColor="transparent">
         <div className="age-quiz">
+          {currentIndex > 0 && (
+            <button
+              type="button"
+              className="age-quiz__back"
+              onClick={handleBack}
+              disabled={selectedOptionId !== null}
+            >
+              ← 이전 질문
+            </button>
+          )}
+
           <p className="age-quiz__progress">
             {progress} / {questions.length}
           </p>
