@@ -6,6 +6,7 @@ import MemoryContentPage from "./pages/Playground/MemoryContentPage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import AgeTestStartPage from "./pages/AgeTest/StartPage.jsx";
 import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
+import AgeTestResultPage from "./pages/AgeTest/ResultPage.jsx";
 import ChatbotFab from "./components/Chatbot/ChatbotFab.jsx";
 
 // 전체 앱 라우팅. 공통 Layout(사이드바+상단바) 아래에 각 화면이 들어간다.
@@ -19,6 +20,7 @@ export default function App() {
       <Routes>
         <Route path="/age-check" element={<AgeTestStartPage />} />
         <Route path="/age-check/quiz" element={<AgeTestQuizPage />} />
+        <Route path="/age-check/result" element={<AgeTestResultPage />} />
 
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />

@@ -23,4 +23,10 @@ async function request(path, options) {
 export const ageTestApi = {
   // F1-1(#2): 질문 목록 조회. representative_age/weight는 서버가 응답에 내려주지 않는다.
   getQuestions: () => request("/api/age-test/questions"),
+  // F1-2(#4): 답변 제출. 로그인 시 결과 저장은 #9 범위(현재 백엔드는 저장하지 않음).
+  submitAnswers: (answers) =>
+    request("/api/age-test/submit", {
+      method: "POST",
+      body: JSON.stringify({ answers }),
+    }),
 };

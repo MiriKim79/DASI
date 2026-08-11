@@ -216,6 +216,32 @@
   margin: 0 auto;
 }
 
+.age-quiz__back {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--age-accent-deep);
+  background: #fffbf0;
+  border: 2px solid var(--age-border);
+  border-radius: 999px;
+  cursor: pointer;
+  padding: 6px 14px;
+  margin: 0 0 14px;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.age-quiz__back:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08);
+  background: var(--age-cream);
+}
+
+.age-quiz__back:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 .age-quiz__progress {
   text-align: center;
   font-weight: 800;
@@ -291,4 +317,81 @@
 
 .age-quiz__option:disabled {
   cursor: default;
+}
+
+/* ---------- 결과 화면 (#8) ---------- */
+.age-result {
+  max-width: 480px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.age-result__badge {
+  font-weight: 800;
+  color: var(--age-muted);
+  margin: 0 0 4px;
+}
+
+.age-result__age {
+  font-size: 56px;
+  font-weight: 800;
+  color: var(--age-accent);
+  margin: 0 0 26px;
+}
+
+.age-result__age span {
+  font-size: 22px;
+  color: var(--age-ink);
+  margin-left: 4px;
+}
+
+.age-result__reasons {
+  background: #fffbf0;
+  border: 2px solid var(--age-border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+  text-align: left;
+}
+
+.age-result__reasons-title {
+  font-weight: 800;
+  color: var(--age-ink);
+  margin: 0 0 10px;
+}
+
+.age-result__reasons ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--age-ink);
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.age-result__login-hint {
+  font-size: 13px;
+  color: var(--age-muted);
+  margin: 0 0 22px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.age-result__login-btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--age-accent-deep);
+  background: none;
+  border: none;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.age-result__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
