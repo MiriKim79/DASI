@@ -13,6 +13,12 @@ from dataclasses import dataclass
 
 DEFAULT_TOP_REASONS_COUNT = 3
 
+# top_reasons 후보 최소 weight. 재미/리듬용 문항(weight 0.2~0.4)은 estimated_age 계산에는
+# 그대로 포함하되, 결과 화면의 "결정적 답변"으로는 노출하지 않기 위한 기준(#76).
+# 역할군별 weight 범위(재미 0.2~0.4 / 보정 0.7~1.1 / 강한신호 1.2~1.5)가 겹치지 않게
+# 설계돼 있어 이 하나의 상수로 충분히 구분된다.
+MIN_REASON_WEIGHT = 0.5
+
 
 @dataclass
 class AnsweredOption:
@@ -67,7 +73,10 @@ def calculate_top_reasons(
     각 답변을 하나씩 제외하고 raw weighted average를 다시 계산해,
     influence = |전체 raw_age - 제외 후 raw_age|
     로 "이 답변이 최종 결과를 얼마나 움직였는가"를 구한다. 반올림은 여기서 하지 않는다.
-    답변이 1개뿐이면 leave-one-out 자체가 불가능하므로, 그 답변을 그대로 반환한다.
+    influence 계산 자체는 전체 답변(재미 문항 포함) 기준으로 하되, 최종 후보는
+    weight >= MIN_REASON_WEIGHT인 답변으로만 제한한다(#76) — 재미 문항이 결과 화면의
+    "결정적 이유"로 노출되지 않게 하기 위함. 답변이 1개뿐이면 leave-one-out 자체가
+    불가능하므로, 그 답변이 기준을 만족할 때만 그대로 반환한다.
 
     정렬 기준:
     1. influence desc
@@ -78,6 +87,8 @@ def calculate_top_reasons(
 
     if len(answered_options) == 1:
         only = answered_options[0]
+        if only.weight < MIN_REASON_WEIGHT:
+            return []
         return [f"{only.question_text}: {only.option_text}"]
 
     full_raw_age = _calculate_weighted_average(answered_options)
@@ -89,10 +100,11 @@ def calculate_top_reasons(
         influence = abs(full_raw_age - without_raw_age)
         scored.append((influence, answer))
 
-    scored.sort(key=lambda pair: (-pair[0], -pair[1].weight, pair[1].order_index))
+    eligible = [pair for pair in scored if pair[1].weight >= MIN_REASON_WEIGHT]
+    eligible.sort(key=lambda pair: (-pair[0], -pair[1].weight, pair[1].order_index))
 
-    n = min(top_n, len(scored))
-    return [f"{a.question_text}: {a.option_text}" for _, a in scored[:n]]
+    n = min(top_n, len(eligible))
+    return [f"{a.question_text}: {a.option_text}" for _, a in eligible[:n]]
 
 
 def estimate_age(

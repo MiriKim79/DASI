@@ -243,6 +243,14 @@
   font-weight: 800;
   color: var(--age-ink);
   line-height: 1.5;
+  margin: 0 0 8px;
+}
+
+.age-quiz__subtitle {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--age-muted);
   margin: 0 0 26px;
 }
 
