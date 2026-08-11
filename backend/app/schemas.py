@@ -55,6 +55,31 @@ class AnswerOut(BaseModel):
     message: str
 
 
+# ---------- Generation (세대별 챗봇, 3번 담당) ----------
+class GenerationOut(BaseModel):
+    id: str
+    display_name: str
+    character: str
+
+
+# ---------- Chat (세대별 챗봇, 3번 담당) ----------
+class ChatMessage(BaseModel):
+    role: str  # "user" | "assistant"
+    content: str
+
+
+class ChatIn(BaseModel):
+    generation: str
+    message: str
+    history: list[ChatMessage] = []
+
+
+class ChatOut(BaseModel):
+    generation: str
+    character: str
+    message: str
+
+
 # ---------- 아재력 결과 처리 ----------
 class ResultIn(BaseModel):
     correct: int          # 맞힌 QUIZ 개수

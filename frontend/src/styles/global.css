@@ -230,8 +230,73 @@ button {
   line-height: 1;
 }
 
+.winbtn[role="button"] {
+  cursor: pointer;
+}
+
 .retro-window__body {
   padding: 26px 22px 28px;
+}
+
+/* ---------- 세대별 챗봇 · FAB + 팝업 (#22) ---------- */
+.chatbot-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #ff7eb6;
+  color: #fff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.06), 0 12px 24px rgba(154, 46, 104, 0.28);
+  z-index: 60;
+  transition: transform 0.12s ease;
+}
+
+.chatbot-fab:hover {
+  transform: translateY(-3px);
+}
+
+.chatbot-fab:active {
+  transform: translateY(0);
+}
+
+.chatbot-popup {
+  position: fixed;
+  right: 20px;
+  bottom: 92px;
+  width: min(92vw, 400px);
+  max-height: min(72vh, 560px);
+  z-index: 60;
+}
+
+.chatbot-popup .retro-window {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-popup .retro-window__body {
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .chatbot-fab {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .chatbot-popup {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 88px;
+  }
 }
 
 /* ---------- 창 내부 헤딩 ---------- */
@@ -299,6 +364,203 @@ button {
   font-weight: 800;
   font-size: 16px;
   color: var(--ink);
+}
+
+/* ---------- 세대별 챗봇 · 세대 선택 (2열 알약형, category-card와 같은 톤) ---------- */
+.generation-select__prompt {
+  text-align: center;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+.generation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.generation-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 2px solid;
+  border-radius: 14px;
+  background: var(--card);
+  padding: 13px 14px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.04);
+  transition: transform 0.12s ease;
+}
+
+.generation-card:hover {
+  transform: translateY(-3px);
+}
+
+.generation-card:active,
+.generation-card--selected {
+  transform: translateY(0);
+}
+
+.generation-card__icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.generation-card__name {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.generation-select__hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 18px 0 0;
+}
+
+/* ---------- 세대별 챗봇 · 채팅 화면 ---------- */
+.chat-window {
+  display: flex;
+  flex-direction: column;
+  min-height: 360px;
+}
+
+.chat-window__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.chat-window__back {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: var(--cream);
+  color: var(--purple-deep);
+  font-size: 18px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-window__title {
+  font-weight: 800;
+  color: var(--ink);
+}
+
+.chat-window__messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px 2px 12px;
+  min-height: 200px;
+}
+
+.chat-bubble {
+  max-width: 78%;
+  padding: 10px 14px;
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.chat-bubble--user {
+  align-self: flex-end;
+  background: var(--purple-deep);
+  color: #fff;
+  border-bottom-right-radius: 4px;
+}
+
+.chat-bubble--assistant {
+  align-self: flex-start;
+  background: var(--cream);
+  color: var(--ink);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-bubble--typing {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: typing-bounce 1.2s infinite ease-in-out;
+}
+
+.typing-dot:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.typing-dot:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes typing-bounce {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+    opacity: 0.5;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.chat-window__input {
+  display: flex;
+  gap: 8px;
+  border-top: 1px solid var(--lavender);
+  padding-top: 12px;
+}
+
+.chat-window__input input {
+  flex: 1;
+  border: 2px solid var(--lavender);
+  border-radius: 20px;
+  padding: 9px 16px;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+.chat-window__input input:focus {
+  outline: none;
+  border-color: var(--purple-deep);
+}
+
+.chat-window__input button {
+  border: none;
+  border-radius: 20px;
+  padding: 9px 18px;
+  background: var(--purple-deep);
+  color: #fff;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.chat-window__input button:disabled {
+  background: var(--lavender);
+  cursor: not-allowed;
 }
 
 /* ---------- 콘텐츠 화면 ---------- */
