@@ -15,7 +15,7 @@ export default function TopNav() {
   return (
     <header className="topnav">
       <div className="topnav__brand">
-        <span className="topnav__logo">✨ DASI</span>
+        <span className="topnav__logo">✨ 다시</span>
       </div>
       <nav className="topnav__nav">
         {MENUS.map((m) => (
