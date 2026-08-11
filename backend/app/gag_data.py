@@ -119,4 +119,5 @@ GAG_ITEMS = [
     {"id": 93, "prompt": "왕이 궁에 들어가기 싫을 때 하는 말은?", "answer": "궁시렁궁시렁"},
     {"id": 94, "prompt": "세상에서 제일 예쁜 풀은?", "answer": "뷰티풀"},
     {"id": 95, "prompt": "입모양이 S자인 사람은?", "answer": "EBS|ebs"},
+    {"id": 96, "prompt": "아이의 아빠는?", "answer": "허수아비"},
 ]
