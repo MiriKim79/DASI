@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from .. import crud, schemas
 from ..database import get_db
-from ..security import hash_password
+from ..security import create_access_token, hash_password, verify_password
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 
@@ -30,3 +30,17 @@ def signup(payload: schemas.SignupIn, db: Session = Depends(get_db)):
 
     db.refresh(user)
     return user
+
+
+@router.post("/login", response_model=schemas.TokenOut)
+def login(payload: schemas.LoginIn, db: Session = Depends(get_db)):
+    """이메일과 비밀번호를 검증하고 access token을 발급한다."""
+    user = crud.get_user_by_email(db, payload.email)
+    if user is None or not verify_password(payload.password, user.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="이메일 또는 비밀번호가 올바르지 않습니다.",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+
+    return schemas.TokenOut(access_token=create_access_token(user.id))

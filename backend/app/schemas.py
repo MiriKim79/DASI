@@ -1,6 +1,6 @@
 """Pydantic 스키마 (요청/응답 DTO)."""
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
@@ -28,6 +28,16 @@ class UserOut(BaseModel):
     nickname: str
     coin_balance: int
     created_at: datetime
+
+
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
 
 
 # ---------- Category ----------
