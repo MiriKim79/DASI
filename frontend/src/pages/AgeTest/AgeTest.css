@@ -1,0 +1,200 @@
+/* 도트/픽셀 폰트 (둥근모꼴+Fixedsys, MIT, 90년대 PC통신에 쓰이던 고전 폰트) — 이 페이지의 큰 헤드라인 전용. 본문/버튼은 기존 폰트 유지. */
+@import "@noonnu/dung-geun-mo/index.css";
+
+/* 나이 맞히기(AgeTest) 전용 스타일.
+   이 화면은 참고 디자인(스크린샷)의 창 색/2단 배치를 최대한 그대로 맞추기 위해
+   RetroWindow 컴포넌트는 그대로 재사용하되, 레이아웃은 .age-start-page 안에서만
+   덮어쓴다. global.css/RetroWindow.jsx 자체는 건드리지 않는다(다른 페이지엔 영향 없음).
+   색상은 #14 공통 디자인 토큰(--cream/--win-border/--ink/--muted/--purple-deep)을
+   그대로 재사용하고, 전역에 없는 진한 그림자 톤만 이 페이지에서 보충한다. */
+
+.age-start-page {
+  --age-cream: var(--cream);
+  --age-border: var(--win-border);
+  --age-ink: var(--ink);
+  --age-muted: var(--muted);
+  --age-accent: var(--purple-deep);
+  --age-accent-deep: #4423b8;
+}
+
+/* 배경 모눈은 global.css(.page)가 그리는 걸 그대로 두고, 창만 화면 중앙에 더 크게 띄운다 */
+.age-start-page.page {
+  min-height: calc(100vh - 4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 16px;
+}
+
+/* 창 자체를 참고 이미지 톤(더 진한 라벤더 테두리, 크림 배경, 타이틀바 투명)에 맞춘다 */
+.age-start-page .retro-window {
+  max-width: 760px;
+  width: 100%;
+  background: var(--age-cream);
+  border-color: var(--age-border);
+  border-width: 3px;
+}
+
+.age-start-page .retro-titlebar__title {
+  color: var(--age-accent-deep);
+  font-size: 16px;
+}
+
+.age-start-page .winbtn {
+  background: transparent;
+  border: 2px solid var(--age-border);
+  color: var(--age-border);
+  border-radius: 5px;
+}
+
+.age-start-page .retro-window__body {
+  padding: 42px 44px 46px;
+}
+
+/* ---------- 2단 배치: 왼쪽 캐릭터 / 오른쪽 카피+버튼 ---------- */
+.age-start-grid {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  gap: 34px;
+  align-items: center;
+}
+
+@media (max-width: 520px) {
+  .age-start-grid {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+  }
+}
+
+/* ---------- 캐릭터 일러스트 ---------- */
+.age-start__stage {
+  position: relative;
+  width: 100%;
+  max-width: 240px;
+  margin: 0 auto;
+}
+
+.age-start__bot {
+  width: 100%;
+  display: block;
+}
+
+.age-start__bubble {
+  position: absolute;
+  top: -8px;
+  right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 2.5px solid var(--age-border);
+  border-radius: 14px;
+  padding: 6px 9px;
+  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.06);
+}
+
+.age-start__cassette {
+  position: absolute;
+  bottom: -14px;
+  left: -18px;
+  width: 88px;
+  transform: rotate(-10deg);
+}
+
+.age-start__deco {
+  position: absolute;
+  filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.08));
+}
+
+.age-start__deco--envelope {
+  top: 30%;
+  right: -30px;
+  transform: rotate(8deg);
+}
+
+.age-start__deco--folder {
+  bottom: 4px;
+  right: -8px;
+  transform: rotate(-6deg);
+}
+
+@media (max-width: 520px) {
+  .age-start__deco--envelope,
+  .age-start__deco--folder {
+    display: none;
+  }
+}
+
+/* ---------- 오른쪽 카피 + 버튼 ---------- */
+.age-start__copy {
+  text-align: left;
+}
+
+@media (max-width: 520px) {
+  .age-start__copy {
+    text-align: center;
+  }
+}
+
+.age-start__headline {
+  font-family: "DungGeunMo", monospace;
+  font-weight: normal;
+  font-size: 46px;
+  line-height: 1.5;
+  color: var(--age-ink);
+  margin: 0 0 18px;
+  letter-spacing: 0.5px;
+}
+
+.age-start__accent {
+  color: var(--age-accent);
+}
+
+.age-start__subtext {
+  color: var(--age-muted);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.65;
+  margin: 0 0 26px;
+}
+
+.age-start__actions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.age-start__btn {
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 17px;
+  padding: 16px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  border: 2px solid var(--age-ink);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.age-start__btn--primary {
+  background: var(--age-accent);
+  color: #fff;
+  border-color: var(--age-accent-deep);
+  box-shadow: 0 4px 0 var(--age-accent-deep);
+}
+
+.age-start__btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 var(--age-accent-deep);
+}
+
+.age-start__btn--ghost {
+  background: #fffbf0;
+  color: var(--age-ink);
+  box-shadow: 0 3px 0 var(--age-ink);
+}
+
+.age-start__btn--ghost:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 0 var(--age-ink);
+}
