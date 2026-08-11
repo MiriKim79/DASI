@@ -69,7 +69,10 @@
 - 완료조건: 메인 이후 모든 페이지가 동일한 사이드바/레이아웃을 공유한다
 
 ### F2-2. 분야별 퀴즈 API — [#16](../../issues/16) [#17](../../issues/17) [#18](../../issues/18)
-- `GET /api/playground/categories` → `[{ "id": 1, "name": "드라마" }, ...]` (개그 제외 7개)
+
+**[확정 — 2026-08-11] 추억 놀이터 8개 분야: 게임 · 드라마 · 영화 · 애니·만화 · 문방구·놀이 · 유행어·밈 · 먹거리 · 음악.** 개그는 추억 놀이터에 노출하지 않고 챗봇(F3-4)에서만 다룬다 — 기존에 "개그 제외 7개"였던 자리를 게임이 채워 8개 분야가 됐다.
+
+- `GET /api/playground/categories` → `[{ "id": 1, "name": "드라마" }, ...]` (게임 포함 8개, 개그는 제외)
 - `GET /api/playground/categories/{id}/quiz` → `{ "category": "드라마", "questions": [{ "id": 1, "text": "...", "options": [...] }] }` (정답은 응답에 포함하지 않음)
 - `POST /api/playground/categories/{id}/submit` → 요청 `{ "answers": [{ "question_id": 1, "option_id": 2 }, ...] }` → 응답 `{ "score": 8, "total": 10 }` — 클라이언트는 선택한 answers만 보내고, 서버가 채점해 score를 계산한다
 - 서버는 category 존재 여부와 option_id가 해당 질문 소속인지 검증 후 채점한다
