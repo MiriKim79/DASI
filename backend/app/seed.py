@@ -7,6 +7,7 @@
 """
 from .database import Base, SessionLocal, engine
 from . import models
+from .age_test_seed import seed_age_test
 
 # ---------------------------------------------------------------------------
 # 카테고리 정의: code -> (name, theme_color, icon, description)
@@ -206,6 +207,11 @@ def seed(reset: bool = False):
         Base.metadata.drop_all(bind=engine)
 
     Base.metadata.create_all(bind=engine)
+
+    # 나이맞히기(age_test) 데이터는 Playground와 별개 테이블이라 독립적으로 시딩한다.
+    # (Playground 데이터 존재 여부와 무관하게, 자체적으로 idempotent하게 동작한다)
+    seed_age_test()
+
     db = SessionLocal()
     try:
         if db.query(models.Category).count() > 0:
