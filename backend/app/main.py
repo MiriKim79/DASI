@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .database import Base, engine
-from .routers import age_test, categories, chat, contents, playground
+from .routers import age_test, categories, chat, chat_gag, contents, playground
 
 # backend/ 디렉터리 (이미지 폴더 gameQ, foodQ 가 위치한 곳)
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,6 +35,7 @@ app.include_router(categories.router)
 app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
+app.include_router(chat_gag.router)
 
 # 퀴즈 이미지 정적 서빙: /media/gameQ/*, /media/foodQ/*
 for _folder in ("gameQ", "foodQ"):
