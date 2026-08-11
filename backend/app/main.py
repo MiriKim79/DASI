@@ -5,7 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from .database import Base, engine
-from .routers import categories, chat, contents, playground
+from .routers import auth, categories, chat, contents, playground
 
 # 앱 시작 시 테이블이 없으면 생성 (개발 편의)
 Base.metadata.create_all(bind=engine)
@@ -30,6 +30,7 @@ app.include_router(categories.router)
 app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
+app.include_router(auth.router)
 
 
 @app.get("/api/health", tags=["health"])
