@@ -36,6 +36,7 @@ app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
 app.include_router(auth.router)
+app.include_router(auth.user_router)
 app.include_router(chat_gag.router)
 
 # 퀴즈 이미지 정적 서빙: /media/gameQ/*, /media/foodQ/*

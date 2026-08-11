@@ -5,9 +5,15 @@ from sqlalchemy.orm import Session
 
 from .. import crud, schemas
 from ..database import get_db
-from ..security import create_access_token, hash_password, verify_password
+from ..security import (
+    create_access_token,
+    get_current_user,
+    hash_password,
+    verify_password,
+)
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
+user_router = APIRouter(prefix="/api", tags=["users"])
 
 
 @router.post("/signup", response_model=schemas.UserOut, status_code=status.HTTP_201_CREATED)
@@ -44,3 +50,8 @@ def login(payload: schemas.LoginIn, db: Session = Depends(get_db)):
         )
 
     return schemas.TokenOut(access_token=create_access_token(user.id))
+
+
+@user_router.get("/me", response_model=schemas.UserOut)
+def get_me(current_user=Depends(get_current_user)):
+    return current_user
