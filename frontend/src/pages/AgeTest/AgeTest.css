@@ -198,3 +198,89 @@
   transform: translateY(-2px);
   box-shadow: 0 5px 0 var(--age-ink);
 }
+
+/* ---------- 퀴즈 진행 화면 (#3) ---------- */
+.age-quiz__state {
+  text-align: center;
+  color: var(--age-muted);
+  font-size: 15px;
+  padding: 20px 0;
+}
+
+.age-quiz__state--error {
+  color: #c23a34;
+}
+
+.age-quiz {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.age-quiz__progress {
+  text-align: center;
+  font-weight: 800;
+  color: var(--age-muted);
+  margin: 0 0 8px;
+}
+
+.age-quiz__progress-bar {
+  height: 8px;
+  border-radius: 999px;
+  background: #efe6d8;
+  overflow: hidden;
+  margin-bottom: 26px;
+}
+
+.age-quiz__progress-fill {
+  height: 100%;
+  background: var(--age-accent);
+  transition: width 0.25s ease;
+}
+
+.age-quiz__question {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 800;
+  color: var(--age-ink);
+  line-height: 1.5;
+  margin: 0 0 26px;
+}
+
+.age-quiz__options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.age-quiz__option {
+  font-family: inherit;
+  text-align: left;
+  border: 2px solid var(--age-border);
+  border-radius: 14px;
+  background: #fffbf0;
+  color: var(--age-ink);
+  padding: 15px 18px;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  transition: transform 0.12s ease, opacity 0.2s ease;
+}
+
+.age-quiz__option:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+.age-quiz__option--selected {
+  background: var(--age-accent);
+  color: #fff;
+  border-color: var(--age-accent-deep);
+}
+
+.age-quiz__option--dim {
+  opacity: 0.45;
+}
+
+.age-quiz__option:disabled {
+  cursor: default;
+}
