@@ -3,9 +3,13 @@ import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from .database import Base, engine
-from .routers import auth, categories, chat, contents, playground
+from .routers import age_test, auth, categories, chat, chat_gag, contents, playground
+
+# backend/ 디렉터리 (이미지 폴더 gameQ, foodQ 가 위치한 곳)
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # 앱 시작 시 테이블이 없으면 생성 (개발 편의)
 Base.metadata.create_all(bind=engine)
@@ -26,11 +30,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(age_test.router)
 app.include_router(categories.router)
 app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
 app.include_router(auth.router)
+app.include_router(chat_gag.router)
+
+# 퀴즈 이미지 정적 서빙: /media/gameQ/*, /media/foodQ/*
+for _folder in ("gameQ", "foodQ"):
+    _path = os.path.join(BACKEND_DIR, _folder)
+    if os.path.isdir(_path):
+        app.mount(f"/media/{_folder}", StaticFiles(directory=_path), name=_folder)
 
 
 @app.get("/api/health", tags=["health"])

@@ -34,7 +34,7 @@ export default function MemoryPlaygroundPage() {
   };
 
   return (
-    <div className="page">
+    <div className="page page--centered">
       <RetroWindow>
         <h1 className="window-heading">
           <span className="sparkle">✨</span>

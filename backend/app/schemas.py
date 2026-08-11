@@ -66,9 +66,21 @@ class ContentOut(BaseModel):
     options: list[ContentOptionOut] = []
 
 
-# ---------- Answer ----------
+# ---------- Answer (객관식) ----------
 class AnswerIn(BaseModel):
     option_id: int
+
+
+# ---------- Answer (텍스트 입력형: 사진/노래 보고 정답 작성) ----------
+class TextAnswerIn(BaseModel):
+    text: str
+
+
+class TextAnswerOut(BaseModel):
+    content_id: int
+    is_correct: bool
+    correct_answer: Optional[str] = None
+    message: str
 
 
 class AnswerOut(BaseModel):
@@ -103,6 +115,23 @@ class ChatOut(BaseModel):
     generation: str
     character: str
     message: str
+
+
+# ---------- 개그 콘텐츠 + 퀴즈 (F3-4, 3번 담당) ----------
+class GagItemOut(BaseModel):
+    id: int
+    prompt: str
+    # 정답은 조회 응답에 포함하지 않는다 (채점 API에서만 공개)
+
+
+class GagAnswerIn(BaseModel):
+    answer: str
+
+
+class GagAnswerOut(BaseModel):
+    item_id: int
+    is_correct: bool
+    correct_answer: str
 
 
 # ---------- 아재력 결과 처리 ----------

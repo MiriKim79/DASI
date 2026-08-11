@@ -56,8 +56,10 @@ class Content(Base):
     title: Mapped[str] = mapped_column(String(100), nullable=False)
     question: Mapped[str] = mapped_column(Text, nullable=False)
     image_url: Mapped[str] = mapped_column(String(255), nullable=True)
-    # QUIZ(정답 있음) / EXPERIENCE(경험 공유형, 정답 없음)
+    # QUIZ(객관식) / EXPERIENCE(경험 공유형) / TEXT_QUIZ(사진·노래 보고 텍스트로 정답 입력)
     content_type: Mapped[str] = mapped_column(String(20), default="QUIZ")
+    # TEXT_QUIZ 정답(텍스트). 여러 정답 허용 시 '|'로 구분한다. (객관식은 NULL)
+    answer: Mapped[str] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     category: Mapped["Category"] = relationship(back_populates="contents")
