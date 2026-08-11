@@ -6,11 +6,12 @@ import { useChatbot } from "../../components/Chatbot/ChatbotContext.jsx";
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
 export default function HomePage() {
   const navigate = useNavigate();
-  const { open: openChatbot } = useChatbot();
+  const { isOpen: chatOpen, open: openChatbot } = useChatbot();
   return (
     <div className="page page--home">
-      {/* 배경을 걸어다니는 마스코트 모리 — 클릭하면 챗봇이 열린다 */}
-      <MoriWanderer onClick={openChatbot} />
+      {/* 배경을 걸어다니는 마스코트 모리 — 클릭하면 우측 하단에 도킹되어 챗봇이 시작된다.
+          도킹된 동안(chatOpen)에는 같은 모리가 두 마리로 보이지 않도록 wanderer는 숨긴다. */}
+      {!chatOpen && <MoriWanderer onClick={openChatbot} hint="나 만져봐 🐾" />}
 
       <RetroWindow>
         <h1 className="window-heading">

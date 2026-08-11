@@ -238,6 +238,62 @@ button {
   cursor: pointer;
 }
 
+/* 클릭 전 안내 말풍선 ("나 만져봐") — 걷는 모리를 따라 함께 움직인다(부모 transform 상속) */
+.mori-wanderer__hint {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #fff;
+  border: 2px solid var(--win-border);
+  border-radius: 14px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.12);
+  animation: mori-hint-bob 2s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.mori-wanderer__hint::after,
+.mori-wanderer__hint::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border-style: solid;
+}
+
+.mori-wanderer__hint::after {
+  bottom: -7px;
+  border-width: 7px 6px 0;
+  border-color: var(--win-border) transparent transparent;
+}
+
+.mori-wanderer__hint::before {
+  bottom: -4.5px;
+  border-width: 5.5px 4.5px 0;
+  border-color: #fff transparent transparent;
+  z-index: 1;
+}
+
+@keyframes mori-hint-bob {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-3px);
+  }
+}
+
+/* 훔쳐보기 포즈 중에는 힌트 숨김(크기/위치가 걷기 모드와 달라서) */
+.mori-wanderer--peeking .mori-wanderer__hint {
+  display: none;
+}
+
 .mori-wanderer__img {
   width: 100%;
   height: 100%;
@@ -422,64 +478,98 @@ button {
   padding: 26px 22px 28px;
 }
 
-/* ---------- 세대별 챗봇 · FAB + 팝업 (#22) ---------- */
-.chatbot-fab {
+/* ---------- 세대별 챗봇 · 우측 하단 도킹된 모리 + 말풍선 (#22) ---------- */
+.docked-mori {
   position: fixed;
-  right: 24px;
-  bottom: 24px;
-  width: 56px;
-  height: 56px;
+  right: 20px;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 60;
+  animation: docked-mori-arrive 0.25s ease-out;
+}
+
+@keyframes docked-mori-arrive {
+  from {
+    transform: translateY(16px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.docked-mori__figure {
+  width: 110px;
+  height: auto;
+  margin-right: 6px;
+  filter: drop-shadow(0 6px 6px rgba(0, 0, 0, 0.18));
+}
+
+.docked-mori__bubble {
+  position: relative;
+  width: min(92vw, 400px);
+  max-height: min(68vh, 540px);
+  overflow-y: auto;
+  margin-bottom: 8px;
+  background: var(--card);
+  border: 2.5px solid var(--win-border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 22px 20px;
+}
+
+/* 말풍선 꼬리 — 모리 머리 쪽(우측)을 향해 아래로 */
+.docked-mori__bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -14px;
+  right: 36px;
+  width: 26px;
+  height: 26px;
+  background: var(--card);
+  border-right: 2.5px solid var(--win-border);
+  border-bottom: 2.5px solid var(--win-border);
+  border-radius: 0 0 6px 0;
+  clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+.docked-mori__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
-  border: 3px solid #fff;
-  background: #ff7eb6;
-  color: #fff;
-  font-size: 24px;
+  border: none;
+  background: var(--cream);
+  color: var(--purple-deep);
+  font-size: 13px;
+  font-weight: 800;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.06), 0 12px 24px rgba(154, 46, 104, 0.28);
-  z-index: 60;
-  transition: transform 0.12s ease;
 }
 
-.chatbot-fab:hover {
-  transform: translateY(-3px);
-}
-
-.chatbot-fab:active {
-  transform: translateY(0);
-}
-
-.chatbot-popup {
-  position: fixed;
-  right: 20px;
-  bottom: 92px;
-  width: min(92vw, 400px);
-  max-height: min(72vh, 560px);
-  z-index: 60;
-}
-
-.chatbot-popup .retro-window {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
-
-.chatbot-popup .retro-window__body {
-  overflow-y: auto;
+.docked-mori__heading {
+  font-size: 18px;
+  margin: 0 0 18px;
+  padding-right: 24px; /* 닫기 버튼과 안 겹치게 */
 }
 
 @media (max-width: 480px) {
-  .chatbot-fab {
-    right: 16px;
-    bottom: 16px;
+  .docked-mori {
+    right: 12px;
   }
 
-  .chatbot-popup {
-    right: 12px;
-    left: 12px;
-    width: auto;
-    bottom: 88px;
+  .docked-mori__figure {
+    width: 84px;
+  }
+
+  .docked-mori__bubble {
+    width: calc(100vw - 24px);
   }
 }
 
