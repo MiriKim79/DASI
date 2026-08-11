@@ -1,14 +1,19 @@
+/* 도트/픽셀 폰트 (둥근모꼴+Fixedsys, MIT, 90년대 PC통신에 쓰이던 고전 폰트) — 이 페이지의 큰 헤드라인 전용. 본문/버튼은 기존 폰트 유지. */
+@import "@noonnu/dung-geun-mo/index.css";
+
 /* 나이 맞히기(AgeTest) 전용 스타일.
    이 화면은 참고 디자인(스크린샷)의 창 색/2단 배치를 최대한 그대로 맞추기 위해
-   RetroWindow 컴포넌트는 그대로 재사용하되, 색과 레이아웃은 .age-start-page 안에서만
-   덮어쓴다. global.css/RetroWindow.jsx 자체는 건드리지 않는다(다른 페이지엔 영향 없음). */
+   RetroWindow 컴포넌트는 그대로 재사용하되, 레이아웃은 .age-start-page 안에서만
+   덮어쓴다. global.css/RetroWindow.jsx 자체는 건드리지 않는다(다른 페이지엔 영향 없음).
+   색상은 #14 공통 디자인 토큰(--cream/--win-border/--ink/--muted/--purple-deep)을
+   그대로 재사용하고, 전역에 없는 진한 그림자 톤만 이 페이지에서 보충한다. */
 
 .age-start-page {
-  --age-cream: #fbf3de;
-  --age-border: #a98fe0;
-  --age-ink: #241d16;
-  --age-muted: #8c7e64;
-  --age-accent: #6b3ef0;
+  --age-cream: var(--cream);
+  --age-border: var(--win-border);
+  --age-ink: var(--ink);
+  --age-muted: var(--muted);
+  --age-accent: var(--purple-deep);
   --age-accent-deep: #4423b8;
 }
 
@@ -79,12 +84,13 @@
   position: absolute;
   top: -8px;
   right: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   border: 2.5px solid var(--age-border);
   border-radius: 14px;
-  padding: 4px 10px;
-  font-size: 16px;
-  line-height: 1;
+  padding: 6px 9px;
   box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.06);
 }
 
@@ -96,21 +102,28 @@
   transform: rotate(-10deg);
 }
 
-.age-start__spark {
+.age-start__deco {
   position: absolute;
-  color: #f0c04a;
-  font-size: 18px;
+  filter: drop-shadow(1px 2px 0 rgba(0, 0, 0, 0.08));
 }
 
-.age-start__spark--1 {
-  top: 4px;
-  left: -14px;
+.age-start__deco--envelope {
+  top: 30%;
+  right: -30px;
+  transform: rotate(8deg);
 }
 
-.age-start__spark--2 {
-  bottom: 40px;
-  right: -20px;
-  font-size: 13px;
+.age-start__deco--folder {
+  bottom: 4px;
+  right: -8px;
+  transform: rotate(-6deg);
+}
+
+@media (max-width: 520px) {
+  .age-start__deco--envelope,
+  .age-start__deco--folder {
+    display: none;
+  }
 }
 
 /* ---------- 오른쪽 카피 + 버튼 ---------- */
@@ -125,11 +138,13 @@
 }
 
 .age-start__headline {
-  font-weight: 900;
-  font-size: 40px;
-  line-height: 1.26;
+  font-family: "DungGeunMo", monospace;
+  font-weight: normal;
+  font-size: 46px;
+  line-height: 1.5;
   color: var(--age-ink);
   margin: 0 0 18px;
+  letter-spacing: 0.5px;
 }
 
 .age-start__accent {
