@@ -8,6 +8,7 @@ docs/랭킹코인기획.md 참고). 실제 콘텐츠를 모으면 gag_data.py의
 — 이 라우터 파일은 건드릴 필요 없음.
 """
 import random
+import re
 
 from fastapi import APIRouter, HTTPException
 
@@ -18,9 +19,17 @@ router = APIRouter(prefix="/api", tags=["gag"])
 
 GAG_ITEMS_BY_ID = {item["id"]: item for item in GAG_ITEMS}
 
+# 공백/대소문자뿐 아니라 흔한 문장부호(물음표·느낌표·물결·따옴표 등)도 무시하고 비교한다.
+_STRIP_CHARS = re.compile(r"[\s'\"~!?.…,]")
+
 
 def _normalize(text: str) -> str:
-    return text.strip().replace(" ", "").lower()
+    return _STRIP_CHARS.sub("", text.strip().lower())
+
+
+def _accepted_answers(answer_field: str) -> list[str]:
+    """quiz_data.py와 같은 컨벤션: '정답1|정답2'로 복수 정답을 표기한다."""
+    return [a for a in answer_field.split("|") if a]
 
 
 @router.get("/gag", response_model=list[schemas.GagItemOut])
@@ -37,11 +46,13 @@ def check_gag_answer(item_id: int, payload: schemas.GagAnswerIn):
     if item is None:
         raise HTTPException(status_code=404, detail="존재하지 않는 문항이에요.")
 
-    is_correct = _normalize(payload.answer) == _normalize(item["answer"])
+    accepted = _accepted_answers(item["answer"])
+    user_norm = _normalize(payload.answer)
+    is_correct = any(_normalize(alt) == user_norm for alt in accepted)
     # TODO(F4-3 연동): 4번의 POST /api/ranking/submit이 준비되면 정답일 때
     # 서버-투-서버로 { "category": "chatbot-gag", "score": 1 } 제출을 여기서 호출한다.
     return schemas.GagAnswerOut(
         item_id=item_id,
         is_correct=is_correct,
-        correct_answer=item["answer"],
+        correct_answer=accepted[0],  # 대표 정답 하나만 사용자에게 보여준다
     )
