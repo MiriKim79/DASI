@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .database import Base, engine
-from .routers import categories, contents, playground
+from .routers import age_test, categories, chat, contents, playground
 
 # backend/ 디렉터리 (이미지 폴더 gameQ, foodQ 가 위치한 곳)
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -16,18 +16,25 @@ Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="나이 맞혀봇 - 추억 놀이터 API", version="1.0.0")
 
-frontend_origin = os.getenv("FRONTEND_ORIGIN", "http://localhost:5173")
+default_cors_origins = "http://localhost:5173,http://127.0.0.1:5173"
+cors_origins = [
+    origin.strip()
+    for origin in os.getenv("CORS_ORIGINS", default_cors_origins).split(",")
+    if origin.strip()
+]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[frontend_origin, "http://localhost:5173", "http://127.0.0.1:5173"],
+    allow_origins=cors_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(age_test.router)
 app.include_router(categories.router)
 app.include_router(contents.router)
 app.include_router(playground.router)
+app.include_router(chat.router)
 
 # 퀴즈 이미지 정적 서빙: /media/gameQ/*, /media/foodQ/*
 for _folder in ("gameQ", "foodQ"):

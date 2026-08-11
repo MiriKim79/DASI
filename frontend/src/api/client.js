@@ -1,7 +1,7 @@
 // 추억 놀이터 API 클라이언트
 // 개발 시 vite proxy 를 통해 /api -> http://localhost:8000 로 전달된다.
-// 배포 시 VITE_API_BASE 로 백엔드 주소를 지정할 수 있다.
-const BASE = import.meta.env.VITE_API_BASE || "";
+// 배포 시 VITE_API_BASE_URL로 백엔드 주소를 지정할 수 있다.
+const BASE = import.meta.env.VITE_API_BASE_URL || "";
 
 async function request(path, options) {
   const res = await fetch(`${BASE}${path}`, {
