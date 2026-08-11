@@ -301,6 +301,66 @@ button {
   color: var(--ink);
 }
 
+/* ---------- 세대별 챗봇 · 세대 선택 (2열 알약형, category-card와 같은 톤) ---------- */
+.generation-select__prompt {
+  text-align: center;
+  font-weight: 700;
+  color: var(--ink);
+  margin: 0 0 16px;
+}
+
+.generation-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+}
+
+.generation-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  border: 2px solid;
+  border-radius: 14px;
+  background: var(--card);
+  padding: 13px 14px;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.04);
+  transition: transform 0.12s ease;
+}
+
+.generation-card:hover {
+  transform: translateY(-3px);
+}
+
+.generation-card:active,
+.generation-card--selected {
+  transform: translateY(0);
+}
+
+.generation-card__icon {
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+}
+
+.generation-card__name {
+  font-weight: 800;
+  font-size: 16px;
+  color: var(--ink);
+}
+
+.generation-select__hint {
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+  margin: 18px 0 0;
+}
+
 /* ---------- 콘텐츠 화면 ---------- */
 .breadcrumb {
   font-size: 13px;
