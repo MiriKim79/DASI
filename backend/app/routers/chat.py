@@ -2,11 +2,16 @@
 
 F3-1: 세대 목록 조회. 세대는 DB로 관리하지 않는 고정 값(1990s~2020s 4종 확정,
 docs/FEATURES.md F3 참고)이라 정적 데이터로 둔다.
-채팅 API(F3-2, POST /api/chat)는 OpenAI 연동 이슈(#26~#28)에서 이어서 구현한다.
+F3-2: 채팅 API. 세대별 persona(personas.py)로 system prompt를 구성해
+OpenAI Responses API를 호출한다. 프론트는 API Key를 절대 모른다 — 항상 이 라우터를 거친다.
 """
-from fastapi import APIRouter
+import os
+
+from fastapi import APIRouter, HTTPException
+from openai import OpenAI, OpenAIError
 
 from .. import schemas
+from ..personas import GENERATION_PROFILES, build_system_prompt
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -17,9 +22,47 @@ GENERATIONS = [
     {"id": "2010s", "display_name": "2010년대", "character": "2010s_campus"},
     {"id": "2020s", "display_name": "2020년대", "character": "2020s_digital"},
 ]
+CHARACTER_BY_GENERATION = {g["id"]: g["character"] for g in GENERATIONS}
+
+CHAT_MODEL = os.getenv("OPENAI_CHAT_MODEL", "gpt-4o-mini")
 
 
 @router.get("/generations", response_model=list[schemas.GenerationOut])
 def list_generations():
     """세대 목록 조회 — docs/FEATURES.md F3-1."""
     return GENERATIONS
+
+
+@router.post("/chat", response_model=schemas.ChatOut)
+def chat(payload: schemas.ChatIn):
+    """세대별 모리와 대화 — docs/FEATURES.md F3-2.
+
+    history는 F3-3 정책대로 클라이언트(비로그인) 또는 향후 DB(로그인, F4-2 연동 예정)에서
+    관리한 대화 목록을 그대로 받는다. 이 요청에서는 저장하지 않고 응답 생성에만 쓴다.
+    """
+    if payload.generation not in GENERATION_PROFILES:
+        raise HTTPException(status_code=400, detail="지원하지 않는 세대예요.")
+
+    api_key = os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        raise HTTPException(
+            status_code=503,
+            detail="OPENAI_API_KEY가 설정되지 않았어요. backend/.env를 확인해주세요.",
+        )
+
+    system_prompt = build_system_prompt(payload.generation)
+    input_messages = [{"role": "system", "content": system_prompt}]
+    input_messages.extend({"role": h.role, "content": h.content} for h in payload.history)
+    input_messages.append({"role": "user", "content": payload.message})
+
+    client = OpenAI(api_key=api_key)
+    try:
+        response = client.responses.create(model=CHAT_MODEL, input=input_messages)
+    except OpenAIError as exc:
+        raise HTTPException(status_code=502, detail=f"OpenAI 호출에 실패했어요: {exc}") from exc
+
+    return schemas.ChatOut(
+        generation=payload.generation,
+        character=CHARACTER_BY_GENERATION[payload.generation],
+        message=response.output_text,
+    )

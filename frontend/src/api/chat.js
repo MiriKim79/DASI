@@ -23,4 +23,10 @@ async function request(path, options) {
 export const chatApi = {
   // F3-1: 세대 목록 조회
   getGenerations: () => request("/api/generations"),
+  // F3-2: 채팅. history는 F3-3 정책대로 호출부(컴포넌트)가 들고 있다가 매번 함께 보낸다.
+  sendMessage: ({ generation, message, history }) =>
+    request("/api/chat", {
+      method: "POST",
+      body: JSON.stringify({ generation, message, history }),
+    }),
 };
