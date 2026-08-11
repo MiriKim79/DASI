@@ -11,7 +11,7 @@ router = APIRouter(prefix="/api/age-test", tags=["age-test"])
 
 @router.get("/questions", response_model=list[schemas.AgeTestQuestionOut])
 def list_questions(db: Session = Depends(get_db)):
-    """10문항(경험형 7 + 앵커 3)을 order_index 순서대로 반환한다.
+    """질문을 order_index 순서대로 반환한다. 문항 수/선택지 수는 고정이 아니다(#76).
 
     representative_age/weight는 서버 내부(#5) 계산 전용이라 응답에 내려주지 않는다.
     """
