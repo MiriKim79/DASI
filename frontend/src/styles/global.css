@@ -241,18 +241,18 @@ button {
 /* 클릭 전 안내 말풍선 ("나 만져봐") — 걷는 모리를 따라 함께 움직인다(부모 transform 상속) */
 .mori-wanderer__hint {
   position: absolute;
-  top: 2px;
+  top: -10px;
   left: 50%;
   transform: translateX(-50%);
   background: #fff;
-  border: 2px solid var(--win-border);
+  border: 2.5px solid var(--purple-deep);
   border-radius: 14px;
-  padding: 4px 10px;
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--ink);
+  padding: 6px 14px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--purple-deep);
   white-space: nowrap;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.06), 0 4px 8px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.18);
   animation: mori-hint-bob 2s ease-in-out infinite;
   pointer-events: none;
 }
@@ -269,7 +269,7 @@ button {
 .mori-wanderer__hint::after {
   bottom: -7px;
   border-width: 7px 6px 0;
-  border-color: var(--win-border) transparent transparent;
+  border-color: var(--purple-deep) transparent transparent;
 }
 
 .mori-wanderer__hint::before {
