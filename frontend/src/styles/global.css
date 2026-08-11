@@ -468,6 +468,28 @@ button {
   min-height: 200px;
 }
 
+.character-avatar {
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.character-avatar--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  border: 1.5px solid rgba(0, 0, 0, 0.06);
+}
+
+.chat-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+  align-self: flex-start;
+  max-width: 88%;
+}
+
 .chat-bubble {
   max-width: 78%;
   padding: 10px 14px;
