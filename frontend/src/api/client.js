@@ -42,6 +42,11 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ option_id: optionId }),
     }),
+  answerText: (contentId, text) =>
+    request(`/api/contents/${contentId}/answer-text`, {
+      method: "POST",
+      body: JSON.stringify({ text }),
+    }),
   getResult: (correct, total, category) =>
     request("/api/playground/result", {
       method: "POST",

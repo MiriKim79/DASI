@@ -14,9 +14,11 @@ export default function ContentCard({ content, theme }) {
           </span>
         )}
       </div>
-      <h2 className="content-card__title" style={{ color: theme.primaryColor }}>
-        {content.title}
-      </h2>
+      {content.title ? (
+        <h2 className="content-card__title" style={{ color: theme.primaryColor }}>
+          {content.title}
+        </h2>
+      ) : null}
       <p className="content-card__question">{content.question}</p>
     </div>
   );
