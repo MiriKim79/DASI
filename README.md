@@ -24,6 +24,7 @@
 - **Database**: MySQL, SQLAlchemy
 - **Auth**: JWT
 - **AI**: OpenAI API (Responses API)
+- **배포**: AWS EC2 (팀원 1명의 EC2에 업로드, 도메인 연결은 옵션)
 
 ## 팀 구성
 
