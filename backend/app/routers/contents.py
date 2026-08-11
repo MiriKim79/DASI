@@ -1,4 +1,5 @@
 """콘텐츠 라우터."""
+import re
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,6 +9,14 @@ from .. import crud, schemas
 from ..database import get_db
 
 router = APIRouter(prefix="/api/contents", tags=["contents"])
+
+
+def _normalize(text: str) -> str:
+    """정답 비교용 정규화: 공백/문장부호 제거 + 소문자화."""
+    if text is None:
+        return ""
+    # 한글/영문/숫자만 남기고 나머지(공백, 특수문자 등) 제거
+    return re.sub(r"[^0-9a-z가-힣]", "", text.lower())
 
 
 @router.get("", response_model=list[schemas.ContentOut])
@@ -79,4 +88,32 @@ def answer_content(
         correct_option_id=correct.id if correct else None,
         correct_option_text=correct.option_text if correct else None,
         message="정답이에요! 🎉" if is_correct else "아쉬워요, 다시 도전!",
+    )
+
+
+@router.post("/{content_id}/answer-text", response_model=schemas.TextAnswerOut)
+def answer_text(
+    content_id: int,
+    payload: schemas.TextAnswerIn,
+    db: Session = Depends(get_db),
+):
+    """사진/노래를 보고 작성한 텍스트 정답을 채점한다(TEXT_QUIZ)."""
+    content = crud.get_content_by_id(db, content_id)
+    if content is None:
+        raise HTTPException(status_code=404, detail="콘텐츠를 찾을 수 없습니다.")
+
+    # 허용 정답 목록: content.answer 를 '|'로 나눈 것 (+ 객관식 정답 옵션 겸용)
+    raw = content.answer or ""
+    accepted = [a for a in raw.split("|") if a.strip()]
+    user_norm = _normalize(payload.text)
+    is_correct = bool(user_norm) and any(
+        user_norm == _normalize(a) for a in accepted
+    )
+    # 대표 정답(첫 번째)만 노출
+    correct_answer = accepted[0] if accepted else None
+    return schemas.TextAnswerOut(
+        content_id=content_id,
+        is_correct=is_correct,
+        correct_answer=correct_answer,
+        message="정답이에요! 🎉" if is_correct else f"아쉬워요! 정답은 '{correct_answer}'였어요.",
     )

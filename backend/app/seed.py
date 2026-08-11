@@ -1,61 +1,36 @@
 """초기 seed 데이터 삽입.
 
 실행: python -m app.seed  (backend 디렉터리에서)
-- 8개 카테고리 + 카테고리별 5개 이상 콘텐츠(총 40+)를 넣는다.
-- 이미 데이터가 있으면 중복 삽입하지 않는다.
-- 이미지는 저작권 문제를 피하기 위해 placeholder(빈 image_url)로 둔다.
+- 8개 카테고리 + 카테고리별 콘텐츠를 넣는다.
+- 게임/먹거리는 사진 보고 텍스트로 정답을 맞히는 TEXT_QUIZ (quiz_data.py 참조).
+- 그 외 분야는 기존 객관식(QUIZ)/경험형(EXPERIENCE).
+- 이미 데이터가 있으면 중복 삽입하지 않는다. (다시 넣으려면 --reset)
 """
 from .database import Base, SessionLocal, engine
 from . import models
+from .quiz_data import GAME as GAME_QUIZ, FOOD as FOOD_QUIZ
 from .age_test_seed import seed_age_test
 
 # ---------------------------------------------------------------------------
 # 카테고리 정의: code -> (name, theme_color, icon, description)
 # ---------------------------------------------------------------------------
 CATEGORIES = [
-    ("COMEDY", "개그", "#F6A623", "🎤", "아재부터 이과까지, 웃음의 세대차"),
+    ("GAME", "게임", "#3AA76D", "🎮", "밤새 하던 그 시절 게임, 사진 보고 맞히기"),
     ("DRAMA", "드라마", "#8E3B46", "📺", "그 시절 본방사수하던 드라마"),
     ("MOVIE", "영화", "#3B2E66", "🎞️", "극장에서 보던 추억의 영화"),
     ("ANIME_COMIC", "애니·만화책", "#5AB0E2", "📚", "만화방과 브라운관의 추억"),
     ("STATIONERY_PLAY", "문방구·놀이", "#38C6A5", "🪀", "학교 앞 문방구와 놀이"),
     ("MEME", "유행어·밈", "#6C5CE7", "💬", "그때 그 말, 지금은 밈"),
-    ("FOOD", "먹거리", "#FF7EB3", "🍪", "추억의 과자와 불량식품"),
+    ("FOOD", "먹거리", "#FF7EB3", "🍪", "추억의 과자와 불량식품, 사진 보고 맞히기"),
     ("MUSIC", "음악", "#4A6CF7", "📼", "카세트부터 MP3까지"),
 ]
 
 # ---------------------------------------------------------------------------
-# 콘텐츠 정의
+# 객관식/경험형 콘텐츠 (게임·먹거리 제외 분야)
 # 각 항목: (category_code, subcategory, title, question, content_type, options)
 #   - options: [(text, is_correct), ...]  (EXPERIENCE 형은 정답 없이 경험 선택)
 # ---------------------------------------------------------------------------
 CONTENTS = [
-    # ---------------- 개그 (COMEDY) ----------------
-    ("COMEDY", "DAD", "세상에서 가장 뜨거운 과일",
-     "세상에서 가장 뜨거운 과일은?", "QUIZ",
-     [("천도(千度)복숭아", True), ("수박", False), ("바나나", False)]),
-    ("COMEDY", "DAD", "왕이 넘어지면",
-     "왕이 넘어지면?", "QUIZ",
-     [("킹콩", True), ("폭삭", False), ("쿵", False)]),
-    ("COMEDY", "HUMANITIES", "가장 억울한 도형",
-     "가장 억울한 도형은?", "QUIZ",
-     [("원통(억울)", True), ("삼각형", False), ("마름모", False)]),
-    ("COMEDY", "HUMANITIES", "세종대왕이 만든 우유",
-     "세종대왕이 만든 우유는?", "QUIZ",
-     [("아야어여(우유)", False), ("훈민정‘음’메", True), ("한글우유", False)]),
-    ("COMEDY", "SCIENCE", "개발자가 싫어하는 음료",
-     "개발자가 가장 싫어하는 음료는?", "QUIZ",
-     [("버그가 들어간 음료", True), ("탄산음료", False), ("에너지 드링크", False)]),
-    ("COMEDY", "SCIENCE", "프로그래머의 인사",
-     "프로그래머끼리 아침에 하는 인사는?", "QUIZ",
-     [("Hello, World!", True), ("굿모닝", False), ("반가워요", False)]),
-    ("COMEDY", "SCIENCE", "이과생의 사랑고백",
-     "이과생이 좋아하는 사람에게 하는 고백은?", "QUIZ",
-     [("너와 나의 반응은 발열반응이야", True), ("사랑해", False), ("좋아해", False)]),
-    ("COMEDY", "GENERATION", "삐삐 8282",
-     "삐삐에 '8282'를 남기면?", "QUIZ",
-     [("빨리빨리 연락해줘", True), ("사랑해", False), ("잘 자", False)]),
-     
-
     # ---------------- 드라마 (DRAMA) ----------------
     ("DRAMA", None, "겨울연가",
      "'겨울연가'의 상징적인 아이템으로 기억나는 것은?", "EXPERIENCE",
@@ -72,7 +47,6 @@ CONTENTS = [
     ("DRAMA", None, "주몽 본방사수",
      "온 가족이 모여 '주몽'을 본방사수하던 기억, 어땠나요?", "EXPERIENCE",
      [("매주 챙겨봤지", False), ("가끔 봤어", False), ("잘 몰라", False)]),
-    
 
     # ---------------- 영화 (MOVIE) ----------------
     ("MOVIE", None, "엽기적인 그녀",
@@ -154,26 +128,6 @@ CONTENTS = [
      "친구들과 유행어 따라 하던 기억 있나요?", "EXPERIENCE",
      [("엄청 따라 했지", False), ("가끔", False), ("잘 몰라", False)]),
 
-    # ---------------- 먹거리 (FOOD) ----------------
-    ("FOOD", None, "허니버터칩 대란",
-     "허니버터칩 대란 기억나?", "EXPERIENCE",
-     [("당연하지", False), ("먹어는 봤어", False), ("잘 모르겠는데?", False)]),
-    ("FOOD", None, "포켓몬빵 스티커",
-     "포켓몬빵에 들어있던 것은?", "QUIZ",
-     [("띠부띠부씰(스티커)", True), ("장난감", False), ("쿠폰", False)]),
-    ("FOOD", None, "아폴로",
-     "가느다란 빨대에 든 가루 불량식품은?", "QUIZ",
-     [("아폴로", True), ("쫀드기", False), ("문방구 쫀드기", False)]),
-    ("FOOD", None, "쫀드기",
-     "연탄불·라이터에 구워 먹던 납작한 간식은?", "QUIZ",
-     [("쫀드기", True), ("아폴로", False), ("뽑기", False)]),
-    ("FOOD", None, "피카츄 돈까스",
-     "캐릭터 모양으로 유명했던 냉동 돈까스는?", "QUIZ",
-     [("피카츄 돈까스", True), ("공룡알", False), ("별사탕", False)]),
-    ("FOOD", None, "달고나 뽑기",
-     "설탕 녹여 모양 찍어 먹던 문방구 간식은?", "QUIZ",
-     [("달고나(뽑기)", True), ("솜사탕", False), ("젤리", False)]),
-
     # ---------------- 음악 (MUSIC) ----------------
     ("MUSIC", None, "싸이월드 BGM",
      "미니홈피에서 노래 들으려면 사야 했던 것은?", "QUIZ",
@@ -193,6 +147,15 @@ CONTENTS = [
     ("MUSIC", None, "CD 플레이어",
      "CD로 음악 듣던 휴대용 기기는?", "QUIZ",
      [("CDP(씨디플레이어)", True), ("턴테이블", False), ("스피커", False)]),
+]
+
+# ---------------------------------------------------------------------------
+# 사진 텍스트 퀴즈 (게임/먹거리)
+#   category_code -> (media 폴더, 질문 문구, quiz_data 목록)
+# ---------------------------------------------------------------------------
+TEXT_QUIZ_SETS = [
+    ("GAME", "gameQ", "이 게임의 이름은?", GAME_QUIZ),
+    ("FOOD", "foodQ", "이 추억의 불량식품(간식) 이름은?", FOOD_QUIZ),
 ]
 
 
@@ -227,14 +190,15 @@ def seed(reset: bool = False):
             code_to_category[code] = category
         db.flush()  # id 확보
 
-        content_count = 0
+        # 1) 객관식/경험형 콘텐츠
+        mc_count = 0
         for code, sub, title, question, ctype, options in CONTENTS:
             content = models.Content(
                 category_id=code_to_category[code].id,
                 subcategory=sub,
                 title=title,
                 question=question,
-                image_url=None,  # placeholder (프론트에서 아이콘/영역으로 대체)
+                image_url=None,
                 content_type=ctype,
             )
             db.add(content)
@@ -247,11 +211,33 @@ def seed(reset: bool = False):
                         is_correct=is_correct,
                     )
                 )
-            content_count += 1
+            mc_count += 1
+
+        # 2) 사진 텍스트 퀴즈 (정답이 채워진 항목만 생성)
+        text_count = 0
+        skipped = 0
+        for code, folder, question, items in TEXT_QUIZ_SETS:
+            for filename, answer in items:
+                if not answer or not answer.strip():
+                    skipped += 1
+                    continue
+                content = models.Content(
+                    category_id=code_to_category[code].id,
+                    subcategory=None,
+                    title="",  # 정답 노출 방지 (제목 비움)
+                    question=question,
+                    image_url=f"/media/{folder}/{filename}",
+                    content_type="TEXT_QUIZ",
+                    answer=answer.strip(),
+                )
+                db.add(content)
+                text_count += 1
 
         db.commit()
         print(
-            f"seed 완료: 카테고리 {len(CATEGORIES)}개, 콘텐츠 {content_count}개 삽입."
+            f"seed 완료: 카테고리 {len(CATEGORIES)}개, "
+            f"객관식/경험형 {mc_count}개, 사진퀴즈 {text_count}개 "
+            f"(정답 미입력 {skipped}개는 건너뜀)."
         )
     finally:
         db.close()

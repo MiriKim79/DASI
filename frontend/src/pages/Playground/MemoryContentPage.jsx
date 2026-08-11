@@ -1,36 +1,50 @@
 import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/client.js";
-import { getTheme, comedySubcategories } from "../../theme/categoryTheme.js";
+import { getTheme } from "../../theme/categoryTheme.js";
 import ContentCard from "../../components/ContentCard.jsx";
 import AnswerButton from "../../components/AnswerButton.jsx";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
+
+// 배열을 무작위로 섞는다(Fisher–Yates).
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
 
 // 공통 콘텐츠 화면 (모든 분야가 이 컴포넌트 하나를 재사용)
 export default function MemoryContentPage() {
   const { code } = useParams();
-  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const sub = searchParams.get("sub"); // 개그 하위분류
-
   const theme = getTheme(code);
-  const isComedy = code === "COMEDY";
-  const needSubChoice = isComedy && !sub;
 
   const [categories, setCategories] = useState([]);
   const [contents, setContents] = useState([]);
-  const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // 답변 상태
+  // 문제 수 선택 + 랜덤 출제
+  const [quizCount, setQuizCount] = useState(null); // null이면 개수 선택 화면
+  const [quiz, setQuiz] = useState([]); // 실제로 풀 문제(랜덤 N개)
+  const [index, setIndex] = useState(0);
+
+  // 답변 상태 (객관식)
   const [selectedId, setSelectedId] = useState(null);
   const [result, setResult] = useState(null); // AnswerOut
+
+  // 답변 상태 (텍스트 입력형)
+  const [textInput, setTextInput] = useState("");
+  const [textResult, setTextResult] = useState(null); // TextAnswerOut
   const [submitting, setSubmitting] = useState(false);
 
-  // 아재력 집계 (QUIZ만) + 결과 화면
+  // 아재력 집계 + 결과 화면
   const [stats, setStats] = useState({ correct: 0, total: 0 });
-  const [finalResult, setFinalResult] = useState(null); // ResultOut
+  const [finalResult, setFinalResult] = useState(null);
 
   const category = useMemo(
     () => categories.find((c) => c.code === code),
@@ -43,21 +57,19 @@ export default function MemoryContentPage() {
     api.getCategories().then(setCategories).catch(() => {});
   }, []);
 
-  // 콘텐츠 로드 (하위분류가 필요한 개그는 sub 선택 후 로드)
+  // 콘텐츠 로드
   useEffect(() => {
-    if (needSubChoice) {
-      setLoading(false);
-      return;
-    }
     let alive = true;
     setLoading(true);
     setError(null);
+    setQuizCount(null);
+    setQuiz([]);
     setIndex(0);
     resetAnswer();
     setStats({ correct: 0, total: 0 });
     setFinalResult(null);
     api
-      .getContents(code, sub || undefined)
+      .getContents(code)
       .then((data) => {
         if (alive) setContents(data);
       })
@@ -70,25 +82,39 @@ export default function MemoryContentPage() {
     return () => {
       alive = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [code, sub, needSubChoice]);
+  }, [code]);
 
   function resetAnswer() {
     setSelectedId(null);
     setResult(null);
+    setTextInput("");
+    setTextResult(null);
   }
 
-  const current = contents[index];
-  const isLast = index >= contents.length - 1;
+  // 문제 수 선택 → 랜덤 N개 뽑아 퀴즈 시작
+  const startQuiz = (count) => {
+    const n = Math.min(count, contents.length);
+    setQuiz(shuffle(contents).slice(0, n));
+    setQuizCount(n);
+    setIndex(0);
+    resetAnswer();
+    setStats({ correct: 0, total: 0 });
+    setFinalResult(null);
+  };
 
+  const current = quiz[index];
+  const isLast = index >= quiz.length - 1;
+  const isTextQuiz = current && current.content_type === "TEXT_QUIZ";
+  const answered = !!result || !!textResult;
+
+  // ----- 객관식 답변 -----
   const handleAnswer = async (option) => {
-    if (result || submitting) return;
+    if (answered || submitting) return;
     setSubmitting(true);
     setSelectedId(option.id);
     try {
       const res = await api.answer(current.id, option.id);
       setResult(res);
-      // 정답이 있는 문제(QUIZ)만 아재력 집계
       if (current.content_type === "QUIZ") {
         setStats((s) => ({
           correct: s.correct + (res.is_correct ? 1 : 0),
@@ -98,6 +124,25 @@ export default function MemoryContentPage() {
     } catch (e) {
       setError(e.message);
       setSelectedId(null);
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  // ----- 텍스트 입력형 답변 -----
+  const handleTextSubmit = async (e) => {
+    e.preventDefault();
+    if (answered || submitting || !textInput.trim()) return;
+    setSubmitting(true);
+    try {
+      const res = await api.answerText(current.id, textInput.trim());
+      setTextResult(res);
+      setStats((s) => ({
+        correct: s.correct + (res.is_correct ? 1 : 0),
+        total: s.total + 1,
+      }));
+    } catch (e2) {
+      setError(e2.message);
     } finally {
       setSubmitting(false);
     }
@@ -118,9 +163,16 @@ export default function MemoryContentPage() {
   };
 
   const handleRestart = () => {
+    // 같은 개수로 다시 랜덤 출제
+    setQuiz(shuffle(contents).slice(0, quizCount));
     setIndex(0);
     resetAnswer();
     setStats({ correct: 0, total: 0 });
+    setFinalResult(null);
+  };
+
+  const handleChangeCount = () => {
+    setQuizCount(null);
     setFinalResult(null);
   };
 
@@ -132,11 +184,18 @@ export default function MemoryContentPage() {
     return "dim";
   };
 
-  // ---------- 렌더 ----------
-  const pageStyle = { backgroundColor: theme.backgroundColor };
+  // 문제 수 선택지 계산 (10/20/30 중 가능한 것 + 전체)
+  const countOptions = useMemo(() => {
+    const available = contents.length;
+    const presets = [10, 20, 30].filter((n) => n < available);
+    return [...presets, available]; // 마지막은 '전체'
+  }, [contents.length]);
 
   return (
-    <div className="page content-page" style={pageStyle}>
+    <div className="page content-page">
+      {/* 분야 맞춤 소품 배경 */}
+      <MemoryBackdrop items={theme.props} variant="category" />
+
       <RetroWindow titleColor={theme.primaryColor}>
         <nav className="breadcrumb">
           <button className="link-btn" onClick={() => navigate("/playground")}>
@@ -146,132 +205,165 @@ export default function MemoryContentPage() {
           <span style={{ color: theme.primaryColor, fontWeight: 700 }}>
             {theme.icon} {categoryName}
           </span>
-          {sub && (
-            <>
-              <span className="breadcrumb__sep"> &gt; </span>
-              <span>
-                {comedySubcategories.find((s) => s.code === sub)?.name || sub}
-              </span>
-            </>
-          )}
         </nav>
 
-        {/* 개그 하위분류 선택 */}
-        {needSubChoice && (
-          <div className="sub-choice">
+        {loading && <p className="state-msg">불러오는 중… ⏳</p>}
+        {error && <p className="state-msg state-msg--error">⚠️ {error}</p>}
+        {!loading && !error && contents.length === 0 && (
+          <p className="state-msg">아직 이 분야의 추억이 없어요. 🥲</p>
+        )}
+
+        {/* 문제 수 선택 화면 */}
+        {!loading && !error && contents.length > 0 && quizCount === null && (
+          <div className="count-choice">
             <h2 className="content-heading" style={{ color: theme.primaryColor }}>
-              어떤 개그가 땡겨?
+              몇 문제 풀어볼까?
             </h2>
-            <div className="sub-grid">
-              {comedySubcategories.map((s) => (
+            <p className="count-choice__sub">
+              전체 {contents.length}문제 중 랜덤으로 출제돼요 🎲
+            </p>
+            <div className="count-grid">
+              {countOptions.map((n, i) => (
                 <button
-                  key={s.code}
-                  className="sub-btn"
+                  key={n}
+                  className="count-btn"
                   style={{ borderColor: theme.primaryColor, color: theme.primaryColor }}
-                  onClick={() => setSearchParams({ sub: s.code })}
+                  onClick={() => startQuiz(n)}
                 >
-                  <span aria-hidden="true">{s.icon}</span> {s.name}
+                  {i === countOptions.length - 1 && n !== 10 && n !== 20 && n !== 30
+                    ? `전체 (${n}문제)`
+                    : `${n}문제`}
                 </button>
               ))}
             </div>
           </div>
         )}
 
-        {!needSubChoice && (
-          <>
-            {loading && <p className="state-msg">불러오는 중… ⏳</p>}
-            {error && <p className="state-msg state-msg--error">⚠️ {error}</p>}
-            {!loading && !error && contents.length === 0 && (
-              <p className="state-msg">아직 이 분야의 추억이 없어요. 🥲</p>
-            )}
+        {/* 결과 화면 */}
+        {finalResult && (
+          <div className="result-screen">
+            <p className="result-screen__badge" style={{ color: theme.primaryColor }}>
+              아재력 측정 결과
+            </p>
+            <div
+              className="result-screen__score"
+              style={{ backgroundColor: theme.accentColor }}
+            >
+              <span style={{ color: theme.primaryColor }}>{finalResult.score}</span>
+              <small>점</small>
+            </div>
+            <h2 className="result-screen__level">{finalResult.level}</h2>
+            <p className="result-screen__msg">{finalResult.message}</p>
+            <p className="result-screen__detail">
+              맞힌 문제 {finalResult.correct} / {finalResult.total}
+            </p>
+            <div className="content-actions">
+              <button
+                className="primary-btn"
+                style={{ backgroundColor: theme.primaryColor }}
+                onClick={handleRestart}
+              >
+                다시 도전 ↻
+              </button>
+              <button className="ghost-btn" onClick={handleChangeCount}>
+                문제 수 다시 고르기
+              </button>
+              <button className="ghost-btn" onClick={() => navigate("/playground")}>
+                다른 분야로 돌아가기
+              </button>
+            </div>
+          </div>
+        )}
 
-            {/* 아재력 결과 화면 */}
-            {finalResult && (
-              <div className="result-screen">
-                <p className="result-screen__badge" style={{ color: theme.primaryColor }}>
-                  아재력 측정 결과
-                </p>
-                <div
-                  className="result-screen__score"
-                  style={{ backgroundColor: theme.accentColor }}
-                >
-                  <span style={{ color: theme.primaryColor }}>{finalResult.score}</span>
-                  <small>점</small>
-                </div>
-                <h2 className="result-screen__level">{finalResult.level}</h2>
-                <p className="result-screen__msg">{finalResult.message}</p>
-                <p className="result-screen__detail">
-                  맞힌 문제 {finalResult.correct} / {finalResult.total}
-                </p>
-                <div className="content-actions">
+        {/* 콘텐츠 진행 화면 */}
+        {!loading && !error && quizCount !== null && current && !finalResult && (
+          <div className="content-wrap">
+            <p className="progress" style={{ color: theme.primaryColor }}>
+              {index + 1} / {quiz.length}
+            </p>
+
+            <ContentCard content={current} theme={theme} />
+
+            {/* 텍스트 입력형 (사진/노래 보고 정답 작성) */}
+            {isTextQuiz ? (
+              <form className="text-answer" onSubmit={handleTextSubmit}>
+                <input
+                  className="text-answer__input"
+                  type="text"
+                  value={textInput}
+                  onChange={(e) => setTextInput(e.target.value)}
+                  placeholder="정답을 입력하세요"
+                  disabled={!!textResult || submitting}
+                  autoFocus
+                  style={{ borderColor: theme.primaryColor }}
+                />
+                {!textResult && (
                   <button
+                    type="submit"
                     className="primary-btn"
                     style={{ backgroundColor: theme.primaryColor }}
-                    onClick={handleRestart}
+                    disabled={submitting || !textInput.trim()}
                   >
-                    다시 도전 ↻
+                    제출
                   </button>
-                  <button className="ghost-btn" onClick={() => navigate("/playground")}>
-                    다른 분야로 돌아가기
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* 콘텐츠 진행 화면 */}
-            {!loading && !error && current && !finalResult && (
-              <div className="content-wrap">
-                <p className="progress" style={{ color: theme.primaryColor }}>
-                  {index + 1} / {contents.length}
-                </p>
-
-                <ContentCard content={current} theme={theme} />
-
-                <div className="answers">
-                  {current.options.map((opt) => (
-                    <AnswerButton
-                      key={opt.id}
-                      option={opt}
-                      state={buttonState(opt)}
-                      disabled={!!result || submitting}
-                      primaryColor={theme.primaryColor}
-                      onClick={handleAnswer}
-                    />
-                  ))}
-                </div>
-
-                {result && (
-                  <p className="result-msg" style={{ color: theme.primaryColor }}>
-                    {result.message}
-                  </p>
                 )}
-
-                <div className="content-actions">
-                  {result && !isLast && (
-                    <button
-                      className="primary-btn"
-                      style={{ backgroundColor: theme.primaryColor }}
-                      onClick={handleNext}
-                    >
-                      다음 추억 →
-                    </button>
-                  )}
-                  {result && isLast && (
-                    <button
-                      className="primary-btn"
-                      style={{ backgroundColor: theme.primaryColor }}
-                      onClick={handleShowResult}
-                    >
-                      🎉 아재력 결과 보기
-                    </button>
-                  )}
-                  <button className="ghost-btn" onClick={() => navigate("/playground")}>
-                    다른 분야로 돌아가기
-                  </button>
-                </div>
+              </form>
+            ) : (
+              <div className="answers">
+                {current.options.map((opt) => (
+                  <AnswerButton
+                    key={opt.id}
+                    option={opt}
+                    state={buttonState(opt)}
+                    disabled={answered || submitting}
+                    primaryColor={theme.primaryColor}
+                    onClick={handleAnswer}
+                  />
+                ))}
               </div>
             )}
-          </>
+
+            {/* 정답/오답 피드백 */}
+            {textResult && (
+              <p
+                className={
+                  "result-msg " +
+                  (textResult.is_correct ? "result-msg--ok" : "result-msg--no")
+                }
+              >
+                {textResult.message}
+              </p>
+            )}
+            {result && (
+              <p className="result-msg" style={{ color: theme.primaryColor }}>
+                {result.message}
+              </p>
+            )}
+
+            <div className="content-actions">
+              {answered && !isLast && (
+                <button
+                  className="primary-btn"
+                  style={{ backgroundColor: theme.primaryColor }}
+                  onClick={handleNext}
+                >
+                  다음 추억 →
+                </button>
+              )}
+              {answered && isLast && (
+                <button
+                  className="primary-btn"
+                  style={{ backgroundColor: theme.primaryColor }}
+                  onClick={handleShowResult}
+                >
+                  🎉 결과 보기
+                </button>
+              )}
+              <button className="ghost-btn" onClick={() => navigate("/playground")}>
+                다른 분야로 돌아가기
+              </button>
+            </div>
+          </div>
         )}
       </RetroWindow>
     </div>
