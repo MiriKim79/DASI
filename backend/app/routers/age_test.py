@@ -1,7 +1,8 @@
 """나이 맞히기(Age Test) 라우터."""
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session, selectinload
 
+from .. import age_test_logic as logic
 from .. import age_test_models as models
 from .. import age_test_schemas as schemas
 from ..database import get_db
@@ -21,3 +22,71 @@ def list_questions(db: Session = Depends(get_db)):
         .order_by(models.Question.order_index)
         .all()
     )
+
+
+@router.post("/submit", response_model=schemas.AgeTestSubmitOut)
+def submit_answers(payload: schemas.AgeTestSubmitIn, db: Session = Depends(get_db)):
+    """답변을 검증한 뒤 #5 계산 로직으로 전달해 예상 나이/결정적 답변을 반환한다.
+
+    문항 수는 하드코딩하지 않고, 현재 age_test_questions 테이블에 존재하는 질문
+    전체(Question 모델에 is_active 같은 활성/비활성 구분 필드는 없음)와 제출된
+    question_id 집합을 비교해서 검증한다(#76 원칙 유지). 로그인 시 결과 저장은 #9 범위.
+    """
+    if not payload.answers:
+        raise HTTPException(status_code=400, detail="answers가 비어 있습니다.")
+
+    submitted_ids = [a.question_id for a in payload.answers]
+    if len(submitted_ids) != len(set(submitted_ids)):
+        raise HTTPException(status_code=400, detail="중복된 question_id가 있습니다.")
+
+    questions = (
+        db.query(models.Question)
+        .options(selectinload(models.Question.options))
+        .order_by(models.Question.order_index)
+        .all()
+    )
+    questions_by_id = {q.id: q for q in questions}
+    active_question_ids = set(questions_by_id.keys())
+    submitted_ids_set = set(submitted_ids)
+
+    unknown_ids = submitted_ids_set - active_question_ids
+    if unknown_ids:
+        raise HTTPException(
+            status_code=400,
+            detail=f"존재하지 않는 question_id가 있습니다: {sorted(unknown_ids)}",
+        )
+
+    if len(payload.answers) != len(questions):
+        raise HTTPException(
+            status_code=400,
+            detail=f"답변 개수({len(payload.answers)})가 현재 문항 수({len(questions)})와 다릅니다.",
+        )
+
+    missing_ids = active_question_ids - submitted_ids_set
+    if missing_ids:
+        raise HTTPException(
+            status_code=400,
+            detail=f"일부 질문에 대한 답변이 누락되었습니다: {sorted(missing_ids)}",
+        )
+
+    answered_options = []
+    for answer in payload.answers:
+        question = questions_by_id[answer.question_id]
+        option = next((o for o in question.options if o.id == answer.option_id), None)
+        if option is None:
+            raise HTTPException(
+                status_code=400,
+                detail=f"option_id {answer.option_id}는 question_id {answer.question_id}에 속하지 않습니다.",
+            )
+        answered_options.append(
+            logic.AnsweredOption(
+                question_text=question.text,
+                option_text=option.text,
+                representative_age=option.representative_age,
+                weight=question.weight,
+                order_index=question.order_index,
+            )
+        )
+
+    estimated_age, top_reasons = logic.estimate_age(answered_options)
+    return schemas.AgeTestSubmitOut(estimated_age=estimated_age, top_reasons=top_reasons)
