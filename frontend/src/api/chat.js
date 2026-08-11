@@ -1,6 +1,6 @@
 // 세대별 챗봇 API 클라이언트 — 3번 담당.
 // client.js(추억놀이터)와 같은 fetch 패턴을 쓰되, 담당 영역을 분리하려고 파일을 따로 둔다.
-const BASE = import.meta.env.VITE_API_BASE || "";
+const BASE = import.meta.env.VITE_API_BASE_URL || "";
 
 async function request(path, options) {
   const res = await fetch(`${BASE}${path}`, {

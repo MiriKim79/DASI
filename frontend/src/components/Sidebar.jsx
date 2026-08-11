@@ -14,7 +14,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="sidebar__brand">
-        <span className="sidebar__logo">✨ NAI BOT</span>
+        <span className="sidebar__logo">✨ 다시</span>
       </div>
       <nav className="sidebar__nav">
         {MENUS.map((m) => (
