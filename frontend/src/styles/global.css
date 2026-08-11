@@ -230,8 +230,73 @@ button {
   line-height: 1;
 }
 
+.winbtn[role="button"] {
+  cursor: pointer;
+}
+
 .retro-window__body {
   padding: 26px 22px 28px;
+}
+
+/* ---------- 세대별 챗봇 · FAB + 팝업 (#22) ---------- */
+.chatbot-fab {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 3px solid #fff;
+  background: #ff7eb6;
+  color: #fff;
+  font-size: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.06), 0 12px 24px rgba(154, 46, 104, 0.28);
+  z-index: 60;
+  transition: transform 0.12s ease;
+}
+
+.chatbot-fab:hover {
+  transform: translateY(-3px);
+}
+
+.chatbot-fab:active {
+  transform: translateY(0);
+}
+
+.chatbot-popup {
+  position: fixed;
+  right: 20px;
+  bottom: 92px;
+  width: min(92vw, 400px);
+  max-height: min(72vh, 560px);
+  z-index: 60;
+}
+
+.chatbot-popup .retro-window {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.chatbot-popup .retro-window__body {
+  overflow-y: auto;
+}
+
+@media (max-width: 480px) {
+  .chatbot-fab {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .chatbot-popup {
+    right: 12px;
+    left: 12px;
+    width: auto;
+    bottom: 88px;
+  }
 }
 
 /* ---------- 창 내부 헤딩 ---------- */
