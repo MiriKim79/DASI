@@ -160,21 +160,33 @@ def seed(reset: bool = False):
         for code, folder, question, items in TEXT_QUIZ_SETS:
             made = 0
             missing = []
-            for filename, answer in items:
+            for item in items:
+                # (파일명, 정답) 또는 (파일명, 정답, 유튜브영상ID)
+                filename, answer, *rest = item
+                youtube_id = rest[0].strip() if rest and rest[0] else None
+
                 if not answer or not answer.strip():
                     skipped += 1
                     continue
-                actual = resolve_media(folder, filename)
-                if actual is None:
-                    missing.append(filename)
-                    skipped += 1
-                    continue
+
+                if youtube_id:
+                    # 음원을 파일로 두지 않고 유튜브 플레이어로 재생한다.
+                    # image_url 에 "youtube:<영상ID>" 로 표시 → 프론트가 이를 보고 플레이어를 띄운다.
+                    media_url = f"youtube:{youtube_id}"
+                else:
+                    actual = resolve_media(folder, filename)
+                    if actual is None:
+                        missing.append(filename)
+                        skipped += 1
+                        continue
+                    media_url = f"/media/{folder}/{actual}"
+
                 content = models.Content(
                     category_id=code_to_category[code].id,
                     subcategory=None,
                     title="",  # 정답 노출 방지 (제목 비움)
                     question=question,
-                    image_url=f"/media/{folder}/{actual}",
+                    image_url=media_url,
                     content_type="TEXT_QUIZ",
                     answer=answer.strip(),
                 )
