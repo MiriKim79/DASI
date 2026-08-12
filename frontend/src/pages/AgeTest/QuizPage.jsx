@@ -106,6 +106,7 @@ export default function QuizPage() {
       <MemoryBackdrop />
       <RetroWindow titleColor="transparent">
         <div className="age-quiz">
+          <div className="age-quiz__toolbar">
           {currentIndex > 0 ? (
             <button
               type="button"
@@ -125,6 +126,11 @@ export default function QuizPage() {
               ← 처음으로
             </button>
           )}
+            <span className="age-quiz__mori-tip">
+              이건 좀 추억인데?
+              <img src="/mori/mori-02.png" alt="" aria-hidden="true" />
+            </span>
+          </div>
 
           <p className="age-quiz__progress">
             {progress} / {questions.length}
@@ -157,6 +163,9 @@ export default function QuizPage() {
                 onClick={() => handleSelect(option.id)}
               >
                 {option.text}
+                {selectedOptionId === option.id && (
+                  <span className="age-quiz__check" aria-hidden="true">✓</span>
+                )}
               </button>
             ))}
           </div>
