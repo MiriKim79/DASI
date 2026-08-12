@@ -65,6 +65,13 @@ class FeedbackOut(BaseModel):
     created_at: datetime
 
 
+class FeedbackListItemOut(BaseModel):
+    id: int
+    nickname: str
+    content: str
+    created_at: datetime
+
+
 # ---------- Category ----------
 class CategoryOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

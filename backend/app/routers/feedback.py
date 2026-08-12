@@ -32,6 +32,26 @@ def _contains_forbidden_word(content: str) -> bool:
     return any(word in normalized_content for word in FORBIDDEN_WORDS)
 
 
+@router.get("", response_model=list[schemas.FeedbackListItemOut])
+def get_feedbacks(db: Session = Depends(get_db)):
+    """등록된 피드백을 최신순으로 조회한다."""
+    rows = (
+        db.query(models.Feedback, models.User.nickname)
+        .join(models.User, models.User.id == models.Feedback.user_id)
+        .order_by(models.Feedback.created_at.desc(), models.Feedback.id.desc())
+        .all()
+    )
+    return [
+        schemas.FeedbackListItemOut(
+            id=feedback.id,
+            nickname=nickname,
+            content=feedback.content,
+            created_at=feedback.created_at,
+        )
+        for feedback, nickname in rows
+    ]
+
+
 @router.post("", response_model=schemas.FeedbackOut, status_code=status.HTTP_201_CREATED)
 def create_feedback(
     payload: schemas.FeedbackCreateIn,
