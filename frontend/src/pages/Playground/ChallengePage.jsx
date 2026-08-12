@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAccessToken } from "../../api/client.js";
 import { rankingApi } from "../../api/ranking.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import ContentCard from "../../components/ContentCard.jsx";
 import RetroWindow from "../../components/RetroWindow.jsx";
 
@@ -17,6 +18,7 @@ const PRIMARY = "#6c5ce7";
 
 export default function ChallengePage() {
   const navigate = useNavigate();
+  const { refreshUser } = useAuth();
 
   const [phase, setPhase] = useState("intro"); // intro | playing | done
   const [loading, setLoading] = useState(false);
@@ -57,6 +59,8 @@ export default function ChallengePage() {
       setTextInput("");
       setFinalResult(null);
       setPhase("playing");
+      // 도전 시작으로 코인 10개가 차감됐으니 상단바를 갱신한다.
+      refreshUser();
     } catch (e) {
       setError(e.message);
     } finally {

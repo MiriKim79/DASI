@@ -1,4 +1,6 @@
+import { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { api } from "../api/client.js";
 import { useAuth } from "../context/AuthContext.jsx";
 
 // 공통 상단 네비게이션 바 (브랜드 + 메뉴 + 로그인).
@@ -13,11 +15,24 @@ const MENUS = [
 
 export default function TopNav() {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
+  const { user, logout, refreshUser } = useAuth();
+  const [charging, setCharging] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
+  };
+
+  // 데모용 가상 충전 — 실제 결제 연동 없이 코인 +100.
+  const handleCharge = async () => {
+    if (charging) return;
+    setCharging(true);
+    try {
+      await api.chargeCoins();
+      await refreshUser();
+    } finally {
+      setCharging(false);
+    }
   };
 
   return (
@@ -47,15 +62,28 @@ export default function TopNav() {
           <span className="topnav__coin" title="보유 코인">
             🪙 {user.coin_balance}
           </span>
+          <button
+            className="topnav__charge"
+            onClick={handleCharge}
+            disabled={charging}
+            title="가상 충전 (+100)"
+          >
+            {charging ? "충전 중…" : "충전"}
+          </button>
           <span className="topnav__nickname">{user.nickname}</span>
           <button className="login-btn" onClick={handleLogout}>
             로그아웃
           </button>
         </div>
       ) : (
-        <button className="login-btn" onClick={() => navigate("/login")}>
-          🔒 로그인
-        </button>
+        <div className="topnav__guest">
+          <span className="topnav__signup-hint">
+            회원가입하면 <b>10코인</b>을 드립니다
+          </span>
+          <button className="login-btn" onClick={() => navigate("/login")}>
+            🔒 로그인
+          </button>
+        </div>
       )}
     </header>
   );

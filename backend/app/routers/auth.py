@@ -1,4 +1,6 @@
 """회원가입 API."""
+from uuid import uuid4
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
@@ -64,3 +66,30 @@ def login(payload: schemas.LoginIn, db: Session = Depends(get_db)):
 @user_router.get("/me", response_model=schemas.UserOut)
 def get_me(current_user=Depends(get_current_user)):
     return current_user
+
+
+@user_router.get("/me/coins", response_model=schemas.CoinBalanceOut)
+def get_my_coins(current_user=Depends(get_current_user)):
+    """현재 로그인 사용자의 코인 잔액을 반환한다."""
+    return schemas.CoinBalanceOut(coin_balance=current_user.coin_balance)
+
+
+@user_router.post("/me/coins/charge", response_model=schemas.CoinChargeOut)
+def charge_my_coins(
+    current_user=Depends(get_current_user), db: Session = Depends(get_db)
+):
+    """데모용 가상 충전: 호출할 때마다 코인 +100 (실제 결제 연동 없음).
+
+    충전은 반복 가능해야 하므로 매 호출마다 고유 event_key를 만들어 지급한다.
+    """
+    amount = 100
+    grant_coin_once(
+        db,
+        user_id=current_user.id,
+        amount=amount,
+        reason="DEMO_CHARGE",
+        event_key=f"demo-charge:{current_user.id}:{uuid4().hex}",
+    )
+    db.commit()
+    db.refresh(current_user)
+    return schemas.CoinChargeOut(coin_balance=current_user.coin_balance, charged=amount)

@@ -8,6 +8,7 @@ from .. import age_test_logic as logic
 from .. import age_test_models as models
 from .. import age_test_schemas as schemas
 from .. import models as core_models
+from ..coin_service import grant_coin_once
 from ..database import get_db
 from ..security import get_current_user_optional
 
@@ -104,6 +105,14 @@ def submit_answers(
 
     if current_user is not None:
         db.add(models.Result(user_id=current_user.id, estimated_age=estimated_age))
+        # 나이맞히기 완료 보상 +10 (사용자당 1회 — 재테스트로 무한 지급되지 않도록 멱등 처리)
+        grant_coin_once(
+            db,
+            user_id=current_user.id,
+            amount=10,
+            reason="AGE_TEST",
+            event_key=f"age-test:{current_user.id}",
+        )
         db.commit()
 
     return schemas.AgeTestSubmitOut(estimated_age=estimated_age, top_reasons=top_reasons)

@@ -51,6 +51,8 @@ export const api = {
       body: JSON.stringify({ email, password }),
     }),
   getMe: () => request("/api/me"),
+  getMyCoins: () => request("/api/me/coins"),
+  chargeCoins: () => request("/api/me/coins/charge", { method: "POST" }),
   getCategories: () => request("/api/categories"),
   getCategory: (id) => request(`/api/categories/${id}`),
   getContents: (category, subcategory) => {

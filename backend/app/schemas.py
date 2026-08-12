@@ -35,6 +35,15 @@ class LoginIn(BaseModel):
     password: str
 
 
+class CoinBalanceOut(BaseModel):
+    coin_balance: int
+
+
+class CoinChargeOut(BaseModel):
+    coin_balance: int
+    charged: int
+
+
 class TokenOut(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"
@@ -187,6 +196,7 @@ class ResultOut(BaseModel):
     level: str            # 아재력 등급 라벨
     message: str          # 결과 멘트
     category: Optional[str] = None
+    coin_reward: int = 0  # 이번 완료로 새로 지급된 코인(분야 최초 완료 시 5, 아니면 0)
 
 
 class RankingQuestionOut(BaseModel):

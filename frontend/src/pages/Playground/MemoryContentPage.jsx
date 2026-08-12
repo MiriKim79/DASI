@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/client.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { getTheme } from "../../theme/categoryTheme.js";
 import ContentCard from "../../components/ContentCard.jsx";
 import AnswerButton from "../../components/AnswerButton.jsx";
@@ -22,6 +23,7 @@ export default function MemoryContentPage() {
   const { code } = useParams();
   const navigate = useNavigate();
   const theme = getTheme(code);
+  const { refreshUser } = useAuth();
 
   const [categories, setCategories] = useState([]);
   const [contents, setContents] = useState([]);
@@ -176,6 +178,8 @@ export default function MemoryContentPage() {
     try {
       const res = await api.getResult(stats.correct, stats.total, code);
       setFinalResult(res);
+      // 분야 최초 완료 보상(+5)이 지급됐으면 상단바 코인을 갱신한다.
+      if (res.coin_reward > 0) refreshUser();
     } catch (e) {
       setError(e.message);
     }
@@ -276,6 +280,11 @@ export default function MemoryContentPage() {
             <p className="result-screen__detail">
               맞힌 문제 {finalResult.correct} / {finalResult.total}
             </p>
+            {finalResult.coin_reward > 0 && (
+              <p className="result-screen__coin">
+                🪙 이 분야 첫 완료 보상 <b>+{finalResult.coin_reward}코인</b> 획득!
+              </p>
+            )}
             <div className="content-actions">
               <button
                 className="primary-btn"
