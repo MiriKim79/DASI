@@ -4,7 +4,7 @@ import RetroWindow from "../components/RetroWindow.jsx";
 export default function PlaceholderPage({ title, note }) {
   return (
     <div className="page page--centered">
-      <RetroWindow>
+      <RetroWindow titleColor="#9b7bd4">
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
           {title}

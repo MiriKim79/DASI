@@ -35,7 +35,7 @@ export default function MemoryPlaygroundPage() {
 
   return (
     <div className="page page--centered">
-      <RetroWindow>
+      <RetroWindow titleColor="#9b7bd4">
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
           어떤 분야의 추억을 꺼내볼까?

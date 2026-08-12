@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
@@ -7,6 +7,11 @@ import "./FeedbackPage.css";
 
 const MAX_CONTENT_LENGTH = 500;
 
+function formatCreatedAt(createdAt) {
+  const [date = "", time = ""] = createdAt.split("T");
+  return `${date.replaceAll("-", ".")} ${time.slice(0, 5)}`.trim();
+}
+
 export default function FeedbackPage() {
   const navigate = useNavigate();
   const { isAuthenticated, isLoading } = useAuth();
@@ -14,6 +19,27 @@ export default function FeedbackPage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [feedbacks, setFeedbacks] = useState([]);
+  const [loadingFeedbacks, setLoadingFeedbacks] = useState(true);
+  const [listError, setListError] = useState("");
+
+  const loadFeedbacks = async () => {
+    setLoadingFeedbacks(true);
+    setListError("");
+
+    try {
+      const items = await feedbackApi.getFeedbacks();
+      setFeedbacks(items);
+    } catch {
+      setListError("피드백을 불러오지 못했습니다.");
+    } finally {
+      setLoadingFeedbacks(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFeedbacks();
+  }, []);
 
   const handleChange = (event) => {
     setContent(event.target.value);
@@ -38,6 +64,7 @@ export default function FeedbackPage() {
       await feedbackApi.createFeedback(content);
       setContent("");
       setSuccess("피드백이 등록되었습니다.");
+      await loadFeedbacks();
     } catch (err) {
       if (err.message === "인증 정보를 확인할 수 없습니다.") {
         setError("피드백을 작성하려면 로그인이 필요합니다.");
@@ -97,6 +124,28 @@ export default function FeedbackPage() {
               </button>
             </form>
           )}
+
+          <section className="feedback-list" aria-labelledby="feedback-list-title">
+            <h2 id="feedback-list-title" className="feedback-list__title">등록된 피드백</h2>
+            {loadingFeedbacks && <p className="state-msg">피드백을 불러오는 중...</p>}
+            {!loadingFeedbacks && listError && <p className="state-msg state-msg--error">{listError}</p>}
+            {!loadingFeedbacks && !listError && feedbacks.length === 0 && (
+              <p className="state-msg">아직 등록된 피드백이 없습니다.</p>
+            )}
+            {!loadingFeedbacks && !listError && feedbacks.length > 0 && (
+              <ul className="feedback-list__items">
+                {feedbacks.map((feedback) => (
+                  <li key={feedback.id} className="feedback-list__item">
+                    <div className="feedback-list__meta">
+                      <span className="feedback-list__nickname" title={feedback.nickname}>{feedback.nickname}</span>
+                      <time className="feedback-list__date">{formatCreatedAt(feedback.created_at)}</time>
+                    </div>
+                    <p className="feedback-list__content">{feedback.content}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
         </section>
       </RetroWindow>
     </div>
