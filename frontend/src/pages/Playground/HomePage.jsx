@@ -29,7 +29,7 @@ export default function HomePage() {
             className="login-reward-banner"
             onClick={() => navigate("/signup")}
           >
-            🎁 회원가입하면 <b>10코인</b>을 드려요!
+            🎁 회원가입하면 <b>100코인</b>을 드려요!
           </button>
         )}
         <h1 className="window-heading">

@@ -36,7 +36,7 @@ def signup(payload: schemas.SignupIn, db: Session = Depends(get_db)):
         grant_coin_once(
             db,
             user_id=user.id,
-            amount=10,
+            amount=100,
             reason="SIGNUP",
             event_key=f"signup:{user.id}",
         )
