@@ -1,4 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext.jsx";
 
 // 공통 상단 네비게이션 바 (브랜드 + 메뉴 + 로그인).
 // 추억 놀이터만 우리 담당이 구현했고, 나머지는 타 팀원이 붙일 자리(placeholder 라우트).
@@ -12,6 +13,13 @@ const MENUS = [
 
 export default function TopNav() {
   const navigate = useNavigate();
+  const { user, logout } = useAuth();
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
   return (
     <header className="topnav">
       <div className="topnav__brand">
@@ -34,9 +42,18 @@ export default function TopNav() {
           </NavLink>
         ))}
       </nav>
-      <button className="login-btn" onClick={() => navigate("/login")}>
-        🔒 로그인
-      </button>
+      {user ? (
+        <div>
+          <span>{user.nickname}</span>
+          <button className="login-btn" onClick={handleLogout}>
+            로그아웃
+          </button>
+        </div>
+      ) : (
+        <button className="login-btn" onClick={() => navigate("/login")}>
+          🔒 로그인
+        </button>
+      )}
     </header>
   );
 }
