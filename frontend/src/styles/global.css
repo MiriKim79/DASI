@@ -1,3 +1,7 @@
+/* 도트/픽셀 폰트 (둥근모꼴, MIT, 90년대 PC통신에 쓰이던 고전 폰트) — AgeTest 헤드라인에서 이미 쓰던
+   패키지를 챗봇 대화 폰트에도 재사용한다(새 패키지 설치 없음). */
+@import "@noonnu/dung-geun-mo/index.css";
+
 /* 추억 놀이터 디자인 시스템 — 레트로 OS 창 + 크림 모눈 배경 + 파스텔 보라 */
 :root {
   --cream: #f5efe0;
@@ -241,20 +245,21 @@ button {
 /* 클릭 전 안내 말풍선 ("나 잡아봐라") — 걷는 모리를 따라 함께 움직인다(부모 transform 상속) */
 .mori-wanderer__hint {
   position: absolute;
-  top: -10px;
+  top: -16px;
   left: 50%;
   transform: translateX(-50%);
   background: #fff;
-  border: 2.5px solid var(--purple-deep);
-  border-radius: 14px;
-  padding: 6px 14px;
-  font-size: 15px;
+  border: 3px solid var(--purple-deep);
+  border-radius: 16px;
+  padding: 8px 18px;
+  font-size: 17px;
   font-weight: 800;
   color: var(--purple-deep);
   white-space: nowrap;
-  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.08), 0 6px 12px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.1), 0 8px 16px rgba(0, 0, 0, 0.22);
   animation: mori-hint-bob 2s ease-in-out infinite;
   pointer-events: none;
+  z-index: 1;
 }
 
 .mori-wanderer__hint::after,
@@ -267,14 +272,14 @@ button {
 }
 
 .mori-wanderer__hint::after {
-  bottom: -7px;
-  border-width: 7px 6px 0;
+  bottom: -8px;
+  border-width: 8px 7px 0;
   border-color: var(--purple-deep) transparent transparent;
 }
 
 .mori-wanderer__hint::before {
-  bottom: -4.5px;
-  border-width: 5.5px 4.5px 0;
+  bottom: -5px;
+  border-width: 6px 5px 0;
   border-color: #fff transparent transparent;
   z-index: 1;
 }
@@ -509,31 +514,179 @@ button {
 }
 
 .docked-mori__bubble {
+  /* 세대별 채팅 테마 변수 — 기본값(세대 미선택/선택 화면). 테마 클래스(.theme-90s 등)가
+     이 값들만 덮어써서 시대 감성을 낸다. 기능·구조는 전혀 건드리지 않는다. */
+  --chat-bg: var(--card);
+  --chat-border: var(--win-border);
+  --chat-radius: 28px 28px 10px 28px;
+  --chat-header-font: var(--font);
+  --chat-header-color: var(--ink);
+  --chat-body-font: var(--font);
+  --bubble-user-bg: var(--purple-deep);
+  --bubble-user-color: #fff;
+  --bubble-assistant-bg: var(--cream);
+  --bubble-assistant-color: var(--ink);
+  --input-border: var(--lavender);
+  --input-radius: 20px;
+  --send-btn-bg: var(--purple-deep);
+  --send-btn-color: #fff;
+
   position: relative;
   width: min(92vw, 400px);
-  max-height: min(68vh, 540px);
-  overflow-y: auto;
+  height: min(68vh, 540px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
   margin-bottom: 8px;
-  background: var(--card);
-  border: 2.5px solid var(--win-border);
-  border-radius: 22px;
+  background: var(--chat-bg);
+  border: 2.5px solid var(--chat-border);
+  /* 말풍선처럼 보이게 모리 쪽(우측 하단) 모서리만 각지게 — 꼬리와 자연스럽게 이어지도록 */
+  border-radius: var(--chat-radius);
   box-shadow: var(--shadow);
   padding: 22px 20px;
+  transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
 
-/* 말풍선 꼬리 — 모리 머리 쪽(우측)을 향해 아래로 */
+/* 말풍선 꼬리 — 모리 머리 쪽(우측)을 향해 아래로, 실제로 거기서 말하는 느낌이 나도록 크게 */
 .docked-mori__bubble::after {
   content: "";
   position: absolute;
-  bottom: -14px;
-  right: 36px;
-  width: 26px;
-  height: 26px;
-  background: var(--card);
-  border-right: 2.5px solid var(--win-border);
-  border-bottom: 2.5px solid var(--win-border);
-  border-radius: 0 0 6px 0;
+  bottom: -20px;
+  right: 30px;
+  width: 34px;
+  height: 34px;
+  background: var(--chat-bg);
+  border-right: 2.5px solid var(--chat-border);
+  border-bottom: 2.5px solid var(--chat-border);
+  border-radius: 0 0 10px 0;
   clip-path: polygon(0 0, 100% 0, 0 100%);
+}
+
+/* ---------- 세대별 채팅 테마 (1) 1990년대 — 손편지 + PC통신 감성 ---------- */
+.docked-mori__bubble.theme-90s {
+  --chat-bg: #f4ebd8;
+  --chat-border: #7a5c3e;
+  --chat-radius: 8px 8px 4px 8px; /* 완전히 둥글지 않게, 편지지처럼 살짝 각지게 */
+  --chat-header-font: "DungGeunMo", monospace; /* 타자기 느낌 포인트 폰트 — 제목/이름 전용 */
+  --chat-header-color: #7a5c3e;
+  --bubble-user-bg: #e4d4b7;
+  --bubble-user-color: #49392d;
+  --bubble-assistant-bg: #fff4d6;
+  --bubble-assistant-color: #49392d;
+  --input-border: #7a5c3e;
+  --input-radius: 4px;
+  --send-btn-bg: #7a5c3e;
+  /* 편지지/PC통신 화면의 은은한 종이 질감 */
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent,
+    transparent 27px,
+    rgba(122, 92, 62, 0.08) 28px
+  );
+}
+.theme-90s .chat-bubble--assistant,
+.theme-90s .chat-bubble--user {
+  border: 1px dashed rgba(122, 92, 62, 0.4);
+}
+/* PC통신/타자기 모티프를 헤더 아래에 아주 작게만 */
+.theme-90s .chat-window__title::after {
+  content: ">> MORI MEMORY 1990s _";
+  display: block;
+  font-family: "DungGeunMo", monospace;
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  color: #7a5c3e;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+/* ---------- (2) 2000년대 — 폴더폰 문자 + 미니홈피 감성 ---------- */
+.docked-mori__bubble.theme-00s {
+  --chat-bg: #eaf6ff;
+  --chat-border: #73b7e3;
+  --chat-radius: 26px 26px 12px 26px; /* 폴더폰 화면 베젤처럼 둥글게 */
+  --chat-header-font: "DungGeunMo", monospace; /* 픽셀 느낌 포인트 — 제목/이름 전용, 본문엔 안 씀 */
+  --chat-header-color: #334b5c;
+  --bubble-user-bg: #cfeaff;
+  --bubble-user-color: #334b5c;
+  --bubble-assistant-bg: #ffffff;
+  --bubble-assistant-color: #334b5c;
+  --input-border: #73b7e3;
+  --input-radius: 16px;
+  --send-btn-bg: #73b7e3;
+}
+.theme-00s .chat-bubble--assistant {
+  border: 1px solid #cfeaff;
+  box-shadow: 0 2px 0 rgba(115, 183, 227, 0.25); /* 2000년대 웹 버튼 특유의 살짝 입체감 */
+}
+.theme-00s .chat-window__input button {
+  box-shadow: 0 2px 0 rgba(115, 183, 227, 0.45);
+}
+/* Y2K 미니홈피 감성 — 하트/상태메시지를 아주 소량만 */
+.theme-00s .chat-window__title::after {
+  content: "♥ MORI ♥  오늘의 기분 : 추억 여행 중 ♡";
+  display: block;
+  font-size: 10px;
+  color: #ffb7d5;
+  text-shadow: 0 0 1px #73b7e3;
+  margin-top: 2px;
+}
+
+/* ---------- (3) 2010년대 — 초기 스마트폰 SNS 메신저 감성 ---------- */
+.docked-mori__bubble.theme-10s {
+  --chat-bg: #f4f7fb;
+  --chat-border: #4f7fc8;
+  --chat-radius: 20px 20px 8px 20px;
+  --chat-header-font: var(--font); /* 깔끔한 고딕체 — 포인트 폰트 없이, 장식도 최소화 */
+  --chat-header-color: #263442;
+  --bubble-user-bg: #5c8ed8;
+  --bubble-user-color: #ffffff;
+  --bubble-assistant-bg: #e9eef5;
+  --bubble-assistant-color: #263442;
+  --input-border: #4f7fc8;
+  --input-radius: 18px;
+  --send-btn-bg: #4f7fc8;
+}
+.theme-10s .chat-window__title::after {
+  content: "● 대화 가능";
+  display: block;
+  font-size: 10px;
+  color: #4f7fc8;
+  margin-top: 2px;
+}
+
+/* ---------- (4) 2020년대 — 현대 SNS DM 감성 ---------- */
+.docked-mori__bubble.theme-20s {
+  --chat-bg: #ffffff;
+  --chat-border: #e8e8e8;
+  --chat-radius: 26px 26px 12px 26px; /* 미니멀하고 둥근 DM 카드 느낌 */
+  --chat-header-font: var(--font); /* Pretendard/SUIT 계열 미설치 — 기존 산세리프로 최대한 깔끔하게 */
+  --chat-header-color: #1f1f1f;
+  --bubble-user-bg: #7b61ff;
+  --bubble-user-color: #ffffff;
+  --bubble-assistant-bg: #f1f1f3;
+  --bubble-assistant-color: #1f1f1f;
+  --input-border: #e8e8e8;
+  --input-radius: 22px;
+  --send-btn-bg: #7b61ff;
+}
+.theme-20s .chat-window__messages {
+  gap: 12px; /* 과거 세대보다 메시지 간격을 넉넉히 둬서 현재 서비스다운 느낌 */
+}
+/* 프로필 사진 옆 작은 온라인 상태 점 */
+.theme-20s .chat-window__header {
+  position: relative;
+}
+.theme-20s .chat-window__header::after {
+  content: "";
+  position: absolute;
+  left: 56px;
+  top: 24px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #3ecf6e;
+  border: 2px solid #fff;
 }
 
 .docked-mori__close {
@@ -551,6 +704,12 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.docked-mori__select-panel {
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
 }
 
 .docked-mori__heading {
@@ -704,7 +863,8 @@ button {
 .chat-window {
   display: flex;
   flex-direction: column;
-  min-height: 360px;
+  height: 100%;
+  min-height: 0;
 }
 
 .chat-window__header {
@@ -712,6 +872,7 @@ button {
   align-items: center;
   gap: 10px;
   margin-bottom: 14px;
+  flex-shrink: 0;
 }
 
 .chat-window__back {
@@ -730,34 +891,48 @@ button {
 
 .chat-window__title {
   font-weight: 800;
-  color: var(--ink);
+  font-family: var(--chat-header-font, var(--font));
+  color: var(--chat-header-color, var(--ink));
+}
+
+.chat-window__activity-actions {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .chat-window__gag-btn {
-  width: 100%;
+  flex: 1;
   border: 1.5px solid #6fcf97;
   background: #eafbf3;
   color: #1f7a4d;
   border-radius: 10px;
-  padding: 9px 12px;
+  padding: 9px 8px;
   font-weight: 700;
   font-size: 13px;
-  margin-bottom: 12px;
 }
 
 .chat-window__gag-btn:hover {
   background: #dcf7ea;
 }
 
+.chat-window__gag-btn:disabled {
+  opacity: 0.5;
+}
+
 /* ---------- 개그 퀴즈 (채팅창 내부 대화형, F3-4) ---------- */
 .chat-window__quiz-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 6px;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .chat-window__quiz-actions button {
-  flex: 1;
+  flex: 1 1 calc(50% - 6px);
+  min-width: 0;
   border: 1.5px solid #6fcf97;
   background: #eafbf3;
   color: #1f7a4d;
@@ -788,7 +963,8 @@ button {
   flex-direction: column;
   gap: 8px;
   padding: 4px 2px 12px;
-  min-height: 200px;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 .character-avatar {
@@ -817,23 +993,39 @@ button {
   max-width: 78%;
   padding: 10px 14px;
   border-radius: 16px;
-  font-size: 14px;
-  line-height: 1.4;
+  font-family: var(--chat-body-font, var(--font)); /* 세대가 바뀌어도 본문은 가독성 우선 */
+  font-size: 15px;
+  line-height: 1.5;
   white-space: pre-wrap;
 }
 
 .chat-bubble--user {
   align-self: flex-end;
-  background: var(--purple-deep);
-  color: #fff;
+  background: var(--bubble-user-bg, var(--purple-deep));
+  color: var(--bubble-user-color, #fff);
   border-bottom-right-radius: 4px;
 }
 
 .chat-bubble--assistant {
   align-self: flex-start;
-  background: var(--cream);
-  color: var(--ink);
+  background: var(--bubble-assistant-bg, var(--cream));
+  color: var(--bubble-assistant-color, var(--ink));
   border-bottom-left-radius: 4px;
+}
+
+/* 메시지 시간 — 기본은 숨김. 1990s(타자기로 기록한 느낌)·2010s(메신저 특유의 작은 시간)에서만 노출 */
+.chat-msg-time {
+  display: none;
+  font-size: 10px;
+  opacity: 0.6;
+  margin-top: 3px;
+}
+.theme-90s .chat-msg-time {
+  display: block;
+  font-family: "DungGeunMo", monospace;
+}
+.theme-10s .chat-msg-time {
+  display: block;
 }
 
 .chat-bubble--typing {
@@ -877,14 +1069,16 @@ button {
   gap: 8px;
   border-top: 1px solid var(--lavender);
   padding-top: 12px;
+  flex-shrink: 0;
 }
 
 .chat-window__input input {
   flex: 1;
-  border: 2px solid var(--lavender);
-  border-radius: 20px;
+  border: 2px solid var(--input-border, var(--lavender));
+  border-radius: var(--input-radius, 20px);
   padding: 9px 16px;
-  font-size: 14px;
+  font-family: var(--font); /* 입력창은 테마와 무관하게 항상 타이핑하기 편한 기본 폰트 */
+  font-size: 15px;
   color: var(--ink);
 }
 
@@ -895,10 +1089,10 @@ button {
 
 .chat-window__input button {
   border: none;
-  border-radius: 20px;
+  border-radius: var(--input-radius, 20px);
   padding: 9px 18px;
-  background: var(--purple-deep);
-  color: #fff;
+  background: var(--send-btn-bg, var(--purple-deep));
+  color: var(--send-btn-color, #fff);
   font-weight: 700;
   font-size: 14px;
 }

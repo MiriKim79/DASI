@@ -23,6 +23,14 @@ function DockedFigure({ character }) {
   );
 }
 
+// 세대별 채팅 UI 테마 — 기능/구조는 그대로 두고 CSS 클래스만 바꿔서 시대 감성을 입힌다.
+const THEME_CLASS_BY_GENERATION = {
+  "1990s": "theme-90s",
+  "2000s": "theme-00s",
+  "2010s": "theme-10s",
+  "2020s": "theme-20s",
+};
+
 // 우측 하단에 서 있는 모리 + 말풍선 챗봇(#22 대체).
 // 홈 화면의 걸어다니는 모리(MoriWanderer)를 클릭하면 여기로 "도착"한 것처럼 보이도록,
 // 같은 순간에 wanderer는 숨고 이 도킹된 모리가 나타난다(HomePage에서 처리).
@@ -47,22 +55,23 @@ export default function DockedMori() {
   if (location.pathname.startsWith("/age-check")) return null;
 
   const character = generation?.character ?? null;
+  const themeClass = generation ? THEME_CLASS_BY_GENERATION[generation.id] : "";
 
   return (
     <div className="docked-mori">
-      <div className="docked-mori__bubble">
+      <div className={`docked-mori__bubble${themeClass ? ` ${themeClass}` : ""}`}>
         <button className="docked-mori__close" onClick={close} aria-label="챗봇 닫기">
           ✕
         </button>
         {!generation && (
-          <>
+          <div className="docked-mori__select-panel">
             <h1 className="window-heading docked-mori__heading">
               <span className="sparkle">✨</span>
               모리와 다시 만나기
               <span className="sparkle">✨</span>
             </h1>
             <GenerationSelect onSelect={setGeneration} />
-          </>
+          </div>
         )}
         {generation && <ChatWindow generation={generation} onBack={() => setGeneration(null)} />}
       </div>
