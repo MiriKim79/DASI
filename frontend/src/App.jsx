@@ -4,7 +4,6 @@ import HomePage from "./pages/Playground/HomePage.jsx";
 import MemoryPlaygroundPage from "./pages/Playground/MemoryPlaygroundPage.jsx";
 import MemoryContentPage from "./pages/Playground/MemoryContentPage.jsx";
 import ChallengePage from "./pages/Playground/ChallengePage.jsx";
-import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import AgeTestStartPage from "./pages/AgeTest/StartPage.jsx";
 import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
 import AgeTestResultPage from "./pages/AgeTest/ResultPage.jsx";
@@ -13,6 +12,7 @@ import { ChatbotProvider } from "./components/Chatbot/ChatbotContext.jsx";
 import SignupPage from "./pages/Auth/SignupPage.jsx";
 import LoginPage from "./pages/Auth/LoginPage.jsx";
 import RankingPage from "./pages/Ranking/RankingPage.jsx";
+import FeedbackPage from "./pages/Feedback/FeedbackPage.jsx";
 import { isAgeCheckSessionDone } from "./utils/ageCheckStatus.js";
 
 // 전체 앱 라우팅. 공통 Layout(사이드바+상단바) 아래에 각 화면이 들어간다.
@@ -45,10 +45,7 @@ export default function App() {
           <Route path="/play/:code" element={<MemoryContentPage />} />
 
           <Route path="/ranking" element={<RankingPage />} />
-          <Route
-            path="/feedback"
-            element={<PlaceholderPage title="피드백" note="피드백 담당 팀원이 구현할 화면이에요. ✉️" />}
-          />
+          <Route path="/feedback" element={<FeedbackPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
         </Route>
