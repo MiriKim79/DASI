@@ -112,3 +112,32 @@ def get_correct_option(db: Session, content_id: int) -> Optional[models.ContentO
         )
         .first()
     )
+
+
+# ---------- Chat (세대별 챗봇, #31 대화 저장) ----------
+def save_chat_turn(
+    db: Session,
+    *,
+    user_id: int,
+    generation: str,
+    user_message: str,
+    assistant_message: str,
+) -> None:
+    """로그인 사용자의 질문/답변 한 턴을 각각 한 행씩 저장한다."""
+    db.add(
+        models.ChatMessage(
+            user_id=user_id,
+            generation=generation,
+            role="user",
+            content=user_message,
+        )
+    )
+    db.add(
+        models.ChatMessage(
+            user_id=user_id,
+            generation=generation,
+            role="assistant",
+            content=assistant_message,
+        )
+    )
+    db.commit()
