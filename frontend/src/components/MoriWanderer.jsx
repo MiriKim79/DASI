@@ -17,7 +17,7 @@ const PEEK_OVERLAP_PX = 10; // 포즈가 창 테두리에 살짝 겹치는 정�
 
 const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-export default function MoriWanderer() {
+export default function MoriWanderer({ onClick, hint }) {
   const elRef = useRef(null);
   const imgRef = useRef(null);
   const st = useRef({
@@ -147,6 +147,7 @@ export default function MoriWanderer() {
       s.peekT = PEEK_TIME;
       s.peekEdge = edge;
       s.peekX = x; s.peekY = y; s.peekCW = cW; s.peekCH = cH;
+      el.classList.add("mori-wanderer--peeking"); // 훔쳐보기 중엔 말풍선 힌트 숨김
     };
 
     const endPeek = () => {
@@ -165,6 +166,7 @@ export default function MoriWanderer() {
       // 크기 원복(걷기용 180)
       el.style.width = "";
       el.style.height = "";
+      el.classList.remove("mori-wanderer--peeking");
       s.mode = "walk";
       s.behind = 0;
       s.paused = 0;
@@ -274,7 +276,25 @@ export default function MoriWanderer() {
   }, []);
 
   return (
-    <div className="mori-wanderer" aria-hidden="true" ref={elRef} style={{ opacity: 0 }}>
+    <div
+      className={`mori-wanderer${onClick ? " mori-wanderer--clickable" : ""}`}
+      ref={elRef}
+      style={{ opacity: 0 }}
+      {...(onClick
+        ? {
+            role: "button",
+            tabIndex: 0,
+            "aria-label": "모리와 대화하기",
+            onClick,
+            onKeyDown: (e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), onClick()),
+          }
+        : { "aria-hidden": "true" })}
+    >
+      {hint && (
+        <span className="mori-wanderer__hint" aria-hidden="true">
+          {hint}
+        </span>
+      )}
       <img className="mori-wanderer__img" ref={imgRef} alt="" draggable="false" />
     </div>
   );

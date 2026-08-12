@@ -131,7 +131,11 @@ class ChatOut(BaseModel):
 class GagItemOut(BaseModel):
     id: int
     prompt: str
-    # 정답은 조회 응답에 포함하지 않는다 (채점 API에서만 공개)
+    hint1: str
+    hint2: str
+    # 정답 자체는 조회 응답에 포함하지 않는다 (채점 API에서만 공개).
+    # 힌트는 정답을 완전히 드러내지 않는 보조 정보라 목록 조회 때 같이 내려준다 —
+    # 프론트에서 언제 보여줄지(단계적으로)만 결정하면 된다.
 
 
 class GagAnswerIn(BaseModel):
