@@ -4,16 +4,20 @@
 랭킹 담당자가 이 결과를 그대로 집계에 활용할 수 있도록 계산 로직을 서버에 둔다.
 """
 from typing import Optional
+from uuid import uuid4
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from .. import models, schemas
-from ..coin_service import grant_coin_once
+from ..coin_service import grant_coin_once, spend_coin
 from ..database import get_db
-from ..security import get_current_user_optional
+from ..security import get_current_user, get_current_user_optional
 
 router = APIRouter(prefix="/api/playground", tags=["playground"])
+
+# 분야 퀴즈 1회 플레이 비용(코인). 랭킹 도전(100)과는 별개 정책이다.
+CATEGORY_PLAY_COST = 50
 
 
 def _maybe_reward_first_completion(
@@ -46,6 +50,42 @@ def _maybe_reward_first_completion(
         db.commit()
         return 5
     return 0
+
+
+@router.post("/categories/{code}/start", response_model=schemas.CategoryPlayStartOut)
+def start_category_play(
+    code: str,
+    current_user: models.User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """분야 퀴즈 플레이 시작 — 코인 50개를 차감한다(로그인 필요).
+
+    플레이할 때마다 매번 차감하므로 event_key는 호출마다 고유하게 만든다.
+    코인이 부족하면 spend_coin이 400을 낸다.
+    """
+    category = db.query(models.Category).filter(models.Category.code == code).first()
+    if category is None:
+        raise HTTPException(status_code=404, detail="분야를 찾을 수 없습니다.")
+
+    try:
+        spend_coin(
+            db,
+            user_id=current_user.id,
+            amount=CATEGORY_PLAY_COST,
+            reason="CATEGORY_PLAY",
+            event_key=f"category-play:{current_user.id}:{code}:{uuid4().hex}",
+        )
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
+
+    db.refresh(current_user)
+    return schemas.CategoryPlayStartOut(
+        category_code=code,
+        coin_cost=CATEGORY_PLAY_COST,
+        remaining_coin=current_user.coin_balance,
+    )
 
 
 def _grade(score: int) -> tuple[str, str]:

@@ -44,6 +44,12 @@ class CoinChargeOut(BaseModel):
     charged: int
 
 
+class CategoryPlayStartOut(BaseModel):
+    category_code: str
+    coin_cost: int
+    remaining_coin: int
+
+
 class TokenOut(BaseModel):
     access_token: str
     token_type: Literal["bearer"] = "bearer"

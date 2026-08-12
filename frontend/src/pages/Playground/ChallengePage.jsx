@@ -8,7 +8,7 @@ import RetroWindow from "../../components/RetroWindow.jsx";
 
 // 랭킹용 통합 도전 화면 (#18/#21).
 // 8개 분야에서 섞은 20문제(전부 사진·노래 정답 입력형)에 도전한다.
-// 로그인한 상태에서 도전하면(코인 10개 소모) 제출 결과가 공식 랭킹에 등록된다.
+// 로그인한 상태에서 도전하면(코인 100개 소모) 제출 결과가 공식 랭킹에 등록된다.
 //   - POST /api/ranking/challenge        → 도전 시작(코인 차감·문제 20개)
 //   - POST /api/ranking/challenge/submit → 20문제 답 일괄 제출·채점·랭킹 등록
 // 부정 방지를 위해 문제별 정답은 내려오지 않는다. 답은 로컬에 모아 마지막에 한 번에 제출하고,
@@ -59,7 +59,7 @@ export default function ChallengePage() {
       setTextInput("");
       setFinalResult(null);
       setPhase("playing");
-      // 도전 시작으로 코인 10개가 차감됐으니 상단바를 갱신한다.
+      // 도전 시작으로 코인 100개가 차감됐으니 상단바를 갱신한다.
       refreshUser();
     } catch (e) {
       setError(e.message);
@@ -123,7 +123,7 @@ export default function ChallengePage() {
 
             {loggedIn ? (
               <p className="state-msg" style={{ fontSize: 13 }}>
-                ※ 도전 1회에 <b>코인 10개</b>가 소모돼요. (하루 첫 도전만 공식 랭킹에 반영)
+                ※ 도전 1회에 <b>코인 100개</b>가 소모돼요. (하루 첫 도전만 공식 랭킹에 반영)
               </p>
             ) : (
               <p className="state-msg" style={{ fontSize: 13 }}>

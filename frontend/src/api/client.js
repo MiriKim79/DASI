@@ -53,6 +53,9 @@ export const api = {
   getMe: () => request("/api/me"),
   getMyCoins: () => request("/api/me/coins"),
   chargeCoins: () => request("/api/me/coins/charge", { method: "POST" }),
+  // 분야 퀴즈 플레이 시작 — 코인 50개 차감(로그인 필요).
+  startCategoryPlay: (code) =>
+    request(`/api/playground/categories/${code}/start`, { method: "POST" }),
   getCategories: () => request("/api/categories"),
   getCategory: (id) => request(`/api/categories/${id}`),
   getContents: (category, subcategory) => {

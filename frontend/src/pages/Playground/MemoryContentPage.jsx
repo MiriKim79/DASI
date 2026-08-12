@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { api } from "../../api/client.js";
+import { api, getAccessToken } from "../../api/client.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { getTheme } from "../../theme/categoryTheme.js";
 import ContentCard from "../../components/ContentCard.jsx";
@@ -47,6 +47,10 @@ export default function MemoryContentPage() {
   // 아재력 집계 + 결과 화면
   const [stats, setStats] = useState({ correct: 0, total: 0 });
   const [finalResult, setFinalResult] = useState(null);
+
+  // 플레이 입장료(50코인) 결제 상태
+  const [paying, setPaying] = useState(false);
+  const [payError, setPayError] = useState(null);
 
   // 편의: 입력창/다음버튼 포커스 제어
   const inputRef = useRef(null);
@@ -97,8 +101,28 @@ export default function MemoryContentPage() {
     setTextResult(null);
   }
 
-  // 문제 수 선택 → 랜덤 N개 뽑아 퀴즈 시작
-  const startQuiz = (count) => {
+  // 문제 수 선택 → 코인 50개 결제 후 랜덤 N개 뽑아 퀴즈 시작.
+  // 결제(코인 차감)는 서버가 판단하므로, 실패하면 퀴즈를 시작하지 않는다.
+  const startQuiz = async (count) => {
+    if (paying) return;
+    setPayError(null);
+
+    if (!getAccessToken()) {
+      setPayError("로그인 후 이용할 수 있어요. (플레이 1회 50코인)");
+      return;
+    }
+
+    setPaying(true);
+    try {
+      await api.startCategoryPlay(code);
+      refreshUser(); // 차감된 잔액을 상단바에 반영
+    } catch (e) {
+      setPayError(e.message);
+      return;
+    } finally {
+      setPaying(false);
+    }
+
     const n = Math.min(count, contents.length);
     setQuiz(shuffle(contents).slice(0, n));
     setQuizCount(n);
@@ -245,6 +269,12 @@ export default function MemoryContentPage() {
             <p className="count-choice__sub">
               전체 {contents.length}문제 중 랜덤으로 출제돼요 🎲
             </p>
+            <p className="count-choice__cost">
+              🪙 플레이 1회에 <b>50코인</b>이 필요해요
+            </p>
+            {payError && (
+              <p className="state-msg state-msg--error">⚠️ {payError}</p>
+            )}
             <div className="count-grid">
               {countOptions.map((n, i) => (
                 <button
@@ -252,8 +282,11 @@ export default function MemoryContentPage() {
                   className="count-btn"
                   style={{ borderColor: theme.primaryColor, color: theme.primaryColor }}
                   onClick={() => startQuiz(n)}
+                  disabled={paying}
                 >
-                  {i === countOptions.length - 1 && n !== 10 && n !== 20 && n !== 30
+                  {paying
+                    ? "결제 중…"
+                    : i === countOptions.length - 1 && n !== 10 && n !== 20 && n !== 30
                     ? `전체 (${n}문제)`
                     : `${n}문제`}
                 </button>
