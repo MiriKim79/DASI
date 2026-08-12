@@ -16,7 +16,7 @@ export default function HomePage() {
           도킹된 동안(chatOpen)에는 같은 모리가 두 마리로 보이지 않도록 wanderer는 숨긴다. */}
       {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 잡아봐라 🐾" />}
 
-      <RetroWindow>
+      <RetroWindow titleColor="#9b7bd4">
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
           오늘은 어떤 추억을 꺼내볼래?
