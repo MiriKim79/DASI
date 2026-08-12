@@ -28,6 +28,7 @@ async function request(path, options = {}) {
 }
 
 export const feedbackApi = {
+  getFeedbacks: () => request("/api/feedback"),
   createFeedback: (content) =>
     request("/api/feedback", {
       method: "POST",
