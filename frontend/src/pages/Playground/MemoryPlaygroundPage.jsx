@@ -60,8 +60,11 @@ export default function MemoryPlaygroundPage() {
               className="challenge-cta"
               onClick={() => navigate("/challenge")}
             >
-              🏆 20문제 챌린지 도전하고 랭킹 등록하기
+              🏆 20문제 챌린지 도전하고 랭킹 등록하기 (🪙 100)
             </button>
+            <p className="window-note">
+              ※ 분야 플레이는 1회 50코인, 랭킹 챌린지는 1회 100코인이 필요해요.
+            </p>
           </>
         )}
       </RetroWindow>

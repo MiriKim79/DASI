@@ -10,6 +10,9 @@ from ..security import get_current_user
 
 router = APIRouter(prefix="/api/ranking", tags=["ranking"])
 
+# 랭킹 도전 1회 비용(코인). 분야 퀴즈 플레이(50)와는 별개 정책이다.
+CHALLENGE_COST = 100
+
 
 @router.get("", response_model=list[schemas.RankingListItemOut])
 def get_ranking(db: Session = Depends(get_db)):
@@ -31,10 +34,10 @@ def get_ranking(db: Session = Depends(get_db)):
 def start_challenge(current_user: models.User = Depends(get_current_user), db: Session = Depends(get_db)):
     questions = select_challenge_questions(db)  # validate pool before any debit
     try:
-        challenge = models.RankingChallenge(user_id=current_user.id, coin_cost=10)
+        challenge = models.RankingChallenge(user_id=current_user.id, coin_cost=CHALLENGE_COST)
         db.add(challenge)
         db.flush()
-        spend_coin(db, user_id=current_user.id, amount=10, reason="RANKING_CHALLENGE", event_key=f"ranking-challenge:{challenge.id}")
+        spend_coin(db, user_id=current_user.id, amount=CHALLENGE_COST, reason="RANKING_CHALLENGE", event_key=f"ranking-challenge:{challenge.id}")
         for position, ranking_question in enumerate(questions, start=1):
             db.add(models.RankingChallengeItem(challenge_id=challenge.id, ranking_question_id=ranking_question.id, position=position))
         db.commit()
@@ -43,7 +46,7 @@ def start_challenge(current_user: models.User = Depends(get_current_user), db: S
         raise
     db.refresh(current_user)
     return schemas.RankingChallengeOut(
-        challenge_id=challenge.id, coin_cost=10, remaining_coin=current_user.coin_balance,
+        challenge_id=challenge.id, coin_cost=CHALLENGE_COST, remaining_coin=current_user.coin_balance,
         official_eligible=not has_official_record_today(db, current_user.id),
         questions=[schemas.RankingQuestionOut(content_id=row.content_id, position=index, question=row.content.question, image_url=row.content.image_url, content_type=row.content.content_type) for index, row in enumerate(questions, start=1)],
     )

@@ -15,8 +15,9 @@ const MENUS = [
 
 export default function TopNav() {
   const navigate = useNavigate();
-  const { user, logout, refreshUser } = useAuth();
+  const { user, logout, refreshUser, setAuthenticatedUser } = useAuth();
   const [charging, setCharging] = useState(false);
+  const [chargeError, setChargeError] = useState("");
 
   const handleLogout = () => {
     logout();
@@ -27,9 +28,19 @@ export default function TopNav() {
   const handleCharge = async () => {
     if (charging) return;
     setCharging(true);
+    setChargeError("");
     try {
-      await api.chargeCoins();
+      const res = await api.chargeCoins();
+      // 서버가 돌려준 잔액을 즉시 반영한다(그 뒤 refreshUser로 최종 동기화).
+      if (res && typeof res.coin_balance === "number") {
+        setAuthenticatedUser((prev) =>
+          prev ? { ...prev, coin_balance: res.coin_balance } : prev
+        );
+      }
       await refreshUser();
+    } catch (e) {
+      // 실패를 조용히 삼키지 않는다(예: 백엔드가 옛 코드라 엔드포인트가 없을 때).
+      setChargeError(e.message || "충전에 실패했어요.");
     } finally {
       setCharging(false);
     }
@@ -66,10 +77,15 @@ export default function TopNav() {
             className="topnav__charge"
             onClick={handleCharge}
             disabled={charging}
-            title="가상 충전 (+100)"
+            title={chargeError || "가상 충전 (+100)"}
           >
             {charging ? "충전 중…" : "충전"}
           </button>
+          {chargeError && (
+            <span className="topnav__charge-error" title={chargeError}>
+              ⚠️ 충전 실패
+            </span>
+          )}
           <span className="topnav__nickname">{user.nickname}</span>
           <button className="login-btn" onClick={handleLogout}>
             로그아웃
