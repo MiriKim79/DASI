@@ -42,7 +42,9 @@ export default function Layout() {
         }`}
         style={mainStyle}
       >
-        <main className="layout__content">
+        <main
+          className={`layout__content${showMori ? " layout__content--mori" : ""}`}
+        >
           <MemoryBackdrop />
           {showMori && <MoriWanderer onClick={openChatbot} hint="나 만져봐 🐾" />}
           <Outlet />
