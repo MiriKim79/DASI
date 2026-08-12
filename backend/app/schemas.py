@@ -162,3 +162,37 @@ class ResultOut(BaseModel):
     level: str            # 아재력 등급 라벨
     message: str          # 결과 멘트
     category: Optional[str] = None
+
+
+class RankingQuestionOut(BaseModel):
+    content_id: int
+    position: int
+    question: str
+    image_url: Optional[str] = None
+    content_type: str
+
+
+class RankingChallengeOut(BaseModel):
+    challenge_id: int
+    coin_cost: int
+    remaining_coin: int
+    official_eligible: bool
+    questions: list[RankingQuestionOut]
+
+
+class RankingAnswerIn(BaseModel):
+    content_id: int
+    answer: str
+
+
+class RankingSubmitIn(BaseModel):
+    challenge_id: int
+    answers: list[RankingAnswerIn]
+
+
+class RankingSubmitOut(BaseModel):
+    correct_count: int
+    total_count: int
+    accuracy: float
+    elapsed_seconds: int
+    official_recorded: bool

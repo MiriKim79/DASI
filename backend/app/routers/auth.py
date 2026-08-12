@@ -4,6 +4,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .. import crud, schemas
+from ..coin_service import grant_coin_once
 from ..database import get_db
 from ..security import (
     create_access_token,
@@ -29,6 +30,14 @@ def signup(payload: schemas.SignupIn, db: Session = Depends(get_db)):
         nickname=payload.nickname,
     )
     try:
+        db.flush()
+        grant_coin_once(
+            db,
+            user_id=user.id,
+            amount=10,
+            reason="SIGNUP",
+            event_key=f"signup:{user.id}",
+        )
         db.commit()
     except IntegrityError as exc:
         db.rollback()
