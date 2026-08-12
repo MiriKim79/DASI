@@ -2,6 +2,16 @@
    패키지를 챗봇 대화 폰트에도 재사용한다(새 패키지 설치 없음). */
 @import "@noonnu/dung-geun-mo/index.css";
 
+/* 나이맞히기 화면에서 쓰던 도트 폰트(Galmuri11). 앱 전역 기본 폰트로 사용한다.
+   galmuri 패키지엔 폰트가 여러 개라 실제 쓰는 파일 하나만 @font-face로 지정한다. */
+@font-face {
+  font-family: "Galmuri11Regular";
+  src: url("../../node_modules/galmuri/dist/Galmuri11.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* 추억 놀이터 디자인 시스템 — 레트로 OS 창 + 크림 모눈 배경 + 파스텔 보라 */
 :root {
   --cream: #f5efe0;
@@ -15,7 +25,11 @@
   --radius: 16px;
   --win-border: #b9a9e0;
   --shadow: 0 8px 0 rgba(0, 0, 0, 0.04), 0 14px 28px rgba(0, 0, 0, 0.1);
-  --font: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  /* 상단바 높이 — 본문 세로 중앙 정렬(calc)에서 함께 참조한다 */
+  --topnav-h: 72px;
+  /* 나이맞히기 화면과 동일한 도트 폰트를 앱 전역 기본으로 사용 */
+  --font: "Galmuri11Regular", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
 }
 
 * {
@@ -49,8 +63,8 @@ button {
   display: flex;
   align-items: center;
   gap: 18px;
-  height: 60px;
-  padding: 0 20px;
+  height: var(--topnav-h);
+  padding: 0 24px;
   background: #fff;
   border-bottom: 2px solid #eee6f7;
   position: sticky;
@@ -65,7 +79,7 @@ button {
 .topnav__logo {
   font-weight: 800;
   color: var(--purple-deep);
-  font-size: 18px;
+  font-size: 21px;
   white-space: nowrap;
 }
 
@@ -82,12 +96,12 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 9px 14px;
+  padding: 11px 16px;
   border-radius: 12px;
   text-decoration: none;
   color: var(--ink);
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   white-space: nowrap;
   transition: background-color 0.15s ease;
 }
@@ -102,7 +116,7 @@ button {
 }
 
 .topnav__icon {
-  font-size: 18px;
+  font-size: 20px;
 }
 
 .login-btn {
@@ -188,7 +202,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--topnav-h));
 }
 
 .page--centered > .retro-window {
@@ -350,7 +364,7 @@ button {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--topnav-h));
 }
 
 /* 중앙 창은 더 크게 + 배경 위로 또렷하게 */
@@ -416,7 +430,7 @@ button {
 
 /* 콘텐츠 화면은 분야 배경색을 영역 전체에 채운다 */
 .content-page {
-  min-height: calc(100vh - 60px);
+  min-height: calc(100vh - var(--topnav-h));
 }
 
 .page-footer {
@@ -481,6 +495,61 @@ button {
 
 .retro-window__body {
   padding: 26px 22px 28px;
+}
+
+/* ---------- 나이맞히기와 동일한 창 디자인 (홈 · 추억놀이터 · 랭킹 · 피드백) ----------
+   AgeTest.css 의 .age-start-page 창 스타일을 그대로 가져와, 위 4개 화면의 가운데 창에만
+   적용한다. 분야 콘텐츠 화면(/play/:code, .content-page)은 분야별 테마를 쓰므로 제외한다. */
+.page--home > .retro-window,
+.page--centered > .retro-window {
+  background: #ebe7e9;
+  border-color: #5b4e83;
+  border-width: 3px;
+  border-radius: 14px;
+  box-shadow: 0 8px 0 rgba(70, 53, 105, 0.12), 0 18px 38px rgba(70, 53, 105, 0.2);
+}
+
+/* 타이틀바: 나이맞히기처럼 모리 아이콘 + 도트체 "다시" */
+.page--home .retro-titlebar__title,
+.page--centered .retro-titlebar__title {
+  color: transparent;
+  font-size: 0;
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.page--home .retro-titlebar__title::before,
+.page--centered .retro-titlebar__title::before {
+  content: "";
+  width: 38px;
+  height: 28px;
+  flex: 0 0 38px;
+  background: url("../pages/AgeTest/assets/mori-title.png") center / contain
+    no-repeat;
+  filter: drop-shadow(1px 1px 0 rgba(66, 42, 117, 0.35));
+}
+
+.page--home .retro-titlebar__title::after,
+.page--centered .retro-titlebar__title::after {
+  content: "다시";
+  color: #fffbed;
+  font-family: "Galmuri11Regular", monospace;
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
+}
+
+/* 창 조절 버튼도 나이맞히기와 동일한 픽셀 톤 */
+.page--home .winbtn,
+.page--centered .winbtn {
+  background: #fff9df;
+  border: 2px solid #3c3745;
+  color: #3c3745;
+  border-radius: 4px;
+  box-shadow: 1px 1px 0 #4d4267;
 }
 
 /* ---------- 세대별 챗봇 · 우측 하단 도킹된 모리 + 말풍선 (#22) ---------- */
@@ -752,6 +821,35 @@ button {
   color: var(--muted);
   font-size: 13px;
   margin: 20px 0 0;
+}
+
+/* 20문제 챌린지 진입 버튼 (놀이터 분야 그리드 아래) */
+.challenge-cta {
+  display: block;
+  width: 100%;
+  margin: 18px 0 0;
+  padding: 15px 18px;
+  border: 3px solid #392e4b;
+  border-radius: 12px;
+  background: #76609a;
+  color: #fff9e8;
+  font-family: inherit;
+  font-weight: 800;
+  font-size: 16px;
+  cursor: pointer;
+  box-shadow: inset 2px 2px 0 #a995c8, inset -2px -2px 0 #514069, 4px 4px 0 #30283b;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.challenge-cta:hover {
+  transform: translate(-1px, -1px);
+  background: #8069a5;
+  box-shadow: inset 2px 2px 0 #b09bd0, inset -2px -2px 0 #514069, 5px 5px 0 #30283b;
+}
+
+.challenge-cta:active {
+  transform: translate(3px, 3px);
+  box-shadow: inset 2px 2px 0 rgba(48, 43, 53, 0.35);
 }
 
 /* ---------- 분야 그리드 (2열 알약형) ---------- */

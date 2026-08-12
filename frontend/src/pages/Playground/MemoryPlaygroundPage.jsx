@@ -55,6 +55,13 @@ export default function MemoryPlaygroundPage() {
                 <CategoryCard key={c.id} category={c} onClick={handleSelect} />
               ))}
             </div>
+            <button
+              type="button"
+              className="challenge-cta"
+              onClick={() => navigate("/challenge")}
+            >
+              🏆 20문제 챌린지 도전하고 랭킹 등록하기
+            </button>
             <p className="window-note">
               ※ 모든 분야의 레이아웃은 동일하며, 색상과 소품만 변경됩니다.
             </p>

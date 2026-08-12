@@ -1,4 +1,5 @@
 """DB 접근 로직 (라우터에서 재사용)."""
+import random
 from typing import Optional
 
 from sqlalchemy import func
@@ -85,6 +86,48 @@ def get_random_content(
     if subcategory:
         query = query.filter(models.Content.subcategory == subcategory.upper())
     return query.order_by(_random_order(db)).first()
+
+
+def get_challenge_contents(
+    db: Session,
+    per_category: int = 2,
+    total: int = 20,
+) -> list[models.Content]:
+    """랭킹용 통합 도전 문제 세트.
+
+    8개 분야에서 각각 per_category개(랜덤)를 먼저 뽑아 모든 분야가 반드시 들어가게 하고,
+    total에 못 미치면 남은 문제 중 랜덤으로 채운다. 마지막에 순서를 섞어 분야가
+    한곳에 몰리지 않게 한다. (예: per_category=2, total=20 → 8분야×2 + 랜덤 4)
+    """
+    picked: list[models.Content] = []
+    picked_ids: set[int] = set()
+
+    for category in get_categories(db):
+        rows = (
+            _content_query(db)
+            .filter(models.Content.category_id == category.id)
+            .order_by(_random_order(db))
+            .limit(per_category)
+            .all()
+        )
+        for row in rows:
+            if row.id not in picked_ids:
+                picked.append(row)
+                picked_ids.add(row.id)
+
+    if len(picked) < total:
+        extra = (
+            _content_query(db)
+            .filter(~models.Content.id.in_(picked_ids))
+            .order_by(_random_order(db))
+            .limit(total - len(picked))
+            .all()
+        )
+        picked.extend(extra)
+
+    picked = picked[:total]
+    random.shuffle(picked)
+    return picked
 
 
 def get_content_by_id(db: Session, content_id: int) -> Optional[models.Content]:

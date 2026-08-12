@@ -66,6 +66,9 @@ export const api = {
     return request(`/api/contents/random?${params.toString()}`);
   },
   getContent: (id) => request(`/api/contents/${id}`),
+  // 랭킹용 통합 도전: 8개 분야에서 섞은 20문제 (정답 미포함)
+  getChallenge: (count = 20) =>
+    request(`/api/contents/challenge?count=${count}`),
   answer: (contentId, optionId) =>
     request(`/api/contents/${contentId}/answer`, {
       method: "POST",
