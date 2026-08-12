@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
 import { ageTestApi } from "../../api/ageTest.js";
 import "./AgeTest.css";
 
@@ -38,6 +39,7 @@ export default function QuizPage() {
   if (status === "loading") {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state">질문을 불러오는 중...</p>
         </RetroWindow>
@@ -48,6 +50,7 @@ export default function QuizPage() {
   if (status === "error") {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state age-quiz__state--error">
             질문을 불러오지 못했어요. 잠시 후 다시 시도해주세요.
@@ -60,6 +63,7 @@ export default function QuizPage() {
   if (questions.length === 0) {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state">아직 준비된 질문이 없어요.</p>
         </RetroWindow>
@@ -99,6 +103,7 @@ export default function QuizPage() {
 
   return (
     <div className="page age-start-page">
+      <MemoryBackdrop />
       <RetroWindow titleColor="transparent">
         <div className="age-quiz">
           {currentIndex > 0 && (
