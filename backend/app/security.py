@@ -83,3 +83,16 @@ def get_current_user(
     if user is None:
         raise credentials_exception
     return user
+
+
+def get_current_user_optional(
+    credentials: HTTPAuthorizationCredentials | None = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> models.User | None:
+    """토큰이 있으면 검증해서 사용자를 반환하고, 없으면 None(비로그인 허용) — #31.
+
+    토큰이 있는데 유효하지 않은 경우는 그대로 401을 낸다(로그인 사칭 방지).
+    """
+    if credentials is None:
+        return None
+    return get_current_user(credentials=credentials, db=db)

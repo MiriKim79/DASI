@@ -1,13 +1,21 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import MoriWanderer from "../../components/MoriWanderer.jsx";
+import { useChatbot } from "../../components/Chatbot/ChatbotContext.jsx";
+import { isAgeCheckDone } from "../../utils/ageCheckStatus.js";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
-// 마스코트 모리는 공통 Layout에서 렌더된다(홈·추억놀이터·랭킹·피드백).
-// 클릭하면 챗봇이 열리는 연동도 Layout이 담당한다.
 export default function HomePage() {
   const navigate = useNavigate();
+  const { isOpen: chatOpen, open: openChatbot } = useChatbot();
+  // 나이맞히기를 완료(또는 패스)하기 전에는 챗봇 진입을 보여주지 않는다(#33).
+  const ageCheckDone = isAgeCheckDone();
   return (
     <div className="page page--home">
+      {/* 배경을 걸어다니는 마스코트 모리 — 클릭하면 우측 하단에 도킹되어 챗봇이 시작된다.
+          도킹된 동안(chatOpen)에는 같은 모리가 두 마리로 보이지 않도록 wanderer는 숨긴다. */}
+      {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 잡아봐라 🐾" />}
+
       <RetroWindow>
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
@@ -51,7 +59,7 @@ export default function HomePage() {
       </RetroWindow>
 
       <p className="page-footer">
-        1990~2020년대 우리의 추억을 소환하는 시간 여행! 💜
+        2000~2010년대 우리의 추억을 소환하는 시간 여행! 💜
       </p>
     </div>
   );

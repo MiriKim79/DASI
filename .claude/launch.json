@@ -9,9 +9,8 @@
     },
     {
       "name": "dasi-backend",
-      "runtimeExecutable": ".venv/Scripts/python.exe",
-      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--reload", "--port", "8000"],
-      "cwd": "backend",
+      "runtimeExecutable": "cmd",
+      "runtimeArgs": ["/c", "backend\\run_dev.cmd"],
       "port": 8000
     }
   ]

@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import { markAgeCheckDone } from "../../utils/ageCheckStatus.js";
 import "./AgeTest.css";
 
 // #1: 나이 맞히기 시작 화면. 사이드바/공통 Layout 없이 단독으로 보여준다(#15, App.jsx에서 처리).
@@ -48,7 +49,11 @@ export default function StartPage() {
               <button
                 type="button"
                 className="age-start__btn age-start__btn--ghost"
-                onClick={() => navigate("/")}
+                onClick={() => {
+                  // 패스도 완료로 취급해 챗봇 진입(#33)이 열리게 한다.
+                  markAgeCheckDone();
+                  navigate("/");
+                }}
               >
                 쫄리면 패스하기 →
               </button>
