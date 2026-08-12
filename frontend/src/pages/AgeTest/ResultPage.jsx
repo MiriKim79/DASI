@@ -116,24 +116,30 @@ export default function ResultPage() {
       <MemoryBackdrop />
       <RetroWindow titleColor="transparent">
         <div className="age-result">
-          <p className="age-result__badge">예상 나이</p>
-          <p className="age-result__age">
-            {result.estimated_age}
-            <span>세</span>
-          </p>
+          <p className="age-result__badge">✨ 모리가 예상한 너의 나이 ✨</p>
+          <div className="age-result__hero">
+            <img src="/mori/mori-06.png" alt="기뻐하는 모리" />
+            <p className="age-result__age">
+              {result.estimated_age}
+              <span>세</span>
+            </p>
+          </div>
 
           <div className="age-result__reasons">
-            <p className="age-result__reasons-title">결정적 답변 TOP3</p>
-            <ul>
-              {result.top_reasons.map((reason) => (
-                <li key={reason}>{reason}</li>
+            <p className="age-result__reasons-title">모리가 나이를 눈치챈 순간 TOP 3</p>
+            <ol>
+              {result.top_reasons.map((reason, index) => (
+                <li key={reason}>
+                  <span className="age-result__reason-number">{String(index + 1).padStart(2, "0")}</span>
+                  <span>{reason}</span>
+                </li>
               ))}
-            </ul>
+            </ol>
           </div>
 
           {!loggedIn && (
             <p className="age-result__login-hint">
-              결과를 저장하거나 공유하려면 로그인하세요.
+              회원가입하면 10코인을 드려요!
               <button
                 type="button"
                 className="age-result__login-btn"

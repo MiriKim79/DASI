@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
 import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
-import ageBotImage from "./assets/age-bot.png";
+import moriStartImage from "./assets/mori-start.png";
 import "./AgeTest.css";
 
 // #1: 나이 맞히기 시작 화면. 사이드바/공통 Layout 없이 단독으로 보여준다(#15, App.jsx에서 처리).
@@ -18,8 +18,8 @@ export default function StartPage() {
           <div className="age-start__stage">
             <img
               className="age-start__bot"
-              src={ageBotImage}
-              alt="웃는 얼굴이 나타난 레트로 컴퓨터와 빨간 카세트테이프"
+              src={moriStartImage}
+              alt="손을 흔들며 인사하는 모리"
             />
             <span className="age-start__bubble" aria-hidden="true">
               <PixelHeart />
@@ -33,9 +33,9 @@ export default function StartPage() {
               <span className="age-start__accent">맞혀볼게!</span>
             </h1>
             <p className="age-start__subtext">
-              몇 가지 질문만 답해봐.
+              몇 가지 질문만 답하면,
               <br />
-              설마 이것도 무서운 건 아니지?
+              네가 자라온 시간을 알 수 있어!
             </p>
 
             <div className="age-start__actions">

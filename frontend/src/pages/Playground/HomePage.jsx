@@ -4,6 +4,8 @@ import MoriWanderer from "../../components/MoriWanderer.jsx";
 import { useChatbot } from "../../components/Chatbot/ChatbotContext.jsx";
 import { useAuth } from "../../context/AuthContext.jsx";
 import { isAgeCheckDone } from "../../utils/ageCheckStatus.js";
+import moriNaiImage from "./assets/mori-nai.png";
+import moriGameImage from "./assets/mori-game.png";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
 export default function HomePage() {
@@ -31,19 +33,16 @@ export default function HomePage() {
           </button>
         )}
         <h1 className="window-heading">
-          <span className="sparkle">✨</span>
-          오늘은 어떤 추억을 꺼내볼래?
-          <span className="sparkle">✨</span>
+          👋 다시 만나서 반가워!
         </h1>
+        <p className="home-intro">오늘은 어떤 추억을 꺼내볼까?</p>
 
         <div className="home-cards">
           <button
             className="home-card"
             onClick={() => navigate("/age-check")}
           >
-            <span className="home-card__icon" aria-hidden="true">
-              📺
-            </span>
+            <img className="home-card__mori" src={moriNaiImage} alt="" aria-hidden="true" />
             <span className="home-card__text">
               나이 다시 맞히기
               <small>몇 가지 질문으로 세대 추측!</small>
@@ -57,9 +56,7 @@ export default function HomePage() {
             className="home-card home-card--accent"
             onClick={() => navigate("/playground")}
           >
-            <span className="home-card__icon" aria-hidden="true">
-              🎮
-            </span>
+            <img className="home-card__mori" src={moriGameImage} alt="" aria-hidden="true" />
             <span className="home-card__text">
               추억 놀이터 가기
               <small>8개 분야의 추억 콘텐츠로 아재력 측정!</small>

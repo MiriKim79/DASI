@@ -14,22 +14,20 @@
 
 /* 추억 놀이터 디자인 시스템 — 레트로 OS 창 + 크림 모눈 배경 + 파스텔 보라 */
 :root {
-  --cream: #f5efe0;
-  --grid: rgba(150, 130, 90, 0.07);
-  --purple: #8a79c9;
-  --purple-deep: #6c5ce7;
-  --lavender: #c7b8e8;
-  --ink: #3f3a56;
-  --muted: #9a94ac;
-  --card: #ffffff;
-  --radius: 16px;
-  --win-border: #b9a9e0;
-  --shadow: 0 8px 0 rgba(0, 0, 0, 0.04), 0 14px 28px rgba(0, 0, 0, 0.1);
+  --cream: #f7f0df;
+  --grid: rgba(143, 113, 72, 0.045);
+  --purple: #8762c5;
+  --purple-deep: #6840b5;
+  --lavender: #d6c8ec;
+  --ink: #302b3c;
+  --muted: #756d7d;
+  --card: #fffaf0;
+  --radius: 11px;
+  --win-border: #574178;
+  --shadow: 0 3px 0 rgba(56, 40, 82, 0.13), 0 12px 28px rgba(85, 63, 116, 0.16);
   /* 상단바 높이 — 본문 세로 중앙 정렬(calc)에서 함께 참조한다 */
-  --topnav-h: 72px;
-  /* 나이맞히기 화면과 동일한 도트 폰트를 앱 전역 기본으로 사용 */
-  --font: "Galmuri11Regular", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic",
-    sans-serif;
+  --topnav-h: 60px;
+  --font: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
 }
 
 * {
@@ -43,7 +41,7 @@ body {
   background-color: var(--cream);
   background-image: linear-gradient(var(--grid) 1px, transparent 1px),
     linear-gradient(90deg, var(--grid) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-size: 26px 26px;
 }
 
 button {
@@ -64,9 +62,10 @@ button {
   align-items: center;
   gap: 18px;
   height: var(--topnav-h);
-  padding: 0 24px;
-  background: #fff;
-  border-bottom: 2px solid #eee6f7;
+  padding: 0 20px;
+  background: rgba(255, 250, 240, 0.96);
+  border-bottom: 2px solid #d7c9e7;
+  box-shadow: 0 3px 0 rgba(85, 65, 120, 0.08);
   position: sticky;
   top: 0;
   z-index: 20;
@@ -77,10 +76,21 @@ button {
 }
 
 .topnav__logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-weight: 800;
   color: var(--purple-deep);
   font-size: 21px;
   white-space: nowrap;
+}
+
+.topnav__logo::before {
+  content: "";
+  width: 22px;
+  height: 17px;
+  flex: 0 0 22px;
+  background: url("../pages/AgeTest/assets/mori-title.png") center / contain no-repeat;
 }
 
 .topnav__nav {
@@ -96,8 +106,8 @@ button {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 11px 16px;
-  border-radius: 12px;
+  padding: 9px 14px;
+  border-radius: 6px;
   text-decoration: none;
   color: var(--ink);
   font-weight: 700;
@@ -107,12 +117,13 @@ button {
 }
 
 .topnav__link:hover {
-  background: #f4f0fc;
+  background: #eee6f5;
 }
 
 .topnav__link--active {
-  background: #efeafd;
+  background: #e4d8f3;
   color: var(--purple-deep);
+  box-shadow: inset 0 -2px 0 #a886d2;
 }
 
 .topnav__icon {
@@ -124,7 +135,7 @@ button {
   border: 2px solid var(--lavender);
   background: #fff;
   color: var(--purple-deep);
-  border-radius: 12px;
+  border-radius: 5px;
   padding: 8px 16px;
   font-weight: 800;
   font-size: 14px;
@@ -348,8 +359,9 @@ button {
 /* 홈/나이맞히기/추억놀이터/랭킹/피드백: 카테고리 화면처럼 소품 배경 위에 창을 얹되 노란 바탕 */
 .layout__main--bg {
   position: relative;
-  background-color: #fff6d6;
-  background-image: linear-gradient(160deg, #fff9e3, #ffe7a6);
+  background-color: #f5ecd9;
+  background-image: radial-gradient(circle at 20% 10%, rgba(255,255,255,.75), transparent 34%),
+    linear-gradient(160deg, #faf4e5, #eee1c8);
 }
 
 /* 본문(소품 배경 포함)은 노란 바탕 위로 */
@@ -460,6 +472,8 @@ button {
   margin: 6px 0 32px;
 }
 
+.home-intro { margin: -22px 0 28px; text-align: center; color: var(--muted); font-weight: 700; }
+
 .page--home .home-card {
   padding: 24px 24px;
 }
@@ -521,7 +535,7 @@ button {
   max-width: 640px;
   margin: 0 auto;
   background: var(--card);
-  border: 2.5px solid var(--win-border);
+  border: 2px solid var(--win-border);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   overflow: hidden;
@@ -531,12 +545,32 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 9px 12px;
-  background: var(--lavender);
+  padding: 7px 10px;
+  background: #8056bd;
+  border-bottom: 2px solid #4f356f;
   transition: background-color 0.3s ease;
 }
 
 .retro-titlebar__title {
+  color: transparent;
+  font-size: 0;
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.retro-titlebar__title::before {
+  content: "";
+  width: 26px;
+  height: 20px;
+  flex: 0 0 26px;
+  background: url("../pages/AgeTest/assets/mori-title.png") center / contain no-repeat;
+  filter: drop-shadow(1px 1px 0 rgba(66, 42, 117, 0.35));
+}
+
+.retro-titlebar__title::after {
+  content: "다시";
   color: #fff;
   font-weight: 800;
   font-size: 14px;
@@ -552,9 +586,10 @@ button {
 .winbtn {
   width: 20px;
   height: 20px;
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.85);
-  color: #6a6480;
+  border: 1.5px solid #453755;
+  border-radius: 3px;
+  background: #fff9e8;
+  color: #3f3548;
   font-size: 12px;
   font-weight: 800;
   display: flex;
@@ -568,7 +603,8 @@ button {
 }
 
 .retro-window__body {
-  padding: 26px 22px 28px;
+  padding: 30px 26px 32px;
+  background: #fffaf0;
 }
 
 /* ---------- 세대별 챗봇 · 우측 하단 도킹된 모리 + 말풍선 (#22) ---------- */
@@ -831,7 +867,7 @@ button {
   text-align: center;
   font-size: 22px;
   font-weight: 800;
-  color: var(--ink);
+  color: #332b43;
   margin: 4px 0 24px;
 }
 
@@ -917,7 +953,7 @@ button {
   gap: 12px;
   width: 100%;
   border: 2px solid;
-  border-radius: 14px;
+  border-radius: 8px;
   background: var(--card);
   padding: 13px 14px;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.04);
@@ -1598,12 +1634,20 @@ button {
   width: 100%;
   text-align: left;
   border: 2px solid var(--lavender);
-  border-radius: var(--radius);
-  background: #f6f3fd;
+  border-radius: 9px;
+  background: #f0e9f7;
   padding: 18px 18px;
   box-shadow: 0 4px 0 rgba(0, 0, 0, 0.04);
   transition: transform 0.12s ease;
 }
+
+.home-card__mori { width: 84px; height: 96px; object-fit: contain; flex: 0 0 84px; }
+
+.page--home .home-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.page--home .home-card { min-height: 190px; position: relative; align-items: flex-start; overflow: hidden; }
+.page--home .home-card__mori { position: absolute; right: 14px; bottom: 0; width: 118px; height: 134px; }
+.page--home .home-card__text { max-width: 55%; }
+.page--home .home-card__arrow { display: none; }
 
 .home-card--accent {
   background: #efeafd;
@@ -1712,13 +1756,11 @@ button {
   .topnav__logo {
     font-size: 0; /* 로고 텍스트 숨김 */
   }
-  .topnav__logo::before {
-    content: "✨";
-    font-size: 20px;
-  }
 }
 
 @media (max-width: 560px) {
+  .page--home .home-cards { grid-template-columns: 1fr; }
+  .page--home .home-card { min-height: 150px; }
   .window-heading {
     font-size: 19px;
   }

@@ -7,6 +7,7 @@ import {
   setAccessToken,
 } from "../../api/client.js";
 import { useAuth } from "../../context/AuthContext.jsx";
+import moriTitleImage from "./assets/mori-title.png";
 import "./SignupPage.css";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -91,7 +92,9 @@ export default function LoginPage() {
 
   return (
     <div className="page signup-page">
-      <RetroWindow>
+      <div className="login-page__hero">
+        <img className="login-page__mori" src={moriTitleImage} alt="" aria-hidden="true" />
+        <RetroWindow>
         <section className="signup-page__content" aria-labelledby="login-title">
           <h1 id="login-title" className="window-heading">
             <span className="sparkle">✨</span>
@@ -154,7 +157,8 @@ export default function LoginPage() {
             아직 계정이 없나요? <Link to="/signup">회원가입하기</Link>
           </p>
         </section>
-      </RetroWindow>
+        </RetroWindow>
+      </div>
     </div>
   );
 }
