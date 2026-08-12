@@ -138,7 +138,8 @@ def canonical_media_url(folder: str, item) -> str | None:
     filename, _answer, *rest = item
     youtube_id = rest[0].strip() if rest and rest[0] else None
     if youtube_id:
-        return f"youtube:{youtube_id}"
+        start_sec = int(rest[1]) if len(rest) > 1 and rest[1] else 0
+        return f"youtube:{youtube_id}:{start_sec}" if start_sec > 0 else f"youtube:{youtube_id}"
     actual = resolve_media(folder, filename)
     return f"/media/{folder}/{actual}" if actual else None
 
@@ -204,9 +205,12 @@ def seed(reset: bool = False):
             made = 0
             missing = []
             for item in items:
-                # (파일명, 정답) 또는 (파일명, 정답, 유튜브영상ID)
+                # (파일명, 정답)
+                # 또는 (파일명, 정답, 유튜브영상ID[, 시작초])
+                #   시작초: 하이라이트(후렴) 지점부터 재생하고 싶을 때 초 단위로 지정
                 filename, answer, *rest = item
                 youtube_id = rest[0].strip() if rest and rest[0] else None
+                start_sec = int(rest[1]) if len(rest) > 1 and rest[1] else 0
 
                 if not answer or not answer.strip():
                     skipped += 1
@@ -214,8 +218,11 @@ def seed(reset: bool = False):
 
                 if youtube_id:
                     # 음원을 파일로 두지 않고 유튜브 플레이어로 재생한다.
-                    # image_url 에 "youtube:<영상ID>" 로 표시 → 프론트가 이를 보고 플레이어를 띄운다.
+                    # image_url 에 "youtube:<영상ID>" (또는 ":<시작초>") 로 표시
+                    #  → 프론트가 이를 보고 플레이어를 띄운다.
                     media_url = f"youtube:{youtube_id}"
+                    if start_sec > 0:
+                        media_url += f":{start_sec}"
                 else:
                     actual = resolve_media(folder, filename)
                     if actual is None:

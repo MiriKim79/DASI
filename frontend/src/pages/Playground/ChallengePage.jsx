@@ -1,14 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api, getAccessToken } from "../../api/client.js";
+import { getAccessToken } from "../../api/client.js";
+import { rankingApi } from "../../api/ranking.js";
 import ContentCard from "../../components/ContentCard.jsx";
-import AnswerButton from "../../components/AnswerButton.jsx";
 import RetroWindow from "../../components/RetroWindow.jsx";
 
-// 랭킹용 통합 도전 화면 (#18/#21, role-2).
-// 8개 분야에서 섞은 20문제를 풀어 점수를 내고, 그 점수를 랭킹에 등록한다.
-// ※ 랭킹 '등록' API(POST /api/ranking/submit)는 4번(role-4) 담당이라 아직 없다.
-//    지금은 점수 계산까지만 하고, 등록 버튼은 규격이 나오면 handleSubmitRanking에 연결한다.
+// 랭킹용 통합 도전 화면 (#18/#21).
+// 8개 분야에서 섞은 20문제(전부 사진·노래 정답 입력형)에 도전한다.
+// 로그인한 상태에서 도전하면(코인 10개 소모) 제출 결과가 공식 랭킹에 등록된다.
+//   - POST /api/ranking/challenge        → 도전 시작(코인 차감·문제 20개)
+//   - POST /api/ranking/challenge/submit → 20문제 답 일괄 제출·채점·랭킹 등록
+// 부정 방지를 위해 문제별 정답은 내려오지 않는다. 답은 로컬에 모아 마지막에 한 번에 제출하고,
+// 채점은 제출 시점에만 이루어진다(문제 푸는 중에는 정답/오답 표시가 없다).
 const CHALLENGE_COUNT = 20;
 const PRIMARY = "#6c5ce7";
 
@@ -16,58 +19,42 @@ export default function ChallengePage() {
   const navigate = useNavigate();
 
   const [phase, setPhase] = useState("intro"); // intro | playing | done
-  const [quiz, setQuiz] = useState([]);
-  const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
-  // 답변 상태
-  const [selectedId, setSelectedId] = useState(null);
-  const [result, setResult] = useState(null); // 객관식 결과
+  // 도전 진행 상태
+  const [challengeId, setChallengeId] = useState(null);
+  const [questions, setQuestions] = useState([]); // [{ content_id, position, question, image_url, content_type }]
+  const [answers, setAnswers] = useState({}); // content_id -> 입력한 답
+  const [index, setIndex] = useState(0);
   const [textInput, setTextInput] = useState("");
-  const [textResult, setTextResult] = useState(null); // 텍스트형 결과
-  const [submitting, setSubmitting] = useState(false);
-
-  const [stats, setStats] = useState({ correct: 0, total: 0 });
   const [finalResult, setFinalResult] = useState(null);
 
   const inputRef = useRef(null);
-  const nextBtnRef = useRef(null);
 
-  const current = quiz[index];
-  const isLast = index >= quiz.length - 1;
-  const isTextQuiz = current && current.content_type === "TEXT_QUIZ";
-  const answered = !!result || !!textResult;
+  const current = questions[index];
+  const isLast = index >= questions.length - 1;
+  const loggedIn = !!getAccessToken();
 
-  function resetAnswer() {
-    setSelectedId(null);
-    setResult(null);
-    setTextInput("");
-    setTextResult(null);
-  }
-
-  // 새 텍스트 문제가 뜨면 입력창 자동 포커스
+  // 새 문제가 뜨면 입력창에 자동 포커스 + 이전에 입력해둔 답 복원
   useEffect(() => {
-    if (phase === "playing" && current && isTextQuiz && !answered) {
-      inputRef.current?.focus();
-    }
+    if (phase !== "playing" || !current) return;
+    setTextInput(answers[current.content_id] ?? "");
+    inputRef.current?.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current, isTextQuiz, answered, phase]);
-
-  // 답을 제출하면 '다음/결과' 버튼으로 포커스 이동 (Enter 한 번 더로 진행)
-  useEffect(() => {
-    if (answered) nextBtnRef.current?.focus();
-  }, [answered]);
+  }, [current, phase]);
 
   const startChallenge = async () => {
     setLoading(true);
     setError(null);
     try {
-      const data = await api.getChallenge(CHALLENGE_COUNT);
-      setQuiz(data);
+      const data = await rankingApi.startChallenge();
+      setChallengeId(data.challenge_id);
+      setQuestions(data.questions);
+      setAnswers({});
       setIndex(0);
-      resetAnswer();
-      setStats({ correct: 0, total: 0 });
+      setTextInput("");
       setFinalResult(null);
       setPhase("playing");
     } catch (e) {
@@ -77,76 +64,43 @@ export default function ChallengePage() {
     }
   };
 
-  // ----- 객관식 답변 -----
-  const handleAnswer = async (option) => {
-    if (answered || submitting) return;
-    setSubmitting(true);
-    setSelectedId(option.id);
-    try {
-      const res = await api.answer(current.id, option.id);
-      setResult(res);
-      setStats((s) => ({
-        correct: s.correct + (res.is_correct ? 1 : 0),
-        total: s.total + 1,
-      }));
-    } catch (e) {
-      setError(e.message);
-      setSelectedId(null);
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  // ----- 텍스트 입력형 답변 -----
-  const handleTextSubmit = async (e) => {
-    e.preventDefault();
-    if (answered || submitting || !textInput.trim()) return;
-    setSubmitting(true);
-    try {
-      const res = await api.answerText(current.id, textInput.trim());
-      setTextResult(res);
-      setStats((s) => ({
-        correct: s.correct + (res.is_correct ? 1 : 0),
-        total: s.total + 1,
-      }));
-    } catch (e2) {
-      setError(e2.message);
-    } finally {
-      setSubmitting(false);
-    }
+  // 현재 문제의 답을 저장하고 다음 단계로 이동한다.
+  const commitAnswer = () => {
+    const next = { ...answers, [current.content_id]: textInput.trim() };
+    setAnswers(next);
+    return next;
   };
 
   const handleNext = () => {
-    resetAnswer();
+    commitAnswer();
     setIndex((i) => i + 1);
   };
 
-  const handleShowResult = async () => {
+  const handleSubmit = async () => {
+    if (submitting) return;
+    const collected = commitAnswer();
+    setSubmitting(true);
+    setError(null);
     try {
-      const res = await api.getResult(stats.correct, stats.total, "CHALLENGE");
+      const payload = questions.map((q) => ({
+        content_id: q.content_id,
+        answer: collected[q.content_id] ?? "",
+      }));
+      const res = await rankingApi.submitChallenge(challengeId, payload);
       setFinalResult(res);
       setPhase("done");
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  // TODO(#21): 4번 랭킹 제출 API(POST /api/ranking/submit) 규격이 확정되면 여기서 호출한다.
-  //   예) await api.submitRanking({ score: finalResult.score, total: stats.total })
-  //   - 로그인(access_token) 필요. 아래 버튼은 규격이 나올 때까지 비활성.
-  const handleSubmitRanking = () => {
-    /* 랭킹 API 준비되면 연결 */
+  const handleFormSubmit = (e) => {
+    e.preventDefault();
+    if (isLast) handleSubmit();
+    else handleNext();
   };
-
-  const buttonState = (option) => {
-    if (!result) return "idle";
-    if (option.id === selectedId) return result.is_correct ? "correct" : "wrong";
-    if (result.correct_option_id && option.id === result.correct_option_id)
-      return "reveal";
-    return "dim";
-  };
-
-  const loggedIn = !!getAccessToken();
 
   return (
     <div className="page page--centered">
@@ -160,23 +114,40 @@ export default function ChallengePage() {
             <p className="state-msg">
               8개 분야에서 섞은 <b>{CHALLENGE_COUNT}문제</b>에 도전하세요!
               <br />
-              점수는 랭킹에 등록할 수 있어요.
+              결과는 <b>통합 랭킹</b>에 등록돼요.
             </p>
-            {!loggedIn && (
+
+            {loggedIn ? (
               <p className="state-msg" style={{ fontSize: 13 }}>
-                ※ 랭킹 등록은 로그인 후 가능해요.
+                ※ 도전 1회에 <b>코인 10개</b>가 소모돼요. (하루 첫 도전만 공식 랭킹에 반영)
+              </p>
+            ) : (
+              <p className="state-msg" style={{ fontSize: 13 }}>
+                ※ 랭킹 도전은 <b>로그인 후</b> 가능해요.
               </p>
             )}
+
             {error && <p className="state-msg state-msg--error">⚠️ {error}</p>}
+
             <div className="content-actions">
-              <button
-                className="primary-btn"
-                style={{ backgroundColor: PRIMARY }}
-                onClick={startChallenge}
-                disabled={loading}
-              >
-                {loading ? "불러오는 중…" : "도전 시작 →"}
-              </button>
+              {loggedIn ? (
+                <button
+                  className="primary-btn"
+                  style={{ backgroundColor: PRIMARY }}
+                  onClick={startChallenge}
+                  disabled={loading}
+                >
+                  {loading ? "불러오는 중…" : "도전 시작 →"}
+                </button>
+              ) : (
+                <button
+                  className="primary-btn"
+                  style={{ backgroundColor: PRIMARY }}
+                  onClick={() => navigate("/login")}
+                >
+                  로그인하러 가기 →
+                </button>
+              )}
               <button className="ghost-btn" onClick={() => navigate("/playground")}>
                 분야별로 즐기기
               </button>
@@ -188,85 +159,47 @@ export default function ChallengePage() {
         {phase === "playing" && current && (
           <div className="content-wrap">
             <p className="progress" style={{ color: PRIMARY }}>
-              {index + 1} / {quiz.length}
+              {index + 1} / {questions.length}
             </p>
 
-            <ContentCard content={current} theme={{ primaryColor: PRIMARY, accentColor: "#efeafd", decoration: "❓" }} />
+            <ContentCard
+              content={current}
+              theme={{ primaryColor: PRIMARY, accentColor: "#efeafd", decoration: "❓" }}
+            />
 
-            {isTextQuiz ? (
-              <form className="text-answer" onSubmit={handleTextSubmit}>
-                <input
-                  ref={inputRef}
-                  className="text-answer__input"
-                  type="text"
-                  value={textInput}
-                  onChange={(e) => setTextInput(e.target.value)}
-                  placeholder="정답을 입력하세요"
-                  disabled={!!textResult || submitting}
-                  autoFocus
-                  style={{ borderColor: PRIMARY }}
-                />
-                {!textResult && (
-                  <button
-                    type="submit"
-                    className="primary-btn"
-                    style={{ backgroundColor: PRIMARY }}
-                    disabled={submitting || !textInput.trim()}
-                  >
-                    제출
-                  </button>
-                )}
-              </form>
-            ) : (
-              <div className="answers">
-                {current.options.map((opt) => (
-                  <AnswerButton
-                    key={opt.id}
-                    option={opt}
-                    state={buttonState(opt)}
-                    disabled={answered || submitting}
-                    primaryColor={PRIMARY}
-                    onClick={handleAnswer}
-                  />
-                ))}
-              </div>
-            )}
+            <form className="text-answer" onSubmit={handleFormSubmit}>
+              <input
+                ref={inputRef}
+                className="text-answer__input"
+                type="text"
+                value={textInput}
+                onChange={(e) => setTextInput(e.target.value)}
+                placeholder="정답을 입력하세요"
+                disabled={submitting}
+                autoFocus
+                style={{ borderColor: PRIMARY }}
+              />
+            </form>
 
-            {textResult && (
-              <p
-                className={
-                  "result-msg " +
-                  (textResult.is_correct ? "result-msg--ok" : "result-msg--no")
-                }
-              >
-                {textResult.message}
-              </p>
-            )}
-            {result && (
-              <p className="result-msg" style={{ color: PRIMARY }}>
-                {result.message}
-              </p>
-            )}
+            {error && <p className="state-msg state-msg--error">⚠️ {error}</p>}
 
             <div className="content-actions">
-              {answered && !isLast && (
+              {!isLast ? (
                 <button
-                  ref={nextBtnRef}
                   className="primary-btn"
                   style={{ backgroundColor: PRIMARY }}
                   onClick={handleNext}
                 >
                   다음 문제 →
                 </button>
-              )}
-              {answered && isLast && (
+              ) : (
                 <button
-                  ref={nextBtnRef}
                   className="primary-btn"
                   style={{ backgroundColor: PRIMARY }}
-                  onClick={handleShowResult}
+                  onClick={handleSubmit}
+                  disabled={submitting}
                 >
-                  🎉 결과 보기
+                  {submitting ? "제출 중…" : "🎉 제출하고 랭킹 등록"}
                 </button>
               )}
               <button className="ghost-btn" onClick={() => navigate("/playground")}>
@@ -280,30 +213,25 @@ export default function ChallengePage() {
         {phase === "done" && finalResult && (
           <div className="content-wrap">
             <h1 className="window-heading" style={{ color: PRIMARY }}>
-              {finalResult.level}
+              {finalResult.official_recorded ? "🏆 랭킹 등록 완료!" : "채점 완료"}
             </h1>
             <p className="progress" style={{ color: PRIMARY, fontSize: 20 }}>
-              {stats.correct} / {stats.total} 정답 · {finalResult.score}점
+              {finalResult.correct_count} / {finalResult.total_count} 정답 ·{" "}
+              {Math.round(finalResult.accuracy * 100)}% · {finalResult.elapsed_seconds}초
             </p>
-            <p className="state-msg">{finalResult.message}</p>
+            <p className="state-msg">
+              {finalResult.official_recorded
+                ? "오늘의 공식 기록으로 통합 랭킹에 등록되었어요!"
+                : "오늘은 이미 공식 기록이 있어 이번 도전은 랭킹에 반영되지 않았어요. (내일 다시 도전!)"}
+            </p>
 
-            {/* 랭킹 등록 — 4번 랭킹 API 준비 후 연결 (#21) */}
             <div className="content-actions">
               <button
                 className="primary-btn"
-                style={{ backgroundColor: PRIMARY, opacity: 0.5 }}
-                onClick={handleSubmitRanking}
-                disabled
-                title="랭킹 기능 준비 중"
-              >
-                🏆 랭킹 등록 (준비 중)
-              </button>
-              <button
-                className="primary-btn"
                 style={{ backgroundColor: PRIMARY }}
-                onClick={startChallenge}
+                onClick={() => navigate("/ranking")}
               >
-                다시 도전 ↻
+                🏆 랭킹 보기
               </button>
               <button className="ghost-btn" onClick={() => navigate("/playground")}>
                 놀이터로 돌아가기
