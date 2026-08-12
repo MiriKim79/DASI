@@ -9,7 +9,7 @@ const SIZE = 180;
 const MARGIN = 16;
 const SPEED = 46; // px/초
 const STRIDE = 26; // 이 거리마다 프레임 1장 전환
-const MIN_TRAVEL = 240; // 목적지 최소 이동 거리
+const MIN_TRAVEL = 360; // 목적지 최소 이동 거리 — 화면을 더 넓게 가로지르게 크게 잡는다
 const BEHIND_TRIGGER = 3; // 창 뒤 몇 초 이상이면 훔쳐보기
 const PEEK_TIME = 1.9; // 훔쳐보기 유지 시간(초)
 const PEEK_MAX = 168; // 훔쳐보기 포즈 최대 크기(px)
@@ -58,8 +58,9 @@ export default function MoriWanderer({ onClick, hint }) {
       const { w, h } = bounds();
       const s = st.current;
       const box = windowBox();
-      // 가끔(약 1/3) 창 뒤로 숨으러 간다 → 도착 후 오래 머물러 훔쳐보기 유발
-      if (box && Math.random() < 0.33) {
+      // 가끔 창 뒤로 숨으러 간다 → 도착 후 오래 머물러 훔쳐보기 유발.
+      // 확률을 낮춰서 화면 전체를 돌아다니는 시간을 더 늘린다.
+      if (box && Math.random() < 0.18) {
         const cx = (box.x0 + box.x1) / 2 - SIZE / 2;
         const cy = (box.y0 + box.y1) / 2 - SIZE / 2;
         s.tx = clamp(cx + (Math.random() * 80 - 40), MARGIN, w - SIZE - MARGIN);
@@ -70,6 +71,15 @@ export default function MoriWanderer({ onClick, hint }) {
       s.hideTarget = false;
       const maxX = Math.max(1, w - SIZE - MARGIN * 2);
       const maxY = Math.max(1, h - SIZE - MARGIN * 2);
+      // 가끔은 화면 네 구석 중 하나를 목표로 잡아서, 중앙 근처만 맴돌지 않고
+      // 가장자리·구석까지 골고루 돌아다니게 한다.
+      if (Math.random() < 0.35) {
+        const cornerX = Math.random() < 0.5 ? 0 : 1;
+        const cornerY = Math.random() < 0.5 ? 0 : 1;
+        s.tx = MARGIN + cornerX * maxX * (0.7 + Math.random() * 0.3);
+        s.ty = MARGIN + cornerY * maxY * (0.7 + Math.random() * 0.3);
+        return;
+      }
       let best = null, bestD = -1;
       for (let i = 0; i < 24; i++) {
         const tx = MARGIN + Math.random() * maxX;
