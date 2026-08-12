@@ -76,6 +76,41 @@ TEXT_QUIZ_SETS = [
     ("MUSIC", "musicQ", "이 노래의 제목이나 가수는?", MUSIC_QUIZ),
 ]
 
+# Ranking candidates are references to seed data, never auto-increment IDs.
+# The two FOOD ambiguities are excluded; MOVIE's media-less Matrix row is not
+# among the selected candidates.
+RANKING_CANDIDATE_ITEMS = {
+    "GAME": GAME_QUIZ[:17], "DRAMA": DRAMA_QUIZ[:17], "MOVIE": MOVIE_QUIZ[:17],
+    "ANIME_COMIC": ANIME_QUIZ[:17], "STATIONERY_PLAY": PLAY_QUIZ[:17],
+    "MEME": MEME_QUIZ[:17], "MUSIC": MUSIC_QUIZ[:17],
+    "FOOD": [item for item in FOOD_QUIZ if item[0] not in {"꾀돌이(깐돌이,초코면,꺼벙이).png", "뽑기.jpeg"}][:17],
+}
+
+
+def seed_ranking_questions(db):
+    """Create only missing mapping rows; return missing Content identifiers."""
+    missing, created = [], 0
+    for code, items in RANKING_CANDIDATE_ITEMS.items():
+        category = db.query(models.Category).filter(models.Category.code == code).first()
+        for item in items:
+            folder = next(folder for category_code, folder, _question, _items in TEXT_QUIZ_SETS if category_code == code)
+            media_key = canonical_media_url(folder, item)
+            content = None if category is None else db.query(models.Content).filter(
+                models.Content.category_id == category.id,
+                models.Content.content_type == "TEXT_QUIZ",
+                models.Content.image_url == media_key,
+            ).first()
+            if content is None:
+                missing.append(f"{code}:{item[0]}")
+            elif not db.query(models.RankingQuestion.id).filter_by(content_id=content.id).first():
+                db.add(models.RankingQuestion(content_id=content.id, is_active=True))
+                created += 1
+    db.flush()
+    print(f"[ranking_questions] created={created}, expected=136, missing={len(missing)}")
+    if missing:
+        print("[ranking_questions] missing Content: " + ", ".join(missing))
+    return missing
+
 
 def resolve_media(folder: str, filename: str) -> str | None:
     """미디어 폴더에서 실제 파일명을 찾아 준다. 없으면 None.
@@ -98,6 +133,16 @@ def resolve_media(folder: str, filename: str) -> str | None:
     return None
 
 
+def canonical_media_url(folder: str, item) -> str | None:
+    """Return exactly the image_url representation used by Content seed."""
+    filename, _answer, *rest = item
+    youtube_id = rest[0].strip() if rest and rest[0] else None
+    if youtube_id:
+        return f"youtube:{youtube_id}"
+    actual = resolve_media(folder, filename)
+    return f"/media/{folder}/{actual}" if actual else None
+
+
 def seed(reset: bool = False):
     """seed 데이터 삽입.
 
@@ -116,12 +161,10 @@ def seed(reset: bool = False):
 
     db = SessionLocal()
     try:
-        if db.query(models.Category).count() > 0:
-            print("이미 seed 데이터가 존재합니다. 건너뜁니다. (다시 넣으려면 --reset)")
-            return
-
-        code_to_category = {}
+        code_to_category = {category.code: category for category in db.query(models.Category).all()}
         for code, name, color, icon, desc in CATEGORIES:
+            if code in code_to_category:
+                continue
             category = models.Category(
                 code=code, name=name, theme_color=color, icon=icon, description=desc
             )
@@ -181,6 +224,14 @@ def seed(reset: bool = False):
                         continue
                     media_url = f"/media/{folder}/{actual}"
 
+                existing = db.query(models.Content.id).filter(
+                    models.Content.category_id == code_to_category[code].id,
+                    models.Content.content_type == "TEXT_QUIZ",
+                    models.Content.image_url == media_url,
+                ).first()
+                if existing is not None:
+                    continue
+
                 content = models.Content(
                     category_id=code_to_category[code].id,
                     subcategory=None,
@@ -195,6 +246,9 @@ def seed(reset: bool = False):
                 text_count += 1
             missing_report.append((folder, made, len(items), missing))
 
+        # Make newly backfilled Content visible to the mapping query in this run.
+        db.flush()
+        seed_ranking_questions(db)
         db.commit()
         print(
             f"seed 완료: 카테고리 {len(CATEGORIES)}개, "

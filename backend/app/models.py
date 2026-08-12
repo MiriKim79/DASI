@@ -2,15 +2,18 @@
 
 Category (분야) 1 - N Content (콘텐츠) 1 - N ContentOption (선택지)
 """
-from datetime import datetime
+from datetime import date, datetime
 
 from sqlalchemy import (
     Boolean,
+    Date,
     DateTime,
     ForeignKey,
     Integer,
+    Float,
     String,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -99,3 +102,57 @@ class ContentOption(Base):
     is_correct: Mapped[bool] = mapped_column(Boolean, default=False)
 
     content: Mapped["Content"] = relationship(back_populates="options")
+
+
+class CoinTransaction(Base):
+    __tablename__ = "coin_transactions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    amount: Mapped[int] = mapped_column(Integer, nullable=False)
+    reason: Mapped[str] = mapped_column(String(50), nullable=False)
+    event_key: Mapped[str] = mapped_column(String(255), unique=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class RankingQuestion(Base):
+    __tablename__ = "ranking_questions"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    content_id: Mapped[int] = mapped_column(ForeignKey("contents.id"), unique=True, nullable=False, index=True)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+    content: Mapped["Content"] = relationship()
+
+
+class RankingChallenge(Base):
+    __tablename__ = "ranking_challenges"
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    started_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, nullable=False)
+    submitted_at: Mapped[datetime] = mapped_column(DateTime, nullable=True)
+    status: Mapped[str] = mapped_column(String(20), default="ACTIVE", nullable=False)
+    coin_cost: Mapped[int] = mapped_column(Integer, default=10, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+
+class RankingChallengeItem(Base):
+    __tablename__ = "ranking_challenge_items"
+    __table_args__ = (UniqueConstraint("challenge_id", "ranking_question_id"), UniqueConstraint("challenge_id", "position"))
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    challenge_id: Mapped[int] = mapped_column(ForeignKey("ranking_challenges.id"), nullable=False, index=True)
+    ranking_question_id: Mapped[int] = mapped_column(ForeignKey("ranking_questions.id"), nullable=False)
+    position: Mapped[int] = mapped_column(Integer, nullable=False)
+    ranking_question: Mapped["RankingQuestion"] = relationship()
+
+
+class RankingRecord(Base):
+    __tablename__ = "ranking_records"
+    __table_args__ = (UniqueConstraint("user_id", "official_date"),)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    challenge_id: Mapped[int] = mapped_column(ForeignKey("ranking_challenges.id"), unique=True, nullable=False)
+    correct_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    total_count: Mapped[int] = mapped_column(Integer, default=20, nullable=False)
+    accuracy: Mapped[float] = mapped_column(Float, nullable=False)
+    elapsed_seconds: Mapped[int] = mapped_column(Integer, nullable=False)
+    official_date: Mapped[date] = mapped_column(Date, nullable=False, index=True)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
