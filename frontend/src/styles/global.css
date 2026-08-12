@@ -84,6 +84,9 @@ button {
   color: var(--purple-deep);
   font-size: 21px;
   white-space: nowrap;
+  /* Galmuri11은 "다시"가 이 크기에서 "디시"처럼 오독돼서, 로고 워드마크만
+     다른 레트로 도트 폰트(DungGeunMo)를 쓴다. */
+  font-family: "DungGeunMo", monospace;
 }
 
 .topnav__logo::before {
@@ -494,11 +497,15 @@ button {
 .page--centered > .retro-window .retro-titlebar__title::after {
   content: "다시";
   color: #fffbed;
-  font-family: "Galmuri11Regular", monospace;
+  /* Galmuri11은 "다시"가 작게 표시되면 "디시"처럼 보여서, 로고 워드마크만 다른
+     레트로 도트 폰트(DungGeunMo)로 바꾼다. */
+  font-family: "DungGeunMo", "Galmuri11Regular", monospace;
   font-size: 18px;
   font-weight: normal;
   letter-spacing: 1px;
-  text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
+  /* 나이맞히기 시작화면과 동일한 그림자 값 — 다른 진한 그림자를 쓰면 색이
+     더 연하게/다르게 보인다. */
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .page--home > .retro-window .winbtn,
@@ -614,11 +621,15 @@ button {
 
 .retro-titlebar__title::after {
   content: "다시";
-  color: #fff;
+  color: #fffbed;
+  /* Galmuri11은 "다시"가 이 크기에서 "디시"처럼 오독돼서, 로고 워드마크만
+     다른 레트로 도트 폰트(DungGeunMo)를 쓴다. */
+  font-family: "DungGeunMo", monospace;
   font-weight: 800;
   font-size: 14px;
   letter-spacing: 0.5px;
-  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.12);
+  /* 나이맞히기 시작화면과 동일한 색/그림자로 통일 */
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .retro-titlebar__buttons {
