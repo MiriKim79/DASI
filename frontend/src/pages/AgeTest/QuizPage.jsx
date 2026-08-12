@@ -106,7 +106,7 @@ export default function QuizPage() {
       <MemoryBackdrop />
       <RetroWindow titleColor="transparent">
         <div className="age-quiz">
-          {currentIndex > 0 && (
+          {currentIndex > 0 ? (
             <button
               type="button"
               className="age-quiz__back"
@@ -114,6 +114,15 @@ export default function QuizPage() {
               disabled={selectedOptionId !== null}
             >
               ← 이전 질문
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="age-quiz__back"
+              onClick={() => navigate("/age-check")}
+              disabled={selectedOptionId !== null}
+            >
+              ← 처음으로
             </button>
           )}
 
