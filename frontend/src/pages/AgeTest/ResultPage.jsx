@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import { ageTestApi } from "../../api/ageTest.js";
-import { markAgeCheckDone } from "../../utils/ageCheckStatus.js";
+import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
 import "./AgeTest.css";
 
 // #8: 나이 맞히기 결과 화면. #3(QuizPage)이 navigate state로 넘겨준 답변을 받아
@@ -42,6 +42,8 @@ export default function ResultPage() {
         setStatus("ready");
         // 결과를 실제로 받았다 = 나이맞히기 완료 → 챗봇 진입 노출(#33).
         markAgeCheckDone();
+        // 이번 방문 세션에서는 "/" 진입 시 다시 나이맞히기로 튕기지 않게 한다.
+        markAgeCheckSessionDone();
       })
       .catch(() => {
         if (cancelled) return;
