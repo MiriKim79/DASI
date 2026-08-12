@@ -27,7 +27,8 @@
   --shadow: 0 3px 0 rgba(56, 40, 82, 0.13), 0 12px 28px rgba(85, 63, 116, 0.16);
   /* 상단바 높이 — 본문 세로 중앙 정렬(calc)에서 함께 참조한다 */
   --topnav-h: 60px;
-  --font: "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --font: "Galmuri11Regular", "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic",
+    sans-serif;
 }
 
 * {
