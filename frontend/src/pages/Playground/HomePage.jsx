@@ -2,12 +2,15 @@ import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import MoriWanderer from "../../components/MoriWanderer.jsx";
 import { useChatbot } from "../../components/Chatbot/ChatbotContext.jsx";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { isAgeCheckDone } from "../../utils/ageCheckStatus.js";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
 export default function HomePage() {
   const navigate = useNavigate();
   const { isOpen: chatOpen, open: openChatbot } = useChatbot();
+  // 로그인 여부 — 비로그인일 때만 코인 안내 배너를 띄운다.
+  const { isAuthenticated, isLoading } = useAuth();
   // 나이맞히기를 완료(또는 패스)하기 전에는 챗봇 진입을 보여주지 않는다(#33).
   const ageCheckDone = isAgeCheckDone();
   return (
@@ -17,6 +20,16 @@ export default function HomePage() {
       {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 잡아봐라 🐾" />}
 
       <RetroWindow titleColor="#9b7bd4">
+        {/* 비로그인 안내: 로그인하면 코인 지급 (로그인하면 사라짐) */}
+        {!isLoading && !isAuthenticated && (
+          <button
+            type="button"
+            className="login-reward-banner"
+            onClick={() => navigate("/login")}
+          >
+            🎁 로그인하면 <b>10코인</b>을 드려요!
+          </button>
+        )}
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
           오늘은 어떤 추억을 꺼내볼래?

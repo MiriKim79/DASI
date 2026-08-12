@@ -371,7 +371,8 @@ button {
    테두리, 크림 배경, "다시" 워드마크 타이틀바)으로 통일한다. 색/폰트 값은
    AgeTest.css(.age-start-page .retro-window 등)와 동일 — 그쪽만 바뀌어도 여기까지
    같이 바꿔야 계속 통일된 상태가 유지된다. */
-.page--home > .retro-window {
+.page--home > .retro-window,
+.page--centered > .retro-window {
   position: relative;
   z-index: 1;
   width: 100%;
@@ -384,12 +385,14 @@ button {
 }
 
 /* 창 내부도 넉넉하게 키운다 */
-.page--home > .retro-window .retro-window__body {
+.page--home > .retro-window .retro-window__body,
+.page--centered > .retro-window .retro-window__body {
   padding: 40px 40px 44px;
 }
 
 /* 타이틀바: 나이맞히기와 동일하게 모리 아이콘 + "다시" 워드마크(픽셀 폰트) */
-.page--home > .retro-window .retro-titlebar__title {
+.page--home > .retro-window .retro-titlebar__title,
+.page--centered > .retro-window .retro-titlebar__title {
   color: transparent;
   font-family: "Galmuri11Regular", monospace;
   font-size: 0;
@@ -399,7 +402,8 @@ button {
   gap: 8px;
 }
 
-.page--home > .retro-window .retro-titlebar__title::before {
+.page--home > .retro-window .retro-titlebar__title::before,
+.page--centered > .retro-window .retro-titlebar__title::before {
   content: "";
   width: 38px;
   height: 28px;
@@ -408,7 +412,8 @@ button {
   filter: drop-shadow(1px 1px 0 rgba(66, 42, 117, 0.35));
 }
 
-.page--home > .retro-window .retro-titlebar__title::after {
+.page--home > .retro-window .retro-titlebar__title::after,
+.page--centered > .retro-window .retro-titlebar__title::after {
   content: "다시";
   color: #fffbed;
   font-family: "Galmuri11Regular", monospace;
@@ -418,7 +423,8 @@ button {
   text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
 }
 
-.page--home > .retro-window .winbtn {
+.page--home > .retro-window .winbtn,
+.page--centered > .retro-window .winbtn {
   background: #fff9df;
   border: 2px solid #3c3745;
   color: #3c3745;
@@ -540,61 +546,6 @@ button {
 
 .retro-window__body {
   padding: 26px 22px 28px;
-}
-
-/* ---------- 나이맞히기와 동일한 창 디자인 (홈 · 추억놀이터 · 랭킹 · 피드백) ----------
-   AgeTest.css 의 .age-start-page 창 스타일을 그대로 가져와, 위 4개 화면의 가운데 창에만
-   적용한다. 분야 콘텐츠 화면(/play/:code, .content-page)은 분야별 테마를 쓰므로 제외한다. */
-.page--home > .retro-window,
-.page--centered > .retro-window {
-  background: #ebe7e9;
-  border-color: #5b4e83;
-  border-width: 3px;
-  border-radius: 14px;
-  box-shadow: 0 8px 0 rgba(70, 53, 105, 0.12), 0 18px 38px rgba(70, 53, 105, 0.2);
-}
-
-/* 타이틀바: 나이맞히기처럼 모리 아이콘 + 도트체 "다시" */
-.page--home .retro-titlebar__title,
-.page--centered .retro-titlebar__title {
-  color: transparent;
-  font-size: 0;
-  text-shadow: none;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.page--home .retro-titlebar__title::before,
-.page--centered .retro-titlebar__title::before {
-  content: "";
-  width: 38px;
-  height: 28px;
-  flex: 0 0 38px;
-  background: url("../pages/AgeTest/assets/mori-title.png") center / contain
-    no-repeat;
-  filter: drop-shadow(1px 1px 0 rgba(66, 42, 117, 0.35));
-}
-
-.page--home .retro-titlebar__title::after,
-.page--centered .retro-titlebar__title::after {
-  content: "다시";
-  color: #fffbed;
-  font-family: "Galmuri11Regular", monospace;
-  font-size: 18px;
-  font-weight: normal;
-  letter-spacing: 1px;
-  text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
-}
-
-/* 창 조절 버튼도 나이맞히기와 동일한 픽셀 톤 */
-.page--home .winbtn,
-.page--centered .winbtn {
-  background: #fff9df;
-  border: 2px solid #3c3745;
-  color: #3c3745;
-  border-radius: 4px;
-  box-shadow: 1px 1px 0 #4d4267;
 }
 
 /* ---------- 세대별 챗봇 · 우측 하단 도킹된 모리 + 말풍선 (#22) ---------- */
@@ -866,6 +817,33 @@ button {
   color: var(--muted);
   font-size: 13px;
   margin: 20px 0 0;
+}
+
+/* 비로그인 안내 배너 (홈 창 맨 위) — 로그인하면 사라진다 */
+.login-reward-banner {
+  display: block;
+  width: 100%;
+  margin: 0 0 18px;
+  padding: 11px 16px;
+  border: 2.5px dashed #b58a2e;
+  border-radius: 12px;
+  background: #fff5d6;
+  color: #7a5a12;
+  font-family: inherit;
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.12s ease, background-color 0.15s ease;
+}
+
+.login-reward-banner b {
+  color: #d17a00;
+}
+
+.login-reward-banner:hover {
+  transform: translateY(-1px);
+  background: #fff0c2;
 }
 
 /* 20문제 챌린지 진입 버튼 (놀이터 분야 그리드 아래) */
