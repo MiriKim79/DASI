@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
-import { markAgeCheckDone } from "../../utils/ageCheckStatus.js";
+import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
 import ageBotImage from "./assets/age-bot.png";
 import "./AgeTest.css";
 
@@ -50,6 +50,8 @@ export default function StartPage() {
                 onClick={() => {
                   // 패스도 완료로 취급해 챗봇 진입(#33)이 열리게 한다.
                   markAgeCheckDone();
+                  // 이번 방문 세션에서는 "/" 진입 시 다시 나이맞히기로 튕기지 않게 한다.
+                  markAgeCheckSessionDone();
                   navigate("/");
                 }}
               >
