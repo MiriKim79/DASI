@@ -1,0 +1,105 @@
+.ranking-page {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ranking-page .retro-window {
+  width: 100%;
+  max-width: 680px;
+}
+
+.ranking-page__content {
+  max-width: 580px;
+  margin: 0 auto;
+}
+
+.ranking-page__intro {
+  margin: -10px 0 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ranking-list__item {
+  display: grid;
+  grid-template-columns: 52px minmax(0, 1fr) 68px 58px 54px;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--lavender);
+  border-radius: 10px;
+  background: #f6f3fd;
+  padding: 13px 14px;
+  color: var(--ink);
+  font-size: 15px;
+}
+
+.ranking-list__rank {
+  color: var(--purple-deep);
+  font-weight: 800;
+}
+
+.ranking-list__nickname {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking-list__score,
+.ranking-list__accuracy,
+.ranking-list__time {
+  text-align: right;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.ranking-list__score b,
+.ranking-list__accuracy {
+  color: var(--ink);
+}
+
+@media (max-width: 560px) {
+  .ranking-page {
+    align-items: flex-start;
+    padding-top: 22px;
+  }
+
+  .ranking-list__item {
+    grid-template-columns: 48px minmax(0, 1fr) 58px;
+    gap: 8px;
+  }
+
+  .ranking-list__score {
+    text-align: right;
+  }
+
+  .ranking-list__accuracy,
+  .ranking-list__time {
+    grid-row: 2;
+    font-size: 13px;
+  }
+
+  .ranking-list__accuracy {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .ranking-list__time {
+    grid-column: 3;
+    text-align: right;
+  }
+}

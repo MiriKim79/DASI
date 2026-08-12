@@ -5,10 +5,26 @@ from sqlalchemy.orm import Session, joinedload
 from .. import models, schemas
 from ..coin_service import spend_coin
 from ..database import get_db
-from ..ranking_service import has_official_record_today, is_text_answer_correct, kst_today, select_challenge_questions, utcnow_naive
+from ..ranking_service import has_official_record_today, is_text_answer_correct, kst_today, select_challenge_questions, top_records_query, utcnow_naive
 from ..security import get_current_user
 
 router = APIRouter(prefix="/api/ranking", tags=["ranking"])
+
+
+@router.get("", response_model=list[schemas.RankingListItemOut])
+def get_ranking(db: Session = Depends(get_db)):
+    records = top_records_query(db).all()
+    return [
+        schemas.RankingListItemOut(
+            rank=rank,
+            nickname=nickname,
+            correct_count=record.correct_count,
+            total_count=record.total_count,
+            accuracy=record.accuracy,
+            elapsed_seconds=record.elapsed_seconds,
+        )
+        for rank, (record, nickname) in enumerate(records, start=1)
+    ]
 
 
 @router.post("/challenge", response_model=schemas.RankingChallengeOut)
