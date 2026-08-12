@@ -24,20 +24,28 @@
   --age-accent-deep: #5931a8;
 }
 
-/* 배경 모눈은 global.css(.page)가 그리는 걸 그대로 두고, 창만 화면 중앙에 더 크게 띄운다 */
+/* 배경은 메인화면과 통일한다(노란 그라데이션 + 떠다니는 추억 소품 MemoryBackdrop).
+   AgeTest 화면은 Layout(#15) 밖에서 단독으로 그려지므로 Layout.jsx의
+   .layout__main--bg와 같은 값을 여기서 직접 재현한다. */
 .age-start-page.page {
   min-height: calc(100vh - 4px);
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
+  background-color: #fff6d6;
+  background-image: linear-gradient(160deg, #fff9e3, #ffe7a6);
 }
 
-/* 창 자체를 참고 이미지 톤(더 진한 라벤더 테두리, 크림 배경, 타이틀바 투명)에 맞춘다 */
+/* 창 자체를 참고 이미지 톤(더 진한 라벤더 테두리, 크림 배경, 타이틀바 투명)에 맞춘다.
+   position/z-index는 위 MemoryBackdrop(추억 소품, z-index:0) 위로 창이 그려지게 하기 위함
+   (HomePage의 .page--home > .retro-window와 동일한 패턴). */
 .age-start-page .retro-window {
+  position: relative;
+  z-index: 1;
   max-width: 710px;
   width: 100%;
-  background: #ebe7e9;
+  background: var(--age-cream);
   border-color: #5b4e83;
   border-width: 3px;
   border-radius: 14px;

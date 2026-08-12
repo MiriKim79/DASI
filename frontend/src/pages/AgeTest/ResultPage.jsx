@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
 import { ageTestApi } from "../../api/ageTest.js";
 import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
 import "./AgeTest.css";
@@ -58,6 +59,7 @@ export default function ResultPage() {
   if (status === "loading") {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state">결과를 계산하는 중...</p>
         </RetroWindow>
@@ -68,6 +70,7 @@ export default function ResultPage() {
   if (status === "no-data") {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state">퀴즈를 먼저 풀어야 결과를 볼 수 있어요.</p>
           <div className="age-result__actions">
@@ -87,6 +90,7 @@ export default function ResultPage() {
   if (status === "error") {
     return (
       <div className="page age-start-page">
+        <MemoryBackdrop />
         <RetroWindow titleColor="transparent">
           <p className="age-quiz__state age-quiz__state--error">
             결과를 불러오지 못했어요. 잠시 후 다시 시도해주세요.
@@ -109,6 +113,7 @@ export default function ResultPage() {
 
   return (
     <div className="page age-start-page">
+      <MemoryBackdrop />
       <RetroWindow titleColor="transparent">
         <div className="age-result">
           <p className="age-result__badge">예상 나이</p>

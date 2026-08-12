@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
+import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
 import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
 import ageBotImage from "./assets/age-bot.png";
 import "./AgeTest.css";
@@ -11,6 +12,7 @@ export default function StartPage() {
 
   return (
     <div className="page age-start-page">
+      <MemoryBackdrop />
       <RetroWindow titleColor="#9b7bd4">
         <div className="age-start-grid">
           <div className="age-start__stage">
