@@ -28,6 +28,26 @@ class User(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
 
+class ChatMessage(Base):
+    """세대별 챗봇 대화 저장 — #31. 로그인 사용자의 메시지만 여기 남는다.
+
+    user 1개 메시지(role="user")와 그 응답(role="assistant")을 각각 한 행으로 저장한다.
+    """
+
+    __tablename__ = "chat_messages"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    generation: Mapped[str] = mapped_column(String(20), nullable=False)
+    role: Mapped[str] = mapped_column(String(20), nullable=False)  # "user" | "assistant"
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow, index=True)
+
+    user: Mapped["User"] = relationship()
+
+
 class Category(Base):
     __tablename__ = "categories"
 

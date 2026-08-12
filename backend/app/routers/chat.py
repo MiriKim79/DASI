@@ -7,11 +7,14 @@ OpenAI Responses API를 호출한다. 프론트는 API Key를 절대 모른다 �
 """
 import os
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from openai import OpenAI, OpenAIError
+from sqlalchemy.orm import Session
 
-from .. import schemas
+from .. import crud, models, schemas
+from ..database import get_db
 from ..personas import GENERATION_PROFILES, build_system_prompt
+from ..security import get_current_user_optional
 
 router = APIRouter(prefix="/api", tags=["chat"])
 
@@ -34,11 +37,17 @@ def list_generations():
 
 
 @router.post("/chat", response_model=schemas.ChatOut)
-def chat(payload: schemas.ChatIn):
+def chat(
+    payload: schemas.ChatIn,
+    db: Session = Depends(get_db),
+    current_user: models.User | None = Depends(get_current_user_optional),
+):
     """세대별 모리와 대화 — docs/FEATURES.md F3-2.
 
-    history는 F3-3 정책대로 클라이언트(비로그인) 또는 향후 DB(로그인, F4-2 연동 예정)에서
-    관리한 대화 목록을 그대로 받는다. 이 요청에서는 저장하지 않고 응답 생성에만 쓴다.
+    history는 F3-3 정책대로 클라이언트(비로그인) 또는 DB(로그인, #31)에서 관리한
+    대화 목록을 그대로 받는다 — 이 요청 자체는 응답 생성에만 쓴다.
+    로그인 사용자(Authorization: Bearer 토큰)면 이번 턴(질문+답변)을 DB에 남긴다(#31).
+    비로그인 사용자는 저장하지 않는다(프론트 state만 유지, 새로고침 시 사라짐).
     """
     if payload.generation not in GENERATION_PROFILES:
         raise HTTPException(status_code=400, detail="지원하지 않는 세대예요.")
@@ -60,6 +69,15 @@ def chat(payload: schemas.ChatIn):
         response = client.responses.create(model=CHAT_MODEL, input=input_messages)
     except OpenAIError as exc:
         raise HTTPException(status_code=502, detail=f"OpenAI 호출에 실패했어요: {exc}") from exc
+
+    if current_user is not None:
+        crud.save_chat_turn(
+            db,
+            user_id=current_user.id,
+            generation=payload.generation,
+            user_message=payload.message,
+            assistant_message=response.output_text,
+        )
 
     return schemas.ChatOut(
         generation=payload.generation,
