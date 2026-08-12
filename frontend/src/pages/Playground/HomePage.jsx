@@ -20,14 +20,14 @@ export default function HomePage() {
       {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 잡아봐라 🐾" />}
 
       <RetroWindow titleColor="#9b7bd4">
-        {/* 비로그인 안내: 로그인하면 코인 지급 (로그인하면 사라짐) */}
+        {/* 비로그인 안내: 회원가입하면 코인 지급 (로그인하면 사라짐) */}
         {!isLoading && !isAuthenticated && (
           <button
             type="button"
             className="login-reward-banner"
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/signup")}
           >
-            🎁 로그인하면 <b>10코인</b>을 드려요!
+            🎁 회원가입하면 <b>10코인</b>을 드려요!
           </button>
         )}
         <h1 className="window-heading">
