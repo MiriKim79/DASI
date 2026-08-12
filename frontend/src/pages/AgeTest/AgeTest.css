@@ -73,12 +73,15 @@
 
 .age-start-page .retro-titlebar__title::after {
   content: "다시";
-  color: #fffbed;
+  /* 퀴즈/결과 화면은 타이틀바가 transparent라 창 배경(크림톤)이 그대로 비친다.
+     예전 옅은 크림 글자(#fffbed)는 그 크림 배경 위에서 거의 안 보였어서 진한 톤으로 바꿈.
+     시작 화면(보라 타이틀바)에서도 대비가 충분해 두 화면 다 잘 보인다. */
+  color: #3c3745;
   font-family: "Galmuri11Regular", monospace;
   font-size: 18px;
   font-weight: normal;
   letter-spacing: 1px;
-  text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
+  text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .age-start-page .winbtn {

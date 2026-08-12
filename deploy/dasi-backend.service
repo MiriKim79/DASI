@@ -1,0 +1,27 @@
+# systemd 서비스 파일 — 백엔드(FastAPI/uvicorn)를 EC2에서 상시 실행/재시작되게 한다.
+#
+# 설치:
+#   sudo cp deploy/dasi-backend.service /etc/systemd/system/dasi-backend.service
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now dasi-backend
+#
+# 로그 확인: sudo journalctl -u dasi-backend -f
+# 재시작:   sudo systemctl restart dasi-backend
+#
+# 아래 경로(/home/ubuntu/DASI)와 User는 실제 서버 계정/경로에 맞게 수정할 것.
+
+[Unit]
+Description=DASI FastAPI backend
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/DASI/backend
+EnvironmentFile=/home/ubuntu/DASI/backend/.env
+ExecStart=/home/ubuntu/DASI/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+Restart=on-failure
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

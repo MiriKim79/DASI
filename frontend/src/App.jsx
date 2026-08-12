@@ -3,6 +3,7 @@ import Layout from "./components/Layout.jsx";
 import HomePage from "./pages/Playground/HomePage.jsx";
 import MemoryPlaygroundPage from "./pages/Playground/MemoryPlaygroundPage.jsx";
 import MemoryContentPage from "./pages/Playground/MemoryContentPage.jsx";
+import ChallengePage from "./pages/Playground/ChallengePage.jsx";
 import PlaceholderPage from "./pages/PlaceholderPage.jsx";
 import AgeTestStartPage from "./pages/AgeTest/StartPage.jsx";
 import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
@@ -39,6 +40,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<HomeGate />} />
           <Route path="/playground" element={<MemoryPlaygroundPage />} />
+          <Route path="/challenge" element={<ChallengePage />} />
           <Route path="/play/:code" element={<MemoryContentPage />} />
 
           {/* 타 팀원 담당 (라우트/사이드바 연결용 자리표시) */}
