@@ -2,11 +2,29 @@
 // 개발 시 vite proxy 를 통해 /api -> http://localhost:8000 로 전달된다.
 // 배포 시 VITE_API_BASE_URL로 백엔드 주소를 지정할 수 있다.
 const BASE = import.meta.env.VITE_API_BASE_URL || "";
+const ACCESS_TOKEN_KEY = "access_token";
 
-async function request(path, options) {
+export function getAccessToken() {
+  return localStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+export function setAccessToken(token) {
+  localStorage.setItem(ACCESS_TOKEN_KEY, token);
+}
+
+export function clearAccessToken() {
+  localStorage.removeItem(ACCESS_TOKEN_KEY);
+}
+
+async function request(path, options = {}) {
+  const token = getAccessToken();
   const res = await fetch(`${BASE}${path}`, {
-    headers: { "Content-Type": "application/json" },
     ...options,
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
   });
   if (!res.ok) {
     let detail = "요청에 실패했어요.";
@@ -22,6 +40,17 @@ async function request(path, options) {
 }
 
 export const api = {
+  signup: ({ email, password, nickname }) =>
+    request("/api/auth/signup", {
+      method: "POST",
+      body: JSON.stringify({ email, password, nickname }),
+    }),
+  login: ({ email, password }) =>
+    request("/api/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+  getMe: () => request("/api/me"),
   getCategories: () => request("/api/categories"),
   getCategory: (id) => request(`/api/categories/${id}`),
   getContents: (category, subcategory) => {

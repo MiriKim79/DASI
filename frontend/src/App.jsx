@@ -9,6 +9,8 @@ import AgeTestQuizPage from "./pages/AgeTest/QuizPage.jsx";
 import AgeTestResultPage from "./pages/AgeTest/ResultPage.jsx";
 import DockedMori from "./components/Chatbot/DockedMori.jsx";
 import { ChatbotProvider } from "./components/Chatbot/ChatbotContext.jsx";
+import SignupPage from "./pages/Auth/SignupPage.jsx";
+import LoginPage from "./pages/Auth/LoginPage.jsx";
 
 // 전체 앱 라우팅. 공통 Layout(사이드바+상단바) 아래에 각 화면이 들어간다.
 // 나이 맞히기 시작 화면(#1)은 #15 정책대로 Layout 밖(사이드바 없이) 단독으로 둔다.
@@ -38,10 +40,8 @@ export default function App() {
             path="/feedback"
             element={<PlaceholderPage title="피드백" note="피드백 담당 팀원이 구현할 화면이에요. ✉️" />}
           />
-          <Route
-            path="/login"
-            element={<PlaceholderPage title="로그인" note="회원/로그인 담당 팀원이 구현할 화면이에요. 🔒" />}
-          />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

@@ -1,8 +1,43 @@
 """Pydantic 스키마 (요청/응답 DTO)."""
 from datetime import datetime
-from typing import Optional
+from typing import Literal, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+
+# ---------- Auth / User ----------
+class SignupIn(BaseModel):
+    email: EmailStr
+    password: str = Field(min_length=8)
+    nickname: str = Field(min_length=1, max_length=50)
+
+    @field_validator("nickname")
+    @classmethod
+    def nickname_must_not_be_blank(cls, value: str) -> str:
+        nickname = value.strip()
+        if not nickname:
+            raise ValueError("닉네임을 입력해주세요.")
+        return nickname
+
+
+class UserOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    email: EmailStr
+    nickname: str
+    coin_balance: int
+    created_at: datetime
+
+
+class LoginIn(BaseModel):
+    email: EmailStr
+    password: str
+
+
+class TokenOut(BaseModel):
+    access_token: str
+    token_type: Literal["bearer"] = "bearer"
 
 
 # ---------- Category ----------
