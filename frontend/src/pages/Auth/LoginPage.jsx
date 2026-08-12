@@ -6,6 +6,7 @@ import {
   clearAccessToken,
   setAccessToken,
 } from "../../api/client.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import "./SignupPage.css";
 
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -28,6 +29,7 @@ function validateLogin({ email, password }) {
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { setAuthenticatedUser } = useAuth();
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState("");
@@ -68,6 +70,7 @@ export default function LoginPage() {
         throw new Error("현재 사용자 정보를 확인하지 못했습니다.");
       }
 
+      setAuthenticatedUser(currentUser);
       navigate("/");
     } catch (error) {
       if (tokenStored) {
