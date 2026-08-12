@@ -69,7 +69,7 @@ export default function HomePage() {
       </RetroWindow>
 
       <p className="page-footer">
-        2000~2010년대 우리의 추억을 소환하는 시간 여행! 💜
+        1990~2020년대 우리의 추억을 소환하는 시간 여행! 💜
       </p>
     </div>
   );
