@@ -4,7 +4,7 @@ export default function RetroWindow({ titleColor = "#C7B8E8", onClose, children 
   return (
     <div className="retro-window">
       <div className="retro-titlebar" style={{ backgroundColor: titleColor }}>
-        <span className="retro-titlebar__title">✨ DASI</span>
+        <span className="retro-titlebar__title">✨ 다시</span>
         <span className="retro-titlebar__buttons" aria-hidden={!onClose}>
           <span className="winbtn">–</span>
           <span className="winbtn">□</span>

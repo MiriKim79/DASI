@@ -1,0 +1,118 @@
+.signup-page {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.signup-page .retro-window {
+  width: 100%;
+  max-width: 460px;
+}
+
+.signup-page__content {
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.signup-page__intro {
+  margin: -10px 0 24px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.signup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.signup-form__field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.signup-form__field label {
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.signup-form__field input {
+  width: 100%;
+  border: 2px solid var(--win-border);
+  border-radius: 10px;
+  background: #fffbf0;
+  color: var(--ink);
+  font: inherit;
+  padding: 11px 12px;
+}
+
+.signup-form__field input:focus {
+  outline: 3px solid rgba(138, 121, 201, 0.2);
+  border-color: var(--purple-deep);
+}
+
+.signup-form__error {
+  margin: 0;
+  color: #c23a34;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.signup-form__error--submit {
+  padding: 10px 12px;
+  border: 1px solid #edb4b0;
+  border-radius: 10px;
+  background: #fff1ef;
+}
+
+.signup-form__submit {
+  border: 2px solid #4423b8;
+  border-radius: 999px;
+  background: var(--purple-deep);
+  color: #fff;
+  font: inherit;
+  font-weight: 800;
+  padding: 13px 18px;
+  box-shadow: 0 4px 0 #4423b8;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.signup-form__submit:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 #4423b8;
+}
+
+.signup-form__submit:disabled {
+  cursor: default;
+  opacity: 0.65;
+}
+
+.signup-page__success {
+  margin: 28px 0;
+  padding: 16px;
+  border: 2px solid #83d8bd;
+  border-radius: 12px;
+  background: #effcf6;
+  color: #227258;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.signup-page__login-link {
+  margin: 22px 0 0;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+}
+
+.signup-page__login-link a {
+  color: var(--purple-deep);
+  font-weight: 800;
+}

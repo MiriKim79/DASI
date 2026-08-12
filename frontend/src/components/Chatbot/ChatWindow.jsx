@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { chatApi } from "../../api/chat.js";
-import { getGenerationTheme } from "../../theme/generationTheme.js";
+import CharacterAvatar from "./CharacterAvatar.jsx";
 
 // 채팅 화면 — F3-2(채팅 API) + F3-3(대화 맥락) 중 비로그인 경로.
 // history는 이 컴포넌트(React state)가 들고 있다가 매 호출마다 함께 보낸다.
 // 로그인 사용자의 서버 저장(F3-3 로그인 분기)은 4번(F4-2 인증 의존성) 연동 이후 이어서 붙인다.
-export default function ChatWindow({ generation, onBack }) {
-  const theme = getGenerationTheme(generation.id);
+export default function ChatWindow({ generation, onBack, onOpenGagQuiz }) {
   const [history, setHistory] = useState([]); // [{ role, content }]
   const [input, setInput] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | error
@@ -40,25 +39,38 @@ export default function ChatWindow({ generation, onBack }) {
         <button className="chat-window__back" onClick={onBack} aria-label="세대 다시 선택">
           ‹
         </button>
-        <span className="chat-window__title">
-          {theme.icon} {generation.display_name} 모리
-        </span>
+        <CharacterAvatar generationId={generation.id} character={generation.character} size={28} />
+        <span className="chat-window__title">{generation.display_name} 모리</span>
       </div>
+
+      <button className="chat-window__gag-btn" onClick={onOpenGagQuiz}>
+        🔤 개그 퀴즈 풀어보기
+      </button>
 
       <div className="chat-window__messages">
         {history.length === 0 && (
           <p className="state-msg">{generation.display_name}의 모리에게 말을 걸어보세요!</p>
         )}
-        {history.map((m, i) => (
-          <div key={i} className={`chat-bubble chat-bubble--${m.role}`}>
-            {m.content}
-          </div>
-        ))}
+        {history.map((m, i) =>
+          m.role === "assistant" ? (
+            <div key={i} className="chat-row">
+              <CharacterAvatar generationId={generation.id} character={generation.character} size={26} />
+              <div className="chat-bubble chat-bubble--assistant">{m.content}</div>
+            </div>
+          ) : (
+            <div key={i} className="chat-bubble chat-bubble--user">
+              {m.content}
+            </div>
+          )
+        )}
         {status === "sending" && (
-          <div className="chat-bubble chat-bubble--assistant chat-bubble--typing">
-            <span className="typing-dot" />
-            <span className="typing-dot" />
-            <span className="typing-dot" />
+          <div className="chat-row">
+            <CharacterAvatar generationId={generation.id} character={generation.character} size={26} />
+            <div className="chat-bubble chat-bubble--assistant chat-bubble--typing">
+              <span className="typing-dot" />
+              <span className="typing-dot" />
+              <span className="typing-dot" />
+            </div>
           </div>
         )}
         {status === "error" && (

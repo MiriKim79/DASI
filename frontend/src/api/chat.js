@@ -29,4 +29,11 @@ export const chatApi = {
       method: "POST",
       body: JSON.stringify({ generation, message, history }),
     }),
+  // F3-4: 개그 콘텐츠 + 채점
+  getGagItems: () => request("/api/gag"),
+  answerGagItem: (itemId, answer) =>
+    request(`/api/gag/${itemId}/answer`, {
+      method: "POST",
+      body: JSON.stringify({ answer }),
+    }),
 };

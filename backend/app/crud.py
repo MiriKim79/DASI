@@ -7,6 +7,26 @@ from sqlalchemy.orm import Session, selectinload
 from . import models
 
 
+def get_user_by_email(db: Session, email: str) -> Optional[models.User]:
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+def create_user(
+    db: Session,
+    *,
+    email: str,
+    password_hash: str,
+    nickname: str,
+) -> models.User:
+    user = models.User(
+        email=email,
+        password_hash=password_hash,
+        nickname=nickname,
+    )
+    db.add(user)
+    return user
+
+
 def _random_order(db: Session):
     """DB 방언에 맞는 랜덤 정렬 함수 반환 (SQLite: random(), MySQL: rand())."""
     dialect = db.bind.dialect.name if db.bind is not None else "sqlite"

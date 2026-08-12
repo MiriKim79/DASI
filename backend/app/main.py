@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .database import Base, engine
-from .routers import age_test, categories, chat, contents, playground
+from .routers import age_test, auth, categories, chat, chat_gag, contents, playground
 
 # backend/ 디렉터리 (이미지 폴더 gameQ, foodQ 가 위치한 곳)
 BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -35,6 +35,9 @@ app.include_router(categories.router)
 app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
+app.include_router(auth.router)
+app.include_router(auth.user_router)
+app.include_router(chat_gag.router)
 
 # 퀴즈 사진·음성 정적 서빙: /media/gameQ/*, /media/dramaQ/*, /media/musicQ/* …
 # (분야를 추가하면 seed.py 의 TEXT_QUIZ_SETS 와 이 목록에 폴더 이름을 함께 넣어 준다)

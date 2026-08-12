@@ -4,7 +4,6 @@ import RetroWindow from "../../components/RetroWindow.jsx";
 import { ageTestApi } from "../../api/ageTest.js";
 import "./AgeTest.css";
 
-const TOTAL_QUESTIONS = 10;
 const SELECT_DELAY_MS = 220; // 선택 상태를 잠깐 보여준 뒤 다음 문항으로 넘어간다
 
 // #3: 나이 맞히기 퀴즈 진행 화면. #2의 GET /api/age-test/questions를 그대로 호출해서 쓴다.
@@ -71,6 +70,12 @@ export default function QuizPage() {
   const currentQuestion = questions[currentIndex];
   const progress = currentIndex + 1;
 
+  function handleBack() {
+    if (currentIndex === 0 || selectedOptionId !== null) return;
+    setCurrentIndex((i) => i - 1);
+    setAnswers((prev) => prev.slice(0, -1));
+  }
+
   function handleSelect(optionId) {
     if (selectedOptionId !== null) return; // 중복 클릭 방지
     setSelectedOptionId(optionId);
@@ -96,17 +101,31 @@ export default function QuizPage() {
     <div className="page age-start-page">
       <RetroWindow titleColor="transparent">
         <div className="age-quiz">
+          {currentIndex > 0 && (
+            <button
+              type="button"
+              className="age-quiz__back"
+              onClick={handleBack}
+              disabled={selectedOptionId !== null}
+            >
+              ← 이전 질문
+            </button>
+          )}
+
           <p className="age-quiz__progress">
-            {progress} / {TOTAL_QUESTIONS}
+            {progress} / {questions.length}
           </p>
           <div className="age-quiz__progress-bar">
             <div
               className="age-quiz__progress-fill"
-              style={{ width: `${(progress / TOTAL_QUESTIONS) * 100}%` }}
+              style={{ width: `${(progress / questions.length) * 100}%` }}
             />
           </div>
 
           <h2 className="age-quiz__question">{currentQuestion.text}</h2>
+          {currentQuestion.subtitle && (
+            <p className="age-quiz__subtitle">{currentQuestion.subtitle}</p>
+          )}
 
           <div className="age-quiz__options">
             {currentQuestion.options.map((option) => (
