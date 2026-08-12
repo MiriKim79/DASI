@@ -14,7 +14,7 @@ export default function HomePage() {
     <div className="page page--home">
       {/* 배경을 걸어다니는 마스코트 모리 — 클릭하면 우측 하단에 도킹되어 챗봇이 시작된다.
           도킹된 동안(chatOpen)에는 같은 모리가 두 마리로 보이지 않도록 wanderer는 숨긴다. */}
-      {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 만져봐 🐾" />}
+      {ageCheckDone && !chatOpen && <MoriWanderer onClick={openChatbot} hint="나 잡아봐라 🐾" />}
 
       <RetroWindow>
         <h1 className="window-heading">

@@ -238,7 +238,7 @@ button {
   cursor: pointer;
 }
 
-/* 클릭 전 안내 말풍선 ("나 만져봐") — 걷는 모리를 따라 함께 움직인다(부모 transform 상속) */
+/* 클릭 전 안내 말풍선 ("나 잡아봐라") — 걷는 모리를 따라 함께 움직인다(부모 transform 상속) */
 .mori-wanderer__hint {
   position: absolute;
   top: -10px;
