@@ -4,6 +4,7 @@ import re
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session, joinedload
 
 from . import models
@@ -60,9 +61,28 @@ def has_official_record_today(db: Session, user_id: int) -> bool:
 
 
 def top_records_query(db: Session, limit: int = 5):
+    record_order = (
+        models.RankingRecord.accuracy.desc(),
+        models.RankingRecord.correct_count.desc(),
+        models.RankingRecord.elapsed_seconds.asc(),
+        models.RankingRecord.created_at.asc(),
+        models.RankingRecord.id.asc(),
+    )
+    ranked_records = (
+        db.query(
+            models.RankingRecord.id.label("record_id"),
+            func.row_number()
+            .over(partition_by=models.RankingRecord.user_id, order_by=record_order)
+            .label("user_record_order"),
+        )
+        .subquery()
+    )
     return (
-        db.query(models.RankingRecord)
-        .order_by(models.RankingRecord.accuracy.desc(), models.RankingRecord.correct_count.desc(), models.RankingRecord.elapsed_seconds.asc(), models.RankingRecord.created_at.asc(), models.RankingRecord.id.asc())
+        db.query(models.RankingRecord, models.User.nickname)
+        .join(ranked_records, models.RankingRecord.id == ranked_records.c.record_id)
+        .join(models.User, models.User.id == models.RankingRecord.user_id)
+        .filter(ranked_records.c.user_record_order == 1)
+        .order_by(*record_order)
         .limit(limit)
     )
 

@@ -196,3 +196,12 @@ class RankingSubmitOut(BaseModel):
     accuracy: float
     elapsed_seconds: int
     official_recorded: bool
+
+
+class RankingListItemOut(BaseModel):
+    rank: int
+    nickname: str
+    correct_count: int
+    total_count: int
+    accuracy: float
+    elapsed_seconds: int

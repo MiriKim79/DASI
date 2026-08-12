@@ -12,6 +12,7 @@ import DockedMori from "./components/Chatbot/DockedMori.jsx";
 import { ChatbotProvider } from "./components/Chatbot/ChatbotContext.jsx";
 import SignupPage from "./pages/Auth/SignupPage.jsx";
 import LoginPage from "./pages/Auth/LoginPage.jsx";
+import RankingPage from "./pages/Ranking/RankingPage.jsx";
 import { isAgeCheckSessionDone } from "./utils/ageCheckStatus.js";
 
 // 전체 앱 라우팅. 공통 Layout(사이드바+상단바) 아래에 각 화면이 들어간다.
@@ -43,11 +44,7 @@ export default function App() {
           <Route path="/challenge" element={<ChallengePage />} />
           <Route path="/play/:code" element={<MemoryContentPage />} />
 
-          {/* 타 팀원 담당 (라우트/사이드바 연결용 자리표시) */}
-          <Route
-            path="/ranking"
-            element={<PlaceholderPage title="랭킹" note="랭킹 담당 팀원이 구현할 화면이에요. 🏆" />}
-          />
+          <Route path="/ranking" element={<RankingPage />} />
           <Route
             path="/feedback"
             element={<PlaceholderPage title="피드백" note="피드백 담당 팀원이 구현할 화면이에요. ✉️" />}
