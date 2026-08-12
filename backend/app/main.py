@@ -36,8 +36,19 @@ app.include_router(contents.router)
 app.include_router(playground.router)
 app.include_router(chat.router)
 
-# 퀴즈 이미지 정적 서빙: /media/gameQ/*, /media/foodQ/*
-for _folder in ("gameQ", "foodQ"):
+# 퀴즈 사진·음성 정적 서빙: /media/gameQ/*, /media/dramaQ/*, /media/musicQ/* …
+# (분야를 추가하면 seed.py 의 TEXT_QUIZ_SETS 와 이 목록에 폴더 이름을 함께 넣어 준다)
+MEDIA_FOLDERS = (
+    "gameQ",
+    "foodQ",
+    "dramaQ",
+    "movieQ",
+    "animeQ",
+    "playQ",
+    "memeQ",
+    "musicQ",
+)
+for _folder in MEDIA_FOLDERS:
     _path = os.path.join(BACKEND_DIR, _folder)
     if os.path.isdir(_path):
         app.mount(f"/media/{_folder}", StaticFiles(directory=_path), name=_folder)

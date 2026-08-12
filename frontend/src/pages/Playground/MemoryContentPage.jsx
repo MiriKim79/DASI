@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { api } from "../../api/client.js";
 import { getTheme } from "../../theme/categoryTheme.js";
@@ -45,6 +45,10 @@ export default function MemoryContentPage() {
   // 아재력 집계 + 결과 화면
   const [stats, setStats] = useState({ correct: 0, total: 0 });
   const [finalResult, setFinalResult] = useState(null);
+
+  // 편의: 입력창/다음버튼 포커스 제어
+  const inputRef = useRef(null);
+  const nextBtnRef = useRef(null);
 
   const category = useMemo(
     () => categories.find((c) => c.code === code),
@@ -106,6 +110,21 @@ export default function MemoryContentPage() {
   const isLast = index >= quiz.length - 1;
   const isTextQuiz = current && current.content_type === "TEXT_QUIZ";
   const answered = !!result || !!textResult;
+
+  // 새 텍스트 문제가 뜨면 입력창 자동 포커스 (마우스 클릭 불필요)
+  useEffect(() => {
+    if (current && isTextQuiz && !answered) {
+      inputRef.current?.focus();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [current, isTextQuiz, answered]);
+
+  // 답을 제출하면 '다음/결과' 버튼에 포커스 → Enter 한 번 더로 다음 문제
+  useEffect(() => {
+    if (answered) {
+      nextBtnRef.current?.focus();
+    }
+  }, [answered]);
 
   // ----- 객관식 답변 -----
   const handleAnswer = async (option) => {
@@ -288,6 +307,7 @@ export default function MemoryContentPage() {
             {isTextQuiz ? (
               <form className="text-answer" onSubmit={handleTextSubmit}>
                 <input
+                  ref={inputRef}
                   className="text-answer__input"
                   type="text"
                   value={textInput}
@@ -343,6 +363,7 @@ export default function MemoryContentPage() {
             <div className="content-actions">
               {answered && !isLast && (
                 <button
+                  ref={nextBtnRef}
                   className="primary-btn"
                   style={{ backgroundColor: theme.primaryColor }}
                   onClick={handleNext}
@@ -352,6 +373,7 @@ export default function MemoryContentPage() {
               )}
               {answered && isLast && (
                 <button
+                  ref={nextBtnRef}
                   className="primary-btn"
                   style={{ backgroundColor: theme.primaryColor }}
                   onClick={handleShowResult}

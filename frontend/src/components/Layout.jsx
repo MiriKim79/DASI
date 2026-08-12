@@ -1,6 +1,7 @@
 import { Outlet, useLocation } from "react-router-dom";
 import TopNav from "./TopNav.jsx";
 import MemoryBackdrop from "./MemoryBackdrop.jsx";
+import MoriWanderer from "./MoriWanderer.jsx";
 import { getTheme } from "../theme/categoryTheme.js";
 
 // 공통 레이아웃: 상단 네비게이션 바 + 본문.
@@ -11,6 +12,10 @@ export default function Layout() {
   // (분야 콘텐츠 /play/:code 는 자체 테마 배경이 있어 제외)
   const bgRoutes = ["/", "/age-check", "/playground", "/ranking", "/feedback"];
   const hasBg = bgRoutes.includes(location.pathname);
+
+  // 마스코트 모리가 돌아다니는 화면: 홈 · 추억놀이터 · 랭킹 · 피드백
+  const moriRoutes = ["/", "/playground", "/ranking", "/feedback"];
+  const showMori = moriRoutes.includes(location.pathname);
 
   // 분야 콘텐츠 화면(/play/:code)은 상단바까지 분야 테마 배경으로 채운다.
   const playMatch = location.pathname.match(/^\/play\/([^/]+)/);
@@ -35,6 +40,7 @@ export default function Layout() {
       >
         <main className="layout__content">
           <MemoryBackdrop />
+          {showMori && <MoriWanderer />}
           <Outlet />
         </main>
       </div>

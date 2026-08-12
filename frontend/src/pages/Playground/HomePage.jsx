@@ -1,15 +1,12 @@
 import { useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
-import MoriWanderer from "../../components/MoriWanderer.jsx";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
+// 마스코트 모리는 공통 Layout에서 렌더된다(홈·추억놀이터·랭킹·피드백).
 export default function HomePage() {
   const navigate = useNavigate();
   return (
     <div className="page page--home">
-      {/* 배경을 걸어다니는 마스코트 모리 */}
-      <MoriWanderer />
-
       <RetroWindow>
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
@@ -53,7 +50,7 @@ export default function HomePage() {
       </RetroWindow>
 
       <p className="page-footer">
-        2000~2010년대 우리의 추억을 소환하는 시간 여행! 💜
+        1990~2020년대 우리의 추억을 소환하는 시간 여행! 💜
       </p>
     </div>
   );
