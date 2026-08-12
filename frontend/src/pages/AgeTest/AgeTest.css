@@ -1,5 +1,12 @@
-/* 도트/픽셀 폰트 (둥근모꼴+Fixedsys, MIT, 90년대 PC통신에 쓰이던 고전 폰트) — 이 페이지의 큰 헤드라인 전용. 본문/버튼은 기존 폰트 유지. */
-@import "@noonnu/dung-geun-mo/index.css";
+/* 도트/픽셀 폰트 (Galmuri11 Bold, SIL OFL) — 이 페이지의 큰 헤드라인 전용. 본문/버튼은 기존 폰트 유지.
+   galmuri 패키지엔 폰트가 15개 넘게 들어있어서, 전체 CSS를 통째로 import하면 안 쓰는
+   폰트까지 빌드에 번들될 수 있다. 그래서 실제 쓰는 파일 하나만 직접 @font-face로 지정한다. */
+@font-face {
+  font-family: "Galmuri11Regular";
+  src: url("../../../node_modules/galmuri/dist/Galmuri11.woff2") format("woff2");
+  font-weight: normal;
+  font-style: normal;
+}
 
 /* 나이 맞히기(AgeTest) 전용 스타일.
    이 화면은 참고 디자인(스크린샷)의 창 색/2단 배치를 최대한 그대로 맞추기 위해
@@ -9,12 +16,12 @@
    그대로 재사용하고, 전역에 없는 진한 그림자 톤만 이 페이지에서 보충한다. */
 
 .age-start-page {
-  --age-cream: var(--cream);
-  --age-border: var(--win-border);
-  --age-ink: var(--ink);
-  --age-muted: var(--muted);
-  --age-accent: var(--purple-deep);
-  --age-accent-deep: #4423b8;
+  --age-cream: #fff9e9;
+  --age-border: #3c3745;
+  --age-ink: #17151b;
+  --age-muted: #37323d;
+  --age-accent: #a34ed0;
+  --age-accent-deep: #5931a8;
 }
 
 /* 배경 모눈은 global.css(.page)가 그리는 걸 그대로 두고, 창만 화면 중앙에 더 크게 띄운다 */
@@ -23,39 +30,66 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 40px 16px;
+  padding: 24px 16px;
 }
 
 /* 창 자체를 참고 이미지 톤(더 진한 라벤더 테두리, 크림 배경, 타이틀바 투명)에 맞춘다 */
 .age-start-page .retro-window {
-  max-width: 760px;
+  max-width: 710px;
   width: 100%;
-  background: var(--age-cream);
-  border-color: var(--age-border);
+  background: #ebe7e9;
+  border-color: #5b4e83;
   border-width: 3px;
+  border-radius: 14px;
+  box-shadow: 0 8px 0 rgba(70, 53, 105, 0.12), 0 18px 38px rgba(70, 53, 105, 0.2);
 }
 
 .age-start-page .retro-titlebar__title {
-  color: var(--age-accent-deep);
-  font-size: 16px;
+  color: transparent;
+  font-family: "Galmuri11Regular", monospace;
+  font-size: 0;
+  text-shadow: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.age-start-page .retro-titlebar__title::before {
+  content: "";
+  width: 38px;
+  height: 28px;
+  flex: 0 0 38px;
+  background: url("./assets/mori-title.png") center / contain no-repeat;
+  filter: drop-shadow(1px 1px 0 rgba(66, 42, 117, 0.35));
+}
+
+.age-start-page .retro-titlebar__title::after {
+  content: "다시";
+  color: #fffbed;
+  font-family: "Galmuri11Regular", monospace;
+  font-size: 18px;
+  font-weight: normal;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0 rgba(66, 42, 117, 0.45);
 }
 
 .age-start-page .winbtn {
-  background: transparent;
+  background: #fff9df;
   border: 2px solid var(--age-border);
   color: var(--age-border);
-  border-radius: 5px;
+  border-radius: 4px;
+  box-shadow: 1px 1px 0 #4d4267;
 }
 
 .age-start-page .retro-window__body {
-  padding: 42px 44px 46px;
+  padding: 46px 38px 42px;
 }
 
 /* ---------- 2단 배치: 왼쪽 캐릭터 / 오른쪽 카피+버튼 ---------- */
 .age-start-grid {
   display: grid;
-  grid-template-columns: 240px 1fr;
-  gap: 34px;
+  grid-template-columns: 230px 1fr;
+  gap: 38px;
   align-items: center;
 }
 
@@ -71,34 +105,37 @@
 .age-start__stage {
   position: relative;
   width: 100%;
-  max-width: 240px;
+  max-width: 260px;
   margin: 0 auto;
 }
 
 .age-start__bot {
-  width: 100%;
+  width: 122%;
+  max-width: none;
+  margin: -30px 0 -38px -16%;
   display: block;
+  filter: drop-shadow(0 7px 5px rgba(60, 55, 69, 0.16));
 }
 
 .age-start__bubble {
   position: absolute;
-  top: -8px;
-  right: 4px;
+  top: 8px;
+  right: -7px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #fff;
   border: 2.5px solid var(--age-border);
-  border-radius: 14px;
-  padding: 6px 9px;
-  box-shadow: 2px 3px 0 rgba(0, 0, 0, 0.06);
+  border-radius: 13px;
+  padding: 8px 11px;
+  box-shadow: 3px 3px 0 rgba(60, 55, 69, 0.14);
 }
 
 .age-start__cassette {
   position: absolute;
-  bottom: -14px;
-  left: -18px;
-  width: 88px;
+  bottom: -52px;
+  left: -8px;
+  width: 82px;
   transform: rotate(-10deg);
 }
 
@@ -108,15 +145,15 @@
 }
 
 .age-start__deco--envelope {
-  top: 30%;
-  right: -30px;
-  transform: rotate(8deg);
+  top: 8%;
+  left: 0;
+  transform: rotate(-18deg);
 }
 
 .age-start__deco--folder {
-  bottom: 4px;
-  right: -8px;
-  transform: rotate(-6deg);
+  bottom: -26px;
+  right: 12px;
+  transform: rotate(8deg);
 }
 
 @media (max-width: 520px) {
@@ -138,25 +175,29 @@
 }
 
 .age-start__headline {
-  font-family: "DungGeunMo", monospace;
+  font-family: "Galmuri11Regular", monospace;
   font-weight: normal;
-  font-size: 46px;
-  line-height: 1.5;
+  font-size: clamp(36px, 5vw, 48px);
+  line-height: 1.32;
   color: var(--age-ink);
-  margin: 0 0 18px;
-  letter-spacing: 0.5px;
+  margin: 0 0 22px;
+  letter-spacing: -1px;
+  text-shadow: 2px 2px 0 rgba(68, 60, 78, 0.14);
 }
 
 .age-start__accent {
   color: var(--age-accent);
+  -webkit-text-stroke: 1px #4f2869;
+  text-shadow: 2px 2px 0 #ead08f;
 }
 
 .age-start__subtext {
+  font-family: "Galmuri11Regular", monospace;
   color: var(--age-muted);
-  font-size: 16px;
+  font-size: 17px;
   font-weight: 600;
-  line-height: 1.65;
-  margin: 0 0 26px;
+  line-height: 1.7;
+  margin: 0 0 28px;
 }
 
 .age-start__actions {
@@ -166,37 +207,62 @@
 }
 
 .age-start__btn {
-  font-family: inherit;
+  font-family: "Galmuri11Regular", monospace;
   font-weight: 700;
   font-size: 17px;
   padding: 16px 22px;
-  border-radius: 999px;
+  border-radius: 5px;
   cursor: pointer;
-  border: 2px solid var(--age-ink);
+  border: 3px solid #352f3d;
+  letter-spacing: 0.5px;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 .age-start__btn--primary {
-  background: var(--age-accent);
-  color: #fff;
-  border-color: var(--age-accent-deep);
-  box-shadow: 0 4px 0 var(--age-accent-deep);
+  background: #76609a;
+  color: #fff9e8;
+  border-color: #392e4b;
+  box-shadow: inset 2px 2px 0 #a995c8, inset -2px -2px 0 #514069,
+    4px 4px 0 #30283b;
 }
 
 .age-start__btn--primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 0 var(--age-accent-deep);
+  transform: translate(-1px, -1px);
+  background: #8069a5;
+  box-shadow: inset 2px 2px 0 #b09bd0, inset -2px -2px 0 #514069,
+    5px 5px 0 #30283b;
 }
 
 .age-start__btn--ghost {
-  background: #fffbf0;
-  color: var(--age-ink);
-  box-shadow: 0 3px 0 var(--age-ink);
+  background: #ddd5c7;
+  color: #302b35;
+  border-color: #48404d;
+  box-shadow: inset 2px 2px 0 #f7f1e7, inset -2px -2px 0 #a69c8d,
+    4px 4px 0 #36303a;
+}
+
+@media (min-width: 521px) and (max-width: 620px) {
+  .age-start-page .retro-window__body {
+    padding: 34px 24px 38px;
+  }
+
+  .age-start-grid {
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+  }
 }
 
 .age-start__btn--ghost:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 5px 0 var(--age-ink);
+  transform: translate(-1px, -1px);
+  background: #e4ddd1;
+  box-shadow: inset 2px 2px 0 #fffaf0, inset -2px -2px 0 #a69c8d,
+    5px 5px 0 #36303a;
+}
+
+.age-start__btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: inset 2px 2px 0 rgba(48, 43, 53, 0.35),
+    inset -1px -1px 0 rgba(255, 255, 255, 0.25);
 }
 
 /* ---------- 퀴즈 진행 화면 (#3) ---------- */
