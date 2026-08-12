@@ -94,7 +94,7 @@ export default function TopNav() {
       ) : (
         <div className="topnav__guest">
           <span className="topnav__signup-hint">
-            회원가입하면 <b>10코인</b>을 드립니다
+            회원가입하면 <b>100코인</b>을 드립니다
           </span>
           <button className="login-btn" onClick={() => navigate("/login")}>
             🔒 로그인

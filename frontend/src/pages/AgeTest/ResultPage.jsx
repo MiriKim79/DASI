@@ -143,7 +143,7 @@ export default function ResultPage() {
 
           {!loggedIn && (
             <p className="age-result__login-hint">
-              회원가입하면 10코인을 드려요!
+              회원가입하면 100코인을 드려요!
               <button
                 type="button"
                 className="age-result__login-btn"
