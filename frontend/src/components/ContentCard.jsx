@@ -10,10 +10,13 @@ function isAudio(url) {
   return AUDIO_EXTS.some((ext) => path.endsWith(ext));
 }
 
-// image_url 이 "youtube:<영상ID>" 형식이면 유튜브 영상 ID를 돌려준다(아니면 null).
-function youtubeId(url) {
+// image_url 이 "youtube:<영상ID>" 또는 "youtube:<영상ID>:<시작초>" 형식이면
+// { id, start } 를 돌려준다(아니면 null). 시작초는 하이라이트(후렴) 지점 재생용.
+function parseYouTube(url) {
   if (!url || !url.startsWith("youtube:")) return null;
-  return url.slice("youtube:".length);
+  const [id, startStr] = url.slice("youtube:".length).split(":");
+  const start = startStr ? parseInt(startStr, 10) : 0;
+  return { id, start: Number.isFinite(start) && start > 0 ? start : 0 };
 }
 
 // 유튜브 IFrame Player API 스크립트를 (한 번만) 로드하고 준비되면 알려준다.
@@ -38,7 +41,7 @@ function loadYouTubeApi(onReady) {
 // 노래 듣고 맞히기: 유튜브 영상을 화면엔 완전히 감추고 소리만 재생.
 // 영상(제목·썸네일=정답)이 절대 보이지 않도록 불투명 버튼으로 완전히 덮는다.
 // 재생/정지는 IFrame Player API로 직접 제어 → 버튼 한 번 클릭으로 동작.
-function YouTubeAudio({ videoId }) {
+function YouTubeAudio({ videoId, start = 0 }) {
   const holderRef = useRef(null);
   const playerRef = useRef(null);
   const [ready, setReady] = useState(false);
@@ -53,7 +56,8 @@ function YouTubeAudio({ videoId }) {
       if (cancelled || !holderRef.current) return;
       playerRef.current = new window.YT.Player(holderRef.current, {
         videoId,
-        playerVars: { controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1 },
+        // start: 하이라이트(후렴) 지점부터 재생
+        playerVars: { controls: 0, disablekb: 1, modestbranding: 1, rel: 0, playsinline: 1, start },
         events: {
           onReady: () => {
             if (!cancelled) setReady(true);
@@ -78,7 +82,7 @@ function YouTubeAudio({ videoId }) {
         playerRef.current = null;
       }
     };
-  }, [videoId]);
+  }, [videoId, start]);
 
   const toggle = () => {
     const p = playerRef.current;
@@ -116,7 +120,7 @@ function YouTubeAudio({ videoId }) {
 
 export default function ContentCard({ content, theme }) {
   const audio = isAudio(content.image_url);
-  const ytId = youtubeId(content.image_url);
+  const yt = parseYouTube(content.image_url);
 
   return (
     <div className="content-card">
@@ -125,8 +129,8 @@ export default function ContentCard({ content, theme }) {
         style={{ backgroundColor: theme.accentColor }}
       >
         {content.image_url ? (
-          ytId ? (
-            <YouTubeAudio videoId={ytId} />
+          yt ? (
+            <YouTubeAudio videoId={yt.id} start={yt.start} />
           ) : audio ? (
             // 정답이 보이면 안 되므로 파일명은 노출하지 않는다.
             <div className="content-card__audio">
