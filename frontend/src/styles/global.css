@@ -599,6 +599,12 @@ button {
   position: relative;
   width: min(92vw, 400px);
   height: min(68vh, 540px);
+  min-width: 280px;
+  min-height: 320px;
+  max-width: 92vw;
+  max-height: 85vh;
+  /* 사용자가 우측 하단 모서리를 드래그해서 팝업 크기를 직접 조절할 수 있게 한다 */
+  resize: both;
   display: flex;
   flex-direction: column;
   overflow: hidden;
