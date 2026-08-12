@@ -43,8 +43,11 @@ export default function TopNav() {
         ))}
       </nav>
       {user ? (
-        <div>
-          <span>{user.nickname}</span>
+        <div className="topnav__user">
+          <span className="topnav__coin" title="보유 코인">
+            🪙 {user.coin_balance}
+          </span>
+          <span className="topnav__nickname">{user.nickname}</span>
           <button className="login-btn" onClick={handleLogout}>
             로그아웃
           </button>
