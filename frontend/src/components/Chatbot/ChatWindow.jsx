@@ -60,6 +60,16 @@ const GREETING_LINES = {
   ],
 };
 
+// 자유 대화(OpenAI 연동) 기능은 아직 붙이기 전이라, 실제 API를 호출하는 대신 안내 멘트만 보여준다.
+// 나중에 LLM 연동이 끝나면 이 값만 true로 바꾸면 된다(sendChatMessage 참고).
+const LLM_CHAT_ENABLED = false;
+const LLM_PENDING_LINES = {
+  default: [
+    "아직 이 기능(자유 대화)은 준비 중이야! 조금만 기다려줘 🙏 그동안 개그 퀴즈 풀어볼래?",
+    "미안, 아직 이 대화 기능은 연결이 안 됐어. 개그 퀴즈는 지금도 할 수 있어!",
+  ],
+};
+
 const START_LINES = ["자, 문제 하나 간다 😏", "좋아, 바로 시작해볼까?", "요것부터 한번 볼까?"];
 const NEXT_LINES = ["다음 문제 간다 😏", "자, 다음 문제!", "이어서 하나 더 볼까?"];
 const EXIT_LINES = ["그래, 원래 하던 얘기 계속할까?", "오케이, 퀴즈는 여기까지! 편하게 얘기하자."];
@@ -111,10 +121,19 @@ export default function ChatWindow({ generation, onBack }) {
   // 살짝 시간차를 두고 하나씩 나타나게 한다.
   const [botTyping, setBotTyping] = useState(false);
   const messagesEndRef = useRef(null);
+  const inputRef = useRef(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ block: "end" });
   }, [history, botTyping, status]);
+
+  // 개그 퀴즈 등 진행 중에도 매번 입력창을 다시 클릭하지 않고 바로 타이핑할 수 있게,
+  // 봇 응답이 끝날 때마다(그리고 퀴즈 버튼 클릭 등으로 포커스가 빠졌을 때) 입력창에 자동으로 포커스를 되돌려준다.
+  useEffect(() => {
+    if (status !== "sending" && !botTyping) {
+      inputRef.current?.focus();
+    }
+  }, [status, botTyping, quiz, history.length]);
 
   async function appendBot(text) {
     setBotTyping(true);
@@ -226,6 +245,13 @@ export default function ChatWindow({ generation, onBack }) {
   }
 
   async function sendChatMessage(text, nextHistory) {
+    // 아직 LLM(OpenAI) 연동 전이라, 실제 API를 호출하는 대신 안내 멘트만 보여준다.
+    // LLM_CHAT_ENABLED를 true로 바꾸면 원래대로 실제 채팅 API를 호출한다.
+    if (!LLM_CHAT_ENABLED) {
+      setHistory(nextHistory);
+      await appendBot(pickByGeneration(LLM_PENDING_LINES, generation.id));
+      return;
+    }
     setStatus("sending");
     try {
       const res = await chatApi.sendMessage({ generation: generation.id, message: text, history: history });
@@ -383,6 +409,7 @@ export default function ChatWindow({ generation, onBack }) {
 
       <div className="chat-window__input">
         <input
+          ref={inputRef}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => e.key === "Enter" && send()}
