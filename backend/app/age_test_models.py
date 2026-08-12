@@ -2,9 +2,10 @@
 
 Question 1 - N Option. 기존 database.py의 Base(공통 engine/session)를 그대로 재사용한다.
 """
+from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Float, ForeignKey, Integer, String, Text
+from sqlalchemy import DateTime, Float, ForeignKey, Integer, String, Text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from .database import Base
@@ -42,3 +43,15 @@ class Option(Base):
     representative_age: Mapped[int] = mapped_column(Integer, nullable=False)
 
     question: Mapped["Question"] = relationship(back_populates="options")
+
+
+class Result(Base):
+    """로그인 사용자의 나이맞히기 결과(#9). 서버가 #5에서 계산한 값만 저장한다 —
+    클라이언트가 값을 직접 보내 저장을 요청하는 경로는 없다(위변조 방지)."""
+
+    __tablename__ = "age_test_results"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False, index=True)
+    estimated_age: Mapped[int] = mapped_column(Integer, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
