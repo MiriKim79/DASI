@@ -960,6 +960,23 @@ button {
   font-size: 62px;
 }
 
+/* 음악 분야: 사진 대신 노래를 듣고 맞히는 플레이어 */
+.content-card__audio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  width: 100%;
+}
+
+.content-card__audio-icon {
+  font-size: 62px;
+}
+
+.content-card__audio audio {
+  width: min(100%, 320px);
+}
+
 .content-card__title {
   font-size: 17px;
   margin: 0 0 8px;

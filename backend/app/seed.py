@@ -6,10 +6,30 @@
 - 그 외 분야는 기존 객관식(QUIZ)/경험형(EXPERIENCE).
 - 이미 데이터가 있으면 중복 삽입하지 않는다. (다시 넣으려면 --reset)
 """
+import os
+
 from .database import Base, SessionLocal, engine
 from . import models
-from .quiz_data import GAME as GAME_QUIZ, FOOD as FOOD_QUIZ
+from .quiz_data import (
+    GAME as GAME_QUIZ,
+    FOOD as FOOD_QUIZ,
+    DRAMA as DRAMA_QUIZ,
+    MOVIE as MOVIE_QUIZ,
+    ANIME_COMIC as ANIME_QUIZ,
+    STATIONERY_PLAY as PLAY_QUIZ,
+    MEME as MEME_QUIZ,
+    MUSIC as MUSIC_QUIZ,
+)
 from .age_test_seed import seed_age_test
+
+# backend/ 디렉터리 (gameQ, foodQ … 미디어 폴더가 있는 곳)
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+# 사진/음성으로 인정하는 확장자 (앞에 있는 것부터 우선 사용)
+MEDIA_EXTS = (
+    ".jpg", ".jpeg", ".png", ".webp", ".gif",   # 사진
+    ".mp3", ".m4a", ".ogg", ".wav",             # 음성
+)
 
 # ---------------------------------------------------------------------------
 # 카테고리 정의: code -> (name, theme_color, icon, description)
@@ -26,137 +46,56 @@ CATEGORIES = [
 ]
 
 # ---------------------------------------------------------------------------
-# 객관식/경험형 콘텐츠 (게임·먹거리 제외 분야)
+# 객관식/경험형 콘텐츠 (현재는 사용 안 함 — 모든 분야를 사진·음성 퀴즈로 출제)
 # 각 항목: (category_code, subcategory, title, question, content_type, options)
 #   - options: [(text, is_correct), ...]  (EXPERIENCE 형은 정답 없이 경험 선택)
 # ---------------------------------------------------------------------------
 CONTENTS = [
-    # ---------------- 드라마 (DRAMA) ----------------
-    ("DRAMA", None, "겨울연가",
-     "'겨울연가'의 상징적인 아이템으로 기억나는 것은?", "EXPERIENCE",
-     [("폴라리스 목걸이", False), ("눈사람", False), ("남이섬 배경", False)]),
-    ("DRAMA", None, "대장금",
-     "'대장금'에서 장금이가 어린 시절 외치던 명대사는?", "QUIZ",
-     [("홍시 맛이 났는데…", True), ("맛있사옵니다", False), ("성은이 망극하옵니다", False)]),
-    ("DRAMA", None, "야인시대",
-     "'야인시대'에서 '4달러' 밈으로 유명한 인물은?", "QUIZ",
-     [("심영", True), ("김두한", False), ("구마적", False)]),
-    ("DRAMA", None, "커피프린스 1호점",
-     "'커피프린스 1호점'의 주요 배경 장소는?", "QUIZ",
-     [("커피 전문점", True), ("병원", False), ("방송국", False)]),
-    ("DRAMA", None, "주몽 본방사수",
-     "온 가족이 모여 '주몽'을 본방사수하던 기억, 어땠나요?", "EXPERIENCE",
-     [("매주 챙겨봤지", False), ("가끔 봤어", False), ("잘 몰라", False)]),
-
-    # ---------------- 영화 (MOVIE) ----------------
-    ("MOVIE", None, "엽기적인 그녀",
-     "'엽기적인 그녀'의 주연 배우는?", "QUIZ",
-     [("전지현", True), ("김태희", False), ("송혜교", False)]),
-    ("MOVIE", None, "친구 니가 가라",
-     "영화 '친구'의 명대사 '니가 가라 ○○○'?", "QUIZ",
-     [("하와이", True), ("부산", False), ("제주도", False)]),
-    ("MOVIE", None, "괴물",
-     "한강에 나타난 괴물을 다룬 봉준호 감독 영화는?", "QUIZ",
-     [("괴물", True), ("기생충", False), ("설국열차", False)]),
-    ("MOVIE", None, "태극기 휘날리며",
-     "'태극기 휘날리며'의 배경이 된 전쟁은?", "QUIZ",
-     [("6·25 전쟁", True), ("임진왜란", False), ("베트남전", False)]),
-    ("MOVIE", None, "왕의 남자",
-     "'왕의 남자'로 스타가 된 배우는?", "QUIZ",
-     [("이준기", True), ("강동원", False), ("원빈", False)]),
-    ("MOVIE", None, "극장 팝콘",
-     "친구들과 극장에서 영화 보던 기억이 있나요?", "EXPERIENCE",
-     [("자주 갔지", False), ("가끔", False), ("잘 안 갔어", False)]),
-
-    # ---------------- 애니·만화책 (ANIME_COMIC) ----------------
-    ("ANIME_COMIC", None, "포켓몬 1호",
-     "포켓몬 도감 1번 포켓몬은?", "QUIZ",
-     [("이상해씨", True), ("피카츄", False), ("파이리", False)]),
-    ("ANIME_COMIC", None, "짱구 별명",
-     "'짱구는 못말려'의 짱구가 좋아하는 것은?", "QUIZ",
-     [("액션가면·초코비", True), ("숙제", False), ("피망", False)]),
-    ("ANIME_COMIC", None, "명탐정 코난 명대사",
-     "명탐정 코난의 명대사는?", "QUIZ",
-     [("진실은 언제나 하나!", True), ("포기하면 편해", False), ("나는 신이다", False)]),
-    ("ANIME_COMIC", None, "마법천자문",
-     "한자를 배우며 봤던 학습만화 '마법천자문'의 주문은?", "QUIZ",
-     [("불 화(火)! 나와라~", True), ("아브라카다브라", False), ("얍!", False)]),
-    ("ANIME_COMIC", None, "코믹 메이플스토리",
-     "게임을 학습만화로 만든 시리즈는?", "QUIZ",
-     [("코믹 메이플스토리", True), ("Why 시리즈", False), ("먼나라 이웃나라", False)]),
-    ("ANIME_COMIC", None, "만화방 추억",
-     "만화방이나 대여점에서 만화책 빌려본 적 있나요?", "EXPERIENCE",
-     [("자주 빌렸어", False), ("가끔", False), ("잘 몰라", False)]),
-
-    # ---------------- 문방구·놀이 (STATIONERY_PLAY) ----------------
-    ("STATIONERY_PLAY", None, "딱지치기",
-     "상대 딱지를 뒤집으면 일어나는 일은?", "QUIZ",
-     [("그 딱지를 내가 가진다", True), ("한 판 진다", False), ("다시 접는다", False)]),
-    ("STATIONERY_PLAY", None, "공기놀이 마지막",
-     "공기놀이에서 마지막에 손등에 올렸다 잡는 단계는?", "QUIZ",
-     [("꺾기(년 따기)", True), ("한 알", False), ("두 알", False)]),
-    ("STATIONERY_PLAY", None, "팽이 배틀",
-     "탑블레이드로 유행했던 놀이는?", "QUIZ",
-     [("팽이 돌리기 대결", True), ("구슬치기", False), ("고무줄놀이", False)]),
-    ("STATIONERY_PLAY", None, "학교 앞 문방구",
-     "문방구 앞 뽑기·쫀드기 사 먹던 기억 있나요?", "EXPERIENCE",
-     [("매일 갔지", False), ("가끔", False), ("잘 몰라", False)]),
-    ("STATIONERY_PLAY", None, "오락기 100원",
-     "문방구 앞 오락기는 보통 한 판에 얼마였을까요?", "QUIZ",
-     [("100원", True), ("500원", False), ("1000원", False)]),
-    ("STATIONERY_PLAY", None, "구슬치기",
-     "구슬치기에서 상대 구슬을 맞히면?", "QUIZ",
-     [("그 구슬을 딴다", True), ("한 번 쉰다", False), ("무효", False)]),
-
-    # ---------------- 유행어·밈 (MEME) ----------------
-    ("MEME", None, "무한도전 유행어",
-     "무한도전에서 나온 '무한~○○'?", "QUIZ",
-     [("무한이기주의", False), ("무야호", True), ("무한긍정", False)]),
-    ("MEME", None, "1등만 기억하는",
-     "개그콘서트 유행어 '1등만 기억하는 ○○○ 세상'?", "QUIZ",
-     [("더러운", True), ("아름다운", False), ("행복한", False)]),
-    ("MEME", None, "부장님 개그",
-     "'~하지 말입니다'가 유행한 드라마는?", "QUIZ",
-     [("태양의 후예", True), ("도깨비", False), ("응답하라 1988", False)]),
-    ("MEME", None, "즐 채팅",
-     "옛날 온라인 게임 채팅에서 '즐'의 뜻은?", "QUIZ",
-     [("비꼬는 인사(꺼져)", True), ("즐겁다", False), ("고맙다", False)]),
-    ("MEME", None, "레알",
-     "'진짜'를 뜻하던 2000년대 인터넷 유행어는?", "QUIZ",
-     [("레알", True), ("가즈아", False), ("실화냐", False)]),
-    ("MEME", None, "당시 유행어",
-     "친구들과 유행어 따라 하던 기억 있나요?", "EXPERIENCE",
-     [("엄청 따라 했지", False), ("가끔", False), ("잘 몰라", False)]),
-
-    # ---------------- 음악 (MUSIC) ----------------
-    ("MUSIC", None, "싸이월드 BGM",
-     "미니홈피에서 노래 들으려면 사야 했던 것은?", "QUIZ",
-     [("도토리", True), ("코인", False), ("포인트", False)]),
-    ("MUSIC", None, "MP3 플레이어",
-     "CD 없이 파일로 음악 듣던 휴대 기기는?", "QUIZ",
-     [("MP3 플레이어(아이리버 등)", True), ("워크맨", False), ("라디오", False)]),
-    ("MUSIC", None, "컬러링",
-     "전화 걸면 상대에게 들리던 음악 서비스는?", "QUIZ",
-     [("컬러링", True), ("벨소리", False), ("문자", False)]),
-    ("MUSIC", None, "노래방 점수",
-     "노래방에서 100점 나오면 어땠나요?", "EXPERIENCE",
-     [("환호했지", False), ("가끔 나왔어", False), ("잘 몰라", False)]),
-    ("MUSIC", None, "카세트 테이프",
-     "테이프 늘어지면 무엇으로 감았을까요?", "QUIZ",
-     [("볼펜(연필)", True), ("가위", False), ("자석", False)]),
-    ("MUSIC", None, "CD 플레이어",
-     "CD로 음악 듣던 휴대용 기기는?", "QUIZ",
-     [("CDP(씨디플레이어)", True), ("턴테이블", False), ("스피커", False)]),
+    # 6개 분야(드라마·영화·애니만화·문방구놀이·유행어밈·음악)는
+    # 사진·음성 맞히기(TEXT_QUIZ)로만 출제한다. → quiz_data.py 참조.
+    # 객관식/경험형 문제가 다시 필요하면 여기에 항목을 추가하면 된다.
 ]
 
 # ---------------------------------------------------------------------------
-# 사진 텍스트 퀴즈 (게임/먹거리)
-#   category_code -> (media 폴더, 질문 문구, quiz_data 목록)
+# 사진·음성 텍스트 퀴즈 (8개 분야 전체)
+#   (category_code, media 폴더, 질문 문구, quiz_data 목록)
+#
+# quiz_data 의 파일명은 확장자를 적어도 되고 안 적어도 된다.
+#   "겨울연가"      → dramaQ 폴더에서 겨울연가.jpg / .png / … 를 자동으로 찾는다
+#   "gta5.png"      → 그 파일을 그대로 쓴다
+# 폴더에 파일이 아직 없으면 그 문제는 seed 하지 않고 건너뛴다.
 # ---------------------------------------------------------------------------
 TEXT_QUIZ_SETS = [
     ("GAME", "gameQ", "이 게임의 이름은?", GAME_QUIZ),
     ("FOOD", "foodQ", "이 추억의 불량식품(간식) 이름은?", FOOD_QUIZ),
+    ("DRAMA", "dramaQ", "이 드라마의 제목은?", DRAMA_QUIZ),
+    ("MOVIE", "movieQ", "이 영화의 제목은?", MOVIE_QUIZ),
+    ("ANIME_COMIC", "animeQ", "이 만화·애니메이션의 제목은?", ANIME_QUIZ),
+    ("STATIONERY_PLAY", "playQ", "이 문방구 물건(또는 놀이)의 이름은?", PLAY_QUIZ),
+    ("MEME", "memeQ", "이 장면에서 유행한 그 시절 유행어는?", MEME_QUIZ),
+    ("MUSIC", "musicQ", "이 노래의 제목이나 가수는?", MUSIC_QUIZ),
 ]
+
+
+def resolve_media(folder: str, filename: str) -> str | None:
+    """미디어 폴더에서 실제 파일명을 찾아 준다. 없으면 None.
+
+    - filename 에 확장자가 있으면 그 파일이 있는지만 확인한다.
+    - 확장자가 없으면 MEDIA_EXTS 를 차례로 붙여 보며 찾는다.
+      (덕분에 .jpg 로 넣든 .png 로 넣든 그대로 인식된다)
+    """
+    folder_path = os.path.join(BACKEND_DIR, folder)
+    if not os.path.isdir(folder_path):
+        return None
+
+    if os.path.splitext(filename)[1].lower() in MEDIA_EXTS:
+        return filename if os.path.isfile(os.path.join(folder_path, filename)) else None
+
+    for ext in MEDIA_EXTS:
+        candidate = filename + ext
+        if os.path.isfile(os.path.join(folder_path, candidate)):
+            return candidate
+    return None
 
 
 def seed(reset: bool = False):
@@ -213,12 +152,21 @@ def seed(reset: bool = False):
                 )
             mc_count += 1
 
-        # 2) 사진 텍스트 퀴즈 (정답이 채워진 항목만 생성)
+        # 2) 사진·음성 텍스트 퀴즈
+        #    정답이 채워져 있고 + 실제 파일이 폴더에 있는 항목만 문제로 만든다.
         text_count = 0
         skipped = 0
+        missing_report = []
         for code, folder, question, items in TEXT_QUIZ_SETS:
+            made = 0
+            missing = []
             for filename, answer in items:
                 if not answer or not answer.strip():
+                    skipped += 1
+                    continue
+                actual = resolve_media(folder, filename)
+                if actual is None:
+                    missing.append(filename)
                     skipped += 1
                     continue
                 content = models.Content(
@@ -226,19 +174,30 @@ def seed(reset: bool = False):
                     subcategory=None,
                     title="",  # 정답 노출 방지 (제목 비움)
                     question=question,
-                    image_url=f"/media/{folder}/{filename}",
+                    image_url=f"/media/{folder}/{actual}",
                     content_type="TEXT_QUIZ",
                     answer=answer.strip(),
                 )
                 db.add(content)
+                made += 1
                 text_count += 1
+            missing_report.append((folder, made, len(items), missing))
 
         db.commit()
         print(
             f"seed 완료: 카테고리 {len(CATEGORIES)}개, "
-            f"객관식/경험형 {mc_count}개, 사진퀴즈 {text_count}개 "
-            f"(정답 미입력 {skipped}개는 건너뜀)."
+            f"객관식/경험형 {mc_count}개, 사진·음성 퀴즈 {text_count}개 "
+            f"(정답 미입력 또는 파일 없음 {skipped}개는 건너뜀)."
         )
+        print("\n[분야별 사진·음성 파일 현황]")
+        for folder, made, total, missing in missing_report:
+            print(f"  {folder:<8} {made:>3}/{total} 준비됨", end="")
+            if missing:
+                preview = ", ".join(missing[:5])
+                more = f" 외 {len(missing) - 5}개" if len(missing) > 5 else ""
+                print(f"  ← 파일 없음: {preview}{more}")
+            else:
+                print()
     finally:
         db.close()
 
