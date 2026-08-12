@@ -203,6 +203,7 @@ def seed(reset: bool = False):
         missing_report = []
         for code, folder, question, items in TEXT_QUIZ_SETS:
             made = 0
+            already = 0  # 이번 실행 전에 이미 DB에 있던 개수(재실행 시 "0개 추가"만 보고 "없다"고 착각하지 않도록 별도 집계)
             missing = []
             for item in items:
                 # (파일명, 정답)
@@ -237,6 +238,7 @@ def seed(reset: bool = False):
                     models.Content.image_url == media_url,
                 ).first()
                 if existing is not None:
+                    already += 1
                     continue
 
                 content = models.Content(
@@ -251,7 +253,7 @@ def seed(reset: bool = False):
                 db.add(content)
                 made += 1
                 text_count += 1
-            missing_report.append((folder, made, len(items), missing))
+            missing_report.append((folder, made, already, len(items), missing))
 
         # Make newly backfilled Content visible to the mapping query in this run.
         db.flush()
@@ -262,9 +264,10 @@ def seed(reset: bool = False):
             f"객관식/경험형 {mc_count}개, 사진·음성 퀴즈 {text_count}개 "
             f"(정답 미입력 또는 파일 없음 {skipped}개는 건너뜀)."
         )
-        print("\n[분야별 사진·음성 파일 현황]")
-        for folder, made, total, missing in missing_report:
-            print(f"  {folder:<8} {made:>3}/{total} 준비됨", end="")
+        print("\n[분야별 사진·음성 파일 현황] (실제 DB 총 개수 = 이번에 새로 추가 + 이미 있던 것)")
+        for folder, made, already, total, missing in missing_report:
+            ready = made + already
+            print(f"  {folder:<8} {ready:>3}/{total} 준비됨 (신규 {made}, 기존 {already})", end="")
             if missing:
                 preview = ", ".join(missing[:5])
                 more = f" 외 {len(missing) - 5}개" if len(missing) > 5 else ""
