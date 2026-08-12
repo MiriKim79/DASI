@@ -66,9 +66,6 @@ export const api = {
     return request(`/api/contents/random?${params.toString()}`);
   },
   getContent: (id) => request(`/api/contents/${id}`),
-  // 랭킹용 통합 도전: 8개 분야에서 섞은 20문제 (정답 미포함)
-  getChallenge: (count = 20) =>
-    request(`/api/contents/challenge?count=${count}`),
   answer: (contentId, optionId) =>
     request(`/api/contents/${contentId}/answer`, {
       method: "POST",
@@ -84,4 +81,14 @@ export const api = {
       method: "POST",
       body: JSON.stringify({ correct, total, category }),
     }),
+  // 랭킹(4번 담당) — 8개 분야에서 섞은 20문제(전부 TEXT_QUIZ)로 통합 도전, 정답률 기준.
+  // 코인 10개를 먼저 차감하고 challenge_id를 내려주며, 20문제를 다 푼 뒤 한 번에 제출한다
+  // (문항별 즉시 채점 없음 — 서버가 submit 시점에 한꺼번에 채점).
+  startRankingChallenge: () => request("/api/ranking/challenge", { method: "POST" }),
+  submitRankingChallenge: (challengeId, answers) =>
+    request("/api/ranking/challenge/submit", {
+      method: "POST",
+      body: JSON.stringify({ challenge_id: challengeId, answers }),
+    }),
+  getRankingList: () => request("/api/ranking"),
 };
