@@ -1,0 +1,120 @@
+.feedback-page {
+  min-height: calc(100vh - 60px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.feedback-page .retro-window {
+  width: 100%;
+  max-width: 680px;
+}
+
+.feedback-page__content {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.feedback-page__intro {
+  margin: -10px 0 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.feedback-page__login-required {
+  text-align: center;
+}
+
+.feedback-page__login-btn,
+.feedback-form__submit {
+  border: 2px solid #392e4b;
+  border-radius: 10px;
+  background: #76609a;
+  color: #fff9e8;
+  padding: 12px 20px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #30283b;
+}
+
+.feedback-page__login-btn:hover,
+.feedback-form__submit:hover:not(:disabled) {
+  background: #8069a5;
+}
+
+.feedback-form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.feedback-form__label {
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.feedback-form__textarea {
+  min-height: 150px;
+  resize: vertical;
+  border: 2px solid var(--lavender);
+  border-radius: 12px;
+  padding: 14px;
+  color: var(--ink);
+  background: #fffdf6;
+  font-family: inherit;
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.feedback-form__textarea:focus {
+  outline: none;
+  border-color: var(--purple-deep);
+}
+
+.feedback-form__textarea:disabled,
+.feedback-form__submit:disabled {
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.feedback-form__meta {
+  color: var(--muted);
+  text-align: right;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.feedback-form__message {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.feedback-form__message--error {
+  color: #c23a34;
+}
+
+.feedback-form__message--success {
+  color: #1f8a4c;
+}
+
+.feedback-form__submit {
+  align-self: flex-end;
+}
+
+@media (max-width: 560px) {
+  .feedback-page {
+    align-items: flex-start;
+    padding-top: 22px;
+  }
+
+  .feedback-form__submit,
+  .feedback-page__login-btn {
+    width: 100%;
+  }
+}

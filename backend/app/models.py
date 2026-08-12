@@ -51,6 +51,21 @@ class ChatMessage(Base):
     user: Mapped["User"] = relationship()
 
 
+class Feedback(Base):
+    """로그인 사용자가 작성한 서비스 피드백."""
+
+    __tablename__ = "feedbacks"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    content: Mapped[str] = mapped_column(Text, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    user: Mapped["User"] = relationship()
+
+
 class Category(Base):
     __tablename__ = "categories"
 

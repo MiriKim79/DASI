@@ -40,6 +40,31 @@ class TokenOut(BaseModel):
     token_type: Literal["bearer"] = "bearer"
 
 
+# ---------- Feedback ----------
+class FeedbackCreateIn(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    content: str
+
+    @field_validator("content")
+    @classmethod
+    def content_must_be_valid(cls, value: str) -> str:
+        content = value.strip()
+        if not content:
+            raise ValueError("피드백 내용을 입력해주세요.")
+        if len(content) > 500:
+            raise ValueError("피드백은 최대 500자까지 입력할 수 있습니다.")
+        return content
+
+
+class FeedbackOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    content: str
+    created_at: datetime
+
+
 # ---------- Category ----------
 class CategoryOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
