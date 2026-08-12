@@ -44,6 +44,16 @@ def random_content(
     return content
 
 
+@router.get("/challenge", response_model=list[schemas.ContentOut])
+def challenge_contents(
+    count: int = Query(20, ge=1, le=40, description="출제할 문제 수"),
+    per_category: int = Query(2, ge=1, le=5, description="분야당 최소 문항 수"),
+    db: Session = Depends(get_db),
+):
+    """랭킹용 통합 도전 문제: 8개 분야에서 섞어 count개 출제(정답 미포함)."""
+    return crud.get_challenge_contents(db, per_category=per_category, total=count)
+
+
 @router.get("/{content_id}", response_model=schemas.ContentOut)
 def get_content(content_id: int, db: Session = Depends(get_db)):
     """특정 콘텐츠 조회."""
