@@ -77,8 +77,8 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="page signup-page">
-      <RetroWindow>
+    <div className="page page--centered signup-page">
+      <RetroWindow titleColor="#9b7bd4">
         <section className="signup-page__content" aria-labelledby="signup-title">
           <h1 id="signup-title" className="window-heading">
             <span className="sparkle">✨</span>

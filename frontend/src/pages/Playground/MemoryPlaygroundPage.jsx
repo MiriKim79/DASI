@@ -35,7 +35,7 @@ export default function MemoryPlaygroundPage() {
 
   return (
     <div className="page page--centered">
-      <RetroWindow>
+      <RetroWindow titleColor="#9b7bd4">
         <h1 className="window-heading">
           <span className="sparkle">✨</span>
           어떤 분야의 추억을 꺼내볼까?
@@ -62,9 +62,6 @@ export default function MemoryPlaygroundPage() {
             >
               🏆 20문제 챌린지 도전하고 랭킹 등록하기
             </button>
-            <p className="window-note">
-              ※ 모든 분야의 레이아웃은 동일하며, 색상과 소품만 변경됩니다.
-            </p>
           </>
         )}
       </RetroWindow>

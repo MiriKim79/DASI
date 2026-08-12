@@ -78,7 +78,9 @@
      예전 옅은 크림 글자(#fffbed)는 그 크림 배경 위에서 거의 안 보였어서 진한 톤으로 바꿈.
      시작 화면(보라 타이틀바)에서도 대비가 충분해 두 화면 다 잘 보인다. */
   color: #fffbed;
-  font-family: "Galmuri11Regular", monospace;
+  /* Galmuri11은 "다시"가 작은 크기에서 "디시"처럼 오독될 수 있어, 로고 워드마크만
+     같은 레트로 도트 계열인 DungGeunMo(이미 챗봇에서 쓰는 폰트)로 바꿔 대체한다. */
+  font-family: "DungGeunMo", "Galmuri11Regular", monospace;
   font-size: 18px;
   font-weight: normal;
   letter-spacing: 1px;

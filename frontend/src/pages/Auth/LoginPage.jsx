@@ -91,10 +91,10 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="page signup-page">
+    <div className="page page--centered signup-page">
       <div className="login-page__hero">
         <img className="login-page__mori" src={moriTitleImage} alt="" aria-hidden="true" />
-        <RetroWindow>
+        <RetroWindow titleColor="#9b7bd4">
         <section className="signup-page__content" aria-labelledby="login-title">
           <h1 id="login-title" className="window-heading">
             <span className="sparkle">✨</span>
