@@ -165,6 +165,48 @@ button {
   color: var(--ink);
 }
 
+.topnav__charge {
+  flex: 0 0 auto;
+  border: 2px solid var(--lavender);
+  background: var(--cream);
+  color: var(--purple-deep);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.topnav__charge:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+/* 상단바 비로그인 상태 — 가입 유도 문구 + 로그인 버튼 */
+.topnav__guest {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.topnav__signup-hint {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--purple-deep);
+}
+
+.topnav__signup-hint b {
+  color: var(--pink-hot, #e2506b);
+}
+
+@media (max-width: 720px) {
+  /* 좁은 화면에서는 가입 유도 문구를 숨겨 상단바가 넘치지 않게 한다 */
+  .topnav__signup-hint {
+    display: none;
+  }
+}
+
 .layout__main {
   flex: 1 1 auto;
   min-width: 0;

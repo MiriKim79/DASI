@@ -39,6 +39,18 @@ export function AuthProvider({ children }) {
       isLoading,
       isAuthenticated: user !== null,
       setAuthenticatedUser: setUser,
+      // 코인 잔액 등 서버 상태가 바뀐 뒤 상단바를 갱신할 때 호출한다.
+      // 로그인 상태가 아니면 아무것도 하지 않는다.
+      refreshUser: async () => {
+        if (!getAccessToken()) return null;
+        try {
+          const currentUser = await api.getMe();
+          setUser(currentUser);
+          return currentUser;
+        } catch {
+          return null;
+        }
+      },
       logout: () => {
         clearAccessToken();
         setUser(null);

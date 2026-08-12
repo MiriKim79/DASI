@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import RetroWindow from "../../components/RetroWindow.jsx";
 import MemoryBackdrop from "../../components/MemoryBackdrop.jsx";
 import { ageTestApi } from "../../api/ageTest.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 import { markAgeCheckDone, markAgeCheckSessionDone } from "../../utils/ageCheckStatus.js";
 import "./AgeTest.css";
 
@@ -25,6 +26,7 @@ export default function ResultPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const answers = location.state?.answers;
+  const { refreshUser } = useAuth();
 
   const [status, setStatus] = useState("loading"); // loading | ready | error
   const [result, setResult] = useState(null);
@@ -45,6 +47,8 @@ export default function ResultPage() {
         markAgeCheckDone();
         // 이번 방문 세션에서는 "/" 진입 시 다시 나이맞히기로 튕기지 않게 한다.
         markAgeCheckSessionDone();
+        // 로그인 상태면 완료 보상(+10)이 지급됐을 수 있으니 상단바 코인을 갱신한다.
+        refreshUser();
       })
       .catch(() => {
         if (cancelled) return;
