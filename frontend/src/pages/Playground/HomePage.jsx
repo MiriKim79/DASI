@@ -3,6 +3,7 @@ import RetroWindow from "../../components/RetroWindow.jsx";
 
 // 메인 화면: 두 개의 큰 진입 카드 (나이 다시 맞히기 / 추억 놀이터 가기)
 // 마스코트 모리는 공통 Layout에서 렌더된다(홈·추억놀이터·랭킹·피드백).
+// 클릭하면 챗봇이 열리는 연동도 Layout이 담당한다.
 export default function HomePage() {
   const navigate = useNavigate();
   return (
