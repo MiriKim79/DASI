@@ -7,7 +7,7 @@ import "./FeedbackPage.css";
 
 const MAX_CONTENT_LENGTH = 500;
 // 서버(POPULAR_LIKE_THRESHOLD / PINNED_LIMIT)와 같은 값 — 안내 문구 표시용
-const POPULAR_THRESHOLD = 5;
+const POPULAR_THRESHOLD = 3;
 const PINNED_LIMIT = 3;
 
 function formatCreatedAt(createdAt) {
