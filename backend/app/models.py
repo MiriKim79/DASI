@@ -64,6 +64,36 @@ class Feedback(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
 
     user: Mapped["User"] = relationship()
+    # 피드백을 지우면 달려 있던 좋아요/싫어요도 함께 지운다(고아 레코드 방지).
+    reactions: Mapped[list["FeedbackReaction"]] = relationship(
+        back_populates="feedback", cascade="all, delete-orphan"
+    )
+
+
+class FeedbackReaction(Base):
+    """피드백에 대한 좋아요/싫어요. 사용자당 피드백 1개에 하나만 남길 수 있다.
+
+    본인 피드백에도 누를 수 있다(정책상 허용).
+    """
+
+    __tablename__ = "feedback_reactions"
+    __table_args__ = (
+        UniqueConstraint("feedback_id", "user_id", name="uq_feedback_reaction_user"),
+    )
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
+    feedback_id: Mapped[int] = mapped_column(
+        ForeignKey("feedbacks.id"), nullable=False, index=True
+    )
+    user_id: Mapped[int] = mapped_column(
+        ForeignKey("users.id"), nullable=False, index=True
+    )
+    # "LIKE" | "DISLIKE"
+    reaction: Mapped[str] = mapped_column(String(10), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
+
+    feedback: Mapped["Feedback"] = relationship(back_populates="reactions")
+    user: Mapped["User"] = relationship()
 
 
 class Category(Base):
