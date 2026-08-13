@@ -135,6 +135,74 @@
   padding: 13px 14px;
 }
 
+/* 인기 피드백(좋아요 5개 이상) — 하늘색으로 구분 */
+.feedback-list__item--popular {
+  border-color: #7ec8e3;
+  background: #e8f6fd;
+}
+
+/* 인기/전체 섹션 구분 제목 */
+.feedback-list__section-title {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin: 16px 0 8px;
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--purple-deep);
+}
+
+.feedback-list__section-note {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--muted);
+}
+
+/* 인기 배지 */
+.feedback-list__badge {
+  flex: 0 0 auto;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #cdeefa;
+  color: #1c6a8c;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* 좋아요/싫어요 버튼 */
+.feedback-list__reactions {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.feedback-react {
+  border: 2px solid var(--lavender);
+  background: #fff;
+  color: var(--ink);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.feedback-react:hover:not(:disabled) {
+  background: #f3ecfb;
+}
+
+.feedback-react--on {
+  border-color: #4aa8cf;
+  background: #d6eefa;
+  color: #1c6a8c;
+}
+
+.feedback-react:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .feedback-list__meta {
   display: flex;
   align-items: center;
@@ -153,11 +221,36 @@
 }
 
 .feedback-list__date {
+  /* 삭제 버튼이 함께 있어도 날짜·버튼이 오른쪽에 붙어 있도록 남는 공간을 흡수한다.
+     (버튼이 없을 때는 기존과 동일하게 닉네임 왼쪽 / 날짜 오른쪽) */
+  margin-left: auto;
   flex: 0 0 auto;
   color: var(--muted);
   font-size: 13px;
   font-weight: 700;
   white-space: nowrap;
+}
+
+/* 본인 피드백에만 노출되는 삭제 버튼 */
+.feedback-list__delete {
+  flex: 0 0 auto;
+  border: 2px solid var(--lavender);
+  background: #fff;
+  color: var(--purple-deep);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.feedback-list__delete:hover:not(:disabled) {
+  background: #f3ecfb;
+}
+
+.feedback-list__delete:disabled {
+  opacity: 0.6;
+  cursor: default;
 }
 
 .feedback-list__content {
@@ -184,5 +277,10 @@
     align-items: flex-start;
     flex-direction: column;
     gap: 4px;
+  }
+
+  /* 세로로 쌓일 땐 auto 마진이 의미가 없어(오히려 위쪽으로 밀려남) 해제한다 */
+  .feedback-list__date {
+    margin-left: 0;
   }
 }

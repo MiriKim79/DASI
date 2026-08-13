@@ -85,6 +85,29 @@ class FeedbackListItemOut(BaseModel):
     nickname: str
     content: str
     created_at: datetime
+    # 조회한 사람이 이 피드백의 작성자인지(비로그인이면 항상 False).
+    # 프론트는 이 값으로 삭제 버튼 노출을 결정한다.
+    is_mine: bool = False
+    like_count: int = 0
+    dislike_count: int = 0
+    # 조회한 사람이 누른 반응: "LIKE" | "DISLIKE" | None(안 누름/비로그인)
+    my_reaction: Optional[str] = None
+    # 좋아요 5개 이상이면 인기 피드백
+    is_popular: bool = False
+    # 인기 피드백 중 좋아요 상위 3개 — 목록 맨 위에 따로 노출된다
+    is_pinned: bool = False
+
+
+class FeedbackReactionIn(BaseModel):
+    reaction: Literal["LIKE", "DISLIKE"]
+
+
+class FeedbackReactionOut(BaseModel):
+    feedback_id: int
+    like_count: int
+    dislike_count: int
+    my_reaction: Optional[str] = None
+    is_popular: bool = False
 
 
 # ---------- Category ----------
