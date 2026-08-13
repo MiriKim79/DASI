@@ -92,7 +92,7 @@ class FeedbackListItemOut(BaseModel):
     dislike_count: int = 0
     # 조회한 사람이 누른 반응: "LIKE" | "DISLIKE" | None(안 누름/비로그인)
     my_reaction: Optional[str] = None
-    # 좋아요 5개 이상이면 인기 피드백
+    # 좋아요 3개 이상이면 인기 피드백
     is_popular: bool = False
     # 인기 피드백 중 좋아요 상위 3개 — 목록 맨 위에 따로 노출된다
     is_pinned: bool = False

@@ -16,7 +16,7 @@ from ..security import get_current_user, get_current_user_optional
 router = APIRouter(prefix="/api/feedback", tags=["feedback"])
 
 # 좋아요가 이 개수 이상이면 '인기 피드백'
-POPULAR_LIKE_THRESHOLD = 5
+POPULAR_LIKE_THRESHOLD = 3
 # 인기 피드백 중 목록 맨 위에 따로 노출할 최대 개수
 PINNED_LIMIT = 3
 
@@ -74,7 +74,7 @@ def get_feedbacks(
 ):
     """등록된 피드백 목록.
 
-    정렬: 인기 피드백(좋아요 5개 이상) 중 좋아요가 많은 상위 3개를 맨 위에 고정하고,
+    정렬: 인기 피드백(좋아요 3개 이상) 중 좋아요가 많은 상위 3개를 맨 위에 고정하고,
     나머지는 최신순으로 잇는다.
 
     로그인 상태면 is_mine(본인 글 여부)과 my_reaction(내가 누른 반응)을 채운다.
